@@ -1,10 +1,11 @@
-#dotfiles
+# dotfiles
 
 setting for using texteditor, ex vim, sublimtext3 etc.
 
-##vim
+## vim
+
 add only colorscheme; molokai
 
-##sublimetext3
+## sublimetext3
 
 setting on openSUSE, not windows.
