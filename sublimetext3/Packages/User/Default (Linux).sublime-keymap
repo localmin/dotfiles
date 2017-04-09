@@ -1,0 +1,47 @@
+[
+    
+    // タブの切り替え
+        { "keys": ["g", "t"], "command": "next_view",
+         "context":
+         [
+                 { "key": "setting.is_widget", "operand": false },
+                 { "key": "setting.command_mode" }
+         ]
+         },
+        { "keys": ["g", "T"], "command": "prev_view",
+         "context":
+         [
+                 { "key": "setting.is_widget", "operand": false },
+                 { "key": "setting.command_mode" }
+         ]
+        },
+        // インサートモードから抜ける
+        {
+        "keys": ["ctrl+j"],
+        "command": "_enter_normal_mode",
+        "args": {"mode": "mode_insert"},
+        "context": [
+        {"key": "vi_insert_mode_aware"}
+        ]
+        },
+        {
+        "keys": ["j", "j"],
+        "command": "_enter_normal_mode",
+        "args": {"mode": "mode_insert"},
+        "context": [
+        {"key": "vi_insert_mode_aware"}
+        ]
+},
+        // ビジュアルモードから抜ける
+        { 
+        "keys": ["ctrl+j"],
+        "command": "_enter_normal_mode",
+        "args": {"mode": "mode_insert"},
+        "context":
+         [
+         { "key": "setting.command_mode"},
+         { "key": "num_selections", "operand": 1},
+         { "key": "selection_empty", "operator": "equal", "operand": false, "match_all": false }
+         ]
+         },
+]

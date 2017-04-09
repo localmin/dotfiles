@@ -1,0 +1,10 @@
+{
+	"color_scheme": "Packages/User/SublimeLinter/Monokai (SL).tmTheme",
+	"font_face": "Ricty Diminished",
+	"font_size": 11,
+	"ignored_packages":
+	[
+	],
+	"vintage_ctrl_keys": true,
+	"vintage_start_in_command_mode": true
+}

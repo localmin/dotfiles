@@ -1,0 +1,29 @@
+{
+	"bootstrapped": true,
+	"in_process_packages":
+	[
+	],
+	"installed_packages":
+	[
+		"All Autocomplete",
+		"BoundKeys",
+		"BracketHighlighter",
+		"Codecs33",
+		"Color Highlighter",
+		"ConvertToUTF8",
+		"Diffy",
+		"Emmet",
+		"LaTeXTools",
+		"Local History",
+		"Package Control",
+		"SideBarEnhancements",
+		"SublimeCodeIntel",
+		"SublimeLinter",
+		"SublimeMozcInput",
+		"Vintageous"
+	],
+	"repositories":
+	[
+		"https://github.com/yasuyuky/SublimeMozcInput"
+	]
+}
