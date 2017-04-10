@@ -1,0 +1,5 @@
+[[plugins]]
+repo = 'tpope/vim-surround'
+
+[[plugins]]
+repo = 'scrooloose/nerdtree'
