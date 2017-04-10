@@ -1,0 +1,3 @@
+['/home/localmin/.vimrc', '/home/localmin/.dein.toml']
+{'nerdtree': {'lazy': 0, 'path': '/home/localmin/.vim/dein/repos/github.com/scrooloose/nerdtree', 'repo': 'scrooloose/nerdtree', 'normalized_name': 'nerdtree', 'merged': 1, 'type': 'git', 'rtp': '/home/localmin/.vim/dein/repos/github.com/scrooloose/nerdtree', 'sourced': 1, 'name': 'nerdtree'}, 'vim-surround': {'lazy': 0, 'path': '/home/localmin/.vim/dein/repos/github.com/tpope/vim-surround', 'repo': 'tpope/vim-surround', 'normalized_name': 'surround', 'merged': 1, 'type': 'git', 'rtp': '/home/localmin/.vim/dein/repos/github.com/tpope/vim-surround', 'sourced': 1, 'name': 'vim-surround'}}
+{}
