@@ -4,8 +4,12 @@ setting for using texteditor, ex vim, sublimtext3 etc.
 
 ## vim
 
-add only colorscheme; molokai
+setting for openSUSE & windows.
 
 ## sublimetext3
 
 setting on openSUSE, not windows.
+
+## usage
+
+`./dotfilesLinks.sh`
