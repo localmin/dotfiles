@@ -1,6 +1,6 @@
 # dotfiles
 
-setting for using texteditor, ex vim, sublimtext3 etc.
+setting for using text-editors and so on, ex vim, sublimtext3 etc.
 
 ## vim
 
