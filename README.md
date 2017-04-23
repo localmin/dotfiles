@@ -1,15 +1,17 @@
 # dotfiles
 
-setting for using text-editors and so on, ex vim, sublimtext3 etc.
+Setting for using text-editors, ex vim, sublimtext3 etc, terminal and so on.
 
 ## vim
 
-setting for openSUSE & windows.
+Setting for openSUSE & windows.
 
 ## sublimetext3
 
-setting on openSUSE, not windows.
+Setting on openSUSE, not windows.
 
 ## usage
+
+After downloading the necessary applications,
 
 `./dotfilesLinks.sh`
