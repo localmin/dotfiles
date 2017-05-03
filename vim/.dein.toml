@@ -3,3 +3,6 @@ repo = 'tpope/vim-surround'
 
 [[plugins]]
 repo = 'scrooloose/nerdtree'
+
+[[plugins]]
+repo = 'nathanaelkane/vim-indent-guides'
