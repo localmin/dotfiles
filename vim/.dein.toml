@@ -6,3 +6,6 @@ repo = 'scrooloose/nerdtree'
 
 [[plugins]]
 repo = 'nathanaelkane/vim-indent-guides'
+
+[[plugins]]
+repo = 'Shougo/denite.nvim'
