@@ -1,2 +1,2 @@
 100
-['Shougo/denite.nvim', 'nathanaelkane/vim-indent-guides', 'scrooloose/nerdtree', 'tpope/vim-surround']
+['Shougo/denite.nvim', 'nathanaelkane/vim-indent-guides', 'scrooloose/nerdtree', 'tpope/vim-fugitive', 'tpope/vim-surround']
