@@ -18,3 +18,9 @@ repo = 'tomtom/tcomment_vim'
 
 [[plugins]]
 repo = 'Shougo/neocomplete.vim'
+
+[[plugins]]
+repo = 'vim-syntastic/syntastic'
+
+[[plugins]]
+repo = 'osyo-manga/vim-watchdogs'
