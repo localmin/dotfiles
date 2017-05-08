@@ -4,6 +4,20 @@ syntax enable
 
 filetype plugin indent on
 
+
+" key mapping
+"escape with jj  
+inoremap <silent> jj <ESC>
+
+" visual mode to ESC when Ctrl-j pushed 
+vnoremap <silent> <C-j> <ESC>
+
+" moving curosr of normal mode 
+inoremap <C-j> <Down>
+inoremap <C-k> <Up>
+inoremap <C-h> <Left>
+inoremap <C-l> <Right>
+
 " Tab setting
 set tabstop=4
 set autoindent
@@ -33,7 +47,8 @@ augroup AUTO_SEP
  au!
  autocmd VimEnter * call s:auto_sep()
 augroup END
-
+set columns=270
+set lines=75
 
 "dein Scripts-----------------------------
 if !&compatible
