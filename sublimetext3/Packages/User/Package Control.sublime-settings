@@ -19,6 +19,7 @@
 		"SideBarEnhancements",
 		"SublimeCodeIntel",
 		"SublimeLinter",
+		"SublimeLinter-jshint",
 		"SublimeMozcInput",
 		"Vintageous"
 	],
