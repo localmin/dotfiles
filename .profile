@@ -27,5 +27,6 @@ test -z "$PROFILEREAD" && . /etc/profile || true
 #    echo
 #fi
 
-conky &
 terminology &
+
+conky &
