@@ -29,4 +29,4 @@ test -z "$PROFILEREAD" && . /etc/profile || true
 
 terminology &
 
-conky &
+#conky &
