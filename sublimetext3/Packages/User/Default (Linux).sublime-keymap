@@ -31,7 +31,7 @@
         "context": [
         {"key": "vi_insert_mode_aware"}
         ]
-},
+        },
         // ビジュアルモードから抜ける
         { 
         "keys": ["ctrl+j"],
@@ -44,4 +44,8 @@
          { "key": "selection_empty", "operator": "equal", "operand": false, "match_all": false }
          ]
          },
+
+        // insert blank line
+        
+
 ]
