@@ -18,11 +18,15 @@ inoremap <C-k> <Up>
 inoremap <C-h> <Left>
 inoremap <C-l> <Right>
 
+" insert blank line
+nnoremap O :<C-u>call append(expand('.'), '')<Cr>k
+
 " Tab setting
 set tabstop=4
 set autoindent
 set expandtab
 set shiftwidth=4
+
 
 " ruler & colum numbering
 set ruler
