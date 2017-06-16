@@ -4,6 +4,8 @@ syntax enable
 
 filetype plugin indent on
 
+" font size
+" set guifont=Ricty\ Diminished\ Discord\ 11
 
 " key mapping
 "escape with jj  
@@ -26,7 +28,6 @@ set tabstop=4
 set autoindent
 set expandtab
 set shiftwidth=4
-
 
 " ruler & colum numbering
 set ruler
