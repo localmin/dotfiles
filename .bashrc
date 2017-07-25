@@ -143,4 +143,3 @@ if ! shopt -oq posix; then
 fi
  
 # add
-screenfetch 

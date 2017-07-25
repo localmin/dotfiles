@@ -4,11 +4,11 @@ Setting for using text-editors, ex vim, sublimtext3 etc, terminal and so on.
 
 ## vim
 
-Setting for openSUSE & windows.
+Setting for Sabayon Linux & windows.
 
 ## sublimetext3
 
-Setting on openSUSE, not windows.
+Setting for Sabayon Linux, not windows.
 
 ## usage
 
