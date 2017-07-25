@@ -12,6 +12,6 @@ Setting for Sabayon Linux, not windows.
 
 ## usage
 
-After downloading the necessary applications,
+After downloading the necessary applications, execute the following command
 
 `./dotfilesLinks.sh`
