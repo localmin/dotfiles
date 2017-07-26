@@ -10,6 +10,5 @@ ln -sf ~/dotfiles/sublimetext3/Packages ~/.config/sublime-text-3/Packages
 ln -sf ~/dotfiles/sublimetext3/Installed\ Packages ~/.config/sublime-text-3/Installed\ Packages
 
 # etc
-ln -sf  ~/dotfiles/.conkyrc ~/.conkyrc
 ln -sf ~/dotfiles/.bashrc ~/.bashrc
-ln -sf ~/dotfiles/.profile ~/.profile
+ln -sf ~/dotfiles/.xprofile ~/.xprofile
