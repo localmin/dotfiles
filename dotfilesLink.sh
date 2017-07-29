@@ -11,4 +11,4 @@ ln -sf ~/dotfiles/sublimetext3/Installed\ Packages ~/.config/sublime-text-3/Inst
 
 # etc
 ln -sf ~/dotfiles/.bashrc ~/.bashrc
-ln -sf ~/dotfiles/.xprofile ~/.xprofile
+
