@@ -1,8 +1,10 @@
 #!/bin/sh
 # vim
 ln -sf ~/dotfiles/vim/colors ~/.vim
-ln -sf ~/dotfiles/vim/dein ~/.vim
 ln -sf ~/dotfiles/vim/.vimrc ~/.vimrc
+mkdir -p ~/.vim/dein/repos/github.com/Shougo/dein.vim
+git clone https://github.com/Shougo/dein.vim.git \
+    ~/.vim/dein/repos/github.com/Shougo/dein.vim
 ln -sf ~/dotfiles/vim/.dein.toml ~/.dein.toml
 
 # sublimetext3
@@ -11,4 +13,3 @@ ln -sf ~/dotfiles/sublimetext3/Installed\ Packages ~/.config/sublime-text-3/Inst
 
 # etc
 ln -sf ~/dotfiles/.bashrc ~/.bashrc
-
