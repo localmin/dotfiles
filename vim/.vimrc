@@ -42,19 +42,6 @@ set list
 " - means "tab"
 set listchars=tab:>-,trail:.  
 
-" separate window
-function! s:auto_sep()
-  rightbelow vsplit ~/_vimrc 
-  wincmd p
-endfunction
-
-augroup AUTO_SEP
- au!
- autocmd VimEnter * call s:auto_sep()
-augroup END
-set columns=270
-set lines=75
-
 "dein Scripts-----------------------------
 if !&compatible
   set nocompatible
