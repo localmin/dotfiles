@@ -17,9 +17,6 @@ repo = 'tpope/vim-fugitive'
 repo = 'tomtom/tcomment_vim'
 
 [[plugins]]
-repo = 'Shougo/neocomplete.vim'
-
-[[plugins]]
 repo = 'vim-syntastic/syntastic'
 
 [[plugins]]
