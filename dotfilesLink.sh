@@ -10,11 +10,5 @@ ln -sf ~/dotfiles/vim/.dein.toml ~/.dein.toml
 ln -sf ~/dotfiles/vim/colors ~/.vim/colors
 ln -sf ~/dotfiles/vim/.vimrc ~/.vimrc
 
-# sublimetext3
-mkdir -p ~/.config/sublime-text-3/Packages
-mkdir -p ~/.config/sublime-text-3/Installed\ Packages 
-ln -sf ~/dotfiles/sublimetext3/Packages ~/.config/sublime-text-3/Packages
-ln -sf ~/dotfiles/sublimetext3/Installed\ Packages ~/.config/sublime-text-3/Installed\ Packages
-
 # etc
 ln -sf ~/dotfiles/.bashrc ~/.bashrc
