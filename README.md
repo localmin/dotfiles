@@ -1,14 +1,10 @@
 # dotfiles
 
-Setting for using text-editors, ex vim, sublimtext3 etc, terminal and so on.
+Setting for using vim, terminal and so on.
 
 ## vim
 
-Setting for Sabayon Linux & windows.
-
-## sublimetext3
-
-Setting for Sabayon Linux, not windows.
+Setting for Sabayon Linux & macOS.
 
 ## usage
 
