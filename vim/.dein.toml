@@ -21,3 +21,6 @@ repo = 'vim-syntastic/syntastic'
 
 [[plugins]]
 repo = 'osyo-manga/vim-watchdogs'
+
+[[plugins]]
+repo = 'lervag/vimtex'
