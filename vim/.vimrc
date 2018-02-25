@@ -82,9 +82,15 @@ let file_name = expand('%')
 if has('vim_starting') &&  file_name == ''
   autocmd VimEnter * NERDTree ./
 endif
- 
-"End dein Scripts-------------------------
 
+call dein#add('Shougo/deoplete.nvim')
+if !has('nvim')
+  call dein#add('roxma/nvim-yarp')
+  call dein#add('roxma/vim-hug-neovim-rpc')
+endif
+let g:deoplete#enable_at_startup = 1
+
+"End dein Scripts-------------------------
 
 " view EM space
 """"""""""""""""""""""""""""""
