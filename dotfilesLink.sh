@@ -9,6 +9,8 @@ ln -sf ~/dotfiles/vim/dein ~/.vim/dein
 ln -sf ~/dotfiles/vim/.dein.toml ~/.dein.toml
 ln -sf ~/dotfiles/vim/colors ~/.vim/colors
 ln -sf ~/dotfiles/vim/.vimrc ~/.vimrc
+ln -sf ~/dotfiles/.gitconfig ~/.vimrc
 
 # etc
+ln -sf ~/dotfiles/.gitconfig ~/.gitconfig
 ln -sf ~/dotfiles/.bashrc ~/.bashrc

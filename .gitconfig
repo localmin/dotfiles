@@ -1,0 +1,5 @@
+[user]
+	name = localmin
+	email = localmin9201009@gmail.com
+[core]
+	editor = /usr/local/bin/vim
