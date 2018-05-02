@@ -46,3 +46,9 @@ let g:deoplete#sources#clang#clang_header = '/Library/Developer/CommandLineTools
 
 on_ft = ['c', 'cpp', 'cmake']
 depends = ['deoplete.nvim']
+
+[[plugins]]
+repo = 'Shougo/neoinclude.vim'
+
+[[plugins]]
+repo = 'tweekmonster/deoplete-clang2'
