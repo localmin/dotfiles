@@ -42,6 +42,10 @@ set list
 " - means "tab"
 set listchars=tab:>-,trail:.  
 
+" clipboard setting
+set clipboard=unnamed
+
+
 "dein Scripts-----------------------------
 if !&compatible
   set nocompatible
