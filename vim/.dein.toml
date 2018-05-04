@@ -52,3 +52,6 @@ repo = 'Shougo/neoinclude.vim'
 
 [[plugins]]
 repo = 'tweekmonster/deoplete-clang2'
+
+[[plugins]]
+repo = 'Shougo/neosnippet-snippets'
