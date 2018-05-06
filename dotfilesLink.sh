@@ -9,6 +9,7 @@ git clone https://github.com/Shougo/dein.vim.git \
     ~/dotfiles/vim/dein/repos/github.com/Shougo/dein.vim
 ln -sf ~/dotfiles/vim/dein ~/.vim
 ln -sf ~/dotfiles/vim/.dein.toml ~/.dein.toml
+ln -sf ~/dotfiles/vim/.dein_lazy.toml ~/.dein_lazy.toml
 ln -sf ~/dotfiles/vim/colors ~/.vim
 ln -sf ~/dotfiles/vim/.vimrc ~/.vimrc
 
