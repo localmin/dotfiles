@@ -1,4 +1,4 @@
-if !&compatible
+if &compatible
   set nocompatible
 endif
 
@@ -66,9 +66,11 @@ let &runtimepath = s:dein_repo_dir .",". &runtimepath
 
 " read cached & make plugin
 let s:toml_file = fnamemodify(expand('<sfile>'), ':h').'/.dein.toml'
+let s:lazy_file = fnamemodify(expand('<sfile>'), ':h').'/.dein_lazy.toml'
 if dein#load_state(s:dein_dir)
   call dein#begin(s:dein_dir)
-  call dein#load_toml(s:toml_file)
+  call dein#load_toml(s:toml_file, {'lazy': 0})
+  call dein#load_toml(s:lazy_file, {'lazy': 1})
   call dein#end()
   call dein#save_state()
 endif
@@ -84,8 +86,7 @@ let file_name = expand('%')
 if has('vim_starting') &&  file_name == ''
   autocmd VimEnter * NERDTree ./
 endif
-" deoplete wake
-call dein#add('Shougo/deoplete.nvim')
+
 if !has('nvim')
   call dein#add('roxma/nvim-yarp')
   call dein#add('roxma/vim-hug-neovim-rpc')
