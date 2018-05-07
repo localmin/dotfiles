@@ -1,4 +1,4 @@
-if !&compatible
+if &compatible
   set nocompatible
 endif
 
