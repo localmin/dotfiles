@@ -1,4 +1,6 @@
-set nocompatible
+if !&compatible
+  set nocompatible
+endif
 
 syntax enable
 
@@ -47,10 +49,6 @@ set clipboard=unnamed
 
 
 "dein Scripts-----------------------------
-if !&compatible
-  set nocompatible
-endif
-
 " reset augroup
 augroup MyAutoCmd
   autocmd!
@@ -69,7 +67,7 @@ let &runtimepath = s:dein_repo_dir .",". &runtimepath
 " read cached & make plugin
 let s:toml_file = fnamemodify(expand('<sfile>'), ':h').'/.dein.toml'
 if dein#load_state(s:dein_dir)
-  call dein#begin(s:dein_dir, [$MYVIMRC, s:toml_file])
+  call dein#begin(s:dein_dir)
   call dein#load_toml(s:toml_file)
   call dein#end()
   call dein#save_state()
