@@ -22,3 +22,17 @@ hook_source = '''
         \    "\<Plug>(neosnippet_expand_or_jump)" : "\<tab>"
 '''
 on_i = 1
+
+[[plugins]]
+repo = 'zchee/deoplete-clang'
+hook_source = '''
+let g:deoplete#sources#clang#libclang_path = '/Library/Developer/CommandLineTools/usr/lib/libclang.dylib'
+let g:deoplete#sources#clang#clang_header = '/Library/Developer/CommandLineTools/usr/lib/clang'
+'''
+on_ft = ['c', 'cpp', 'cmake']
+depends = ['deoplete.nvim']
+on_i = 1
+
+[[plugins]]
+repo = 'Shougo/neoinclude.vim'
+on_i = 1
