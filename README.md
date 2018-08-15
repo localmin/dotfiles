@@ -1,9 +1,5 @@
 # dotfiles
 
-Setting for using vim, terminal and so on.
-
-## vim
-
 Setting for Sabayon Linux & macOS.
 
 ## usage
