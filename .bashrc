@@ -45,3 +45,5 @@ if [ -x /usr/bin/dircolors ]; then
 fi
   
 # add
+# LuaJitTex
+alias luajitlatex='luajittex --fmt=luajitlatex.fmt'
