@@ -20,9 +20,12 @@ fi
 if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
     debian_chroot=$(cat /etc/debian_chroot)
 fi
- 
-PS1='\[\e[0;32m\]( ╹◡╹) \[\e[0;37m'
- 
+
+# setting for git prompt & completion
+source /usr/local/etc/bash_completion.d/git-prompt.sh
+source /usr/local/etc/bash_completion.d/git-completion.bash
+GIT_PS1_SHOWDIRTYSTATE=true
+PS1=' \[\033[33m\]\w\[\033[36m\]$(__git_ps1 [%s])\n\[\e[0;32m\]( ╹◡╹) \[\e[0;37m'
 # If this is an xterm set the title to user@host:dir
 case "$TERM" in
 xterm*|rxvt*)
@@ -47,3 +50,4 @@ fi
 # add
 # LuaJitTex
 alias luajitlatex='luajittex --fmt=luajitlatex.fmt'
+
