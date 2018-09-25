@@ -26,19 +26,11 @@ source /usr/local/etc/bash_completion.d/git-prompt.sh
 source /usr/local/etc/bash_completion.d/git-completion.bash
 GIT_PS1_SHOWDIRTYSTATE=true
 PS1=' \[\033[33m\]\w\[\033[36m\]$(__git_ps1 [%s])\n\[\e[0;32m\]( ╹◡╹) \[\e[0;37m'
-# If this is an xterm set the title to user@host:dir
-case "$TERM" in
-xterm*|rxvt*)
-    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}( ╹◡╹)\w\a\]$PS1"
-    ;;
-*)
-    ;;
-esac
- 
+
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-    alias ls='ls --color=auto'
+    #alias ls='ls --color=auto'
     #alias dir='dir --color=auto'
     #alias vdir='vdir --color=auto'
  
@@ -50,4 +42,5 @@ fi
 # add
 # LuaJitTex
 alias luajitlatex='luajittex --fmt=luajitlatex.fmt'
-
+export LSCOLORS=gxfxcxdxbxegedabagacad
+alias ls='ls -G'
