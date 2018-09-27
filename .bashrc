@@ -15,7 +15,6 @@ if [[ $- != *i* ]] ; then
 fi
 
 # Put your fun stuff here.
- 
 # set variable identifying the chroot you work in (used in the prompt below)
 if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
     debian_chroot=$(cat /etc/debian_chroot)
@@ -42,5 +41,6 @@ fi
 # add
 # LuaJitTex
 alias luajitlatex='luajittex --fmt=luajitlatex.fmt'
+# ls color
 export LSCOLORS=gxfxcxdxbxegedabagacad
 alias ls='ls -G'
