@@ -146,3 +146,5 @@ endfunction
 """"""""""""""""""""""""""""""
 colorscheme molokai
 syntax on
+
+let g:tex_conceal = ''

@@ -23,9 +23,6 @@ repo = 'vim-syntastic/syntastic'
 repo = 'osyo-manga/vim-watchdogs'
 
 [[plugins]]
-repo = 'lervag/vimtex'
-
-[[plugins]]
 repo = 'kana/vim-smartinput'
 
 [[plugins]]
@@ -36,3 +33,6 @@ repo = 'roxma/vim-hug-neovim-rpc'
 
 [[plugins]]
 repo = 'Shougo/neosnippet-snippets'
+
+[[plugins]]
+repo = 'lervag/vimtex'
