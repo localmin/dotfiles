@@ -41,6 +41,7 @@ fi
 # add
 # LuaJitTex
 alias luajitlatex='luajittex --fmt=luajitlatex.fmt'
+alias lmk='latexmk -pvc'
 # ls color
 export LSCOLORS=gxfxcxdxbxegedabagacad
 alias ls='ls -G'
