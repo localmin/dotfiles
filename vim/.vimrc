@@ -6,7 +6,6 @@ syntax enable
 
 " Highlight setting of the rows & colums 
 set cursorline
-set cursorcolumn
 
 filetype plugin indent on
 
