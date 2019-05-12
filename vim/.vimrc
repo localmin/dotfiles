@@ -70,6 +70,7 @@ let &runtimepath = s:dein_repo_dir .",". &runtimepath
 " read cached & make plugin
 let s:toml_file = fnamemodify(expand('<sfile>'), ':h').'/.dein.toml'
 let s:lazy_file = fnamemodify(expand('<sfile>'), ':h').'/.dein_lazy.toml'
+
 if dein#load_state(s:dein_dir)
   call dein#begin(s:dein_dir)
   call dein#load_toml(s:toml_file, {'lazy': 0})
@@ -94,6 +95,7 @@ if !has('nvim')
   call dein#add('roxma/nvim-yarp')
   call dein#add('roxma/vim-hug-neovim-rpc')
 endif
+
 let g:deoplete#enable_at_startup = 1
 
 
