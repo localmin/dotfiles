@@ -25,14 +25,6 @@ repo = 'osyo-manga/vim-watchdogs'
 [[plugins]]
 repo = 'kana/vim-smartinput'
 
-[[plugins]]
-repo = 'roxma/nvim-yarp'
-
-[[plugins]]
-repo = 'roxma/vim-hug-neovim-rpc'
-
-[[plugins]]
-repo = 'Shougo/neosnippet-snippets'
 
 [[plugins]]
 repo = 'lervag/vimtex'

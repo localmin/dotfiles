@@ -91,13 +91,15 @@ if has('vim_starting') &&  file_name == ''
   autocmd VimEnter * NERDTree ./
 endif
 
+" deoplete wake
+"call dein#add('Shougo/deoplete.nvim')
+call dein#add('deoplete-plugin/deoplete-clang')
 if !has('nvim')
   call dein#add('roxma/nvim-yarp')
   call dein#add('roxma/vim-hug-neovim-rpc')
 endif
 
 let g:deoplete#enable_at_startup = 1
-
 
 "End dein Scripts-------------------------
 
