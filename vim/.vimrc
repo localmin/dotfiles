@@ -93,7 +93,7 @@ endif
 
 " deoplete wake
 "call dein#add('Shougo/deoplete.nvim')
-call dein#add('deoplete-plugin/deoplete-clang')
+"call dein#add('deoplete-plugin/deoplete-clang')
 if !has('nvim')
   call dein#add('roxma/nvim-yarp')
   call dein#add('roxma/vim-hug-neovim-rpc')
