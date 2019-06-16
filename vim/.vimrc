@@ -8,7 +8,8 @@ syntax enable
 set cursorline
 
 filetype plugin indent on
-
+" Remove the unnesessary preview window
+set completeopt=menuone
 " font size
 " set guifont=Ricty\ Diminished\ Discord\ 11
 
