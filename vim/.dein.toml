@@ -1,4 +1,7 @@
 [[plugins]]
+repo = 'Shougo/denite.nvim'
+
+[[plugins]]
 repo = 'tpope/vim-surround'
 
 [[plugins]]
@@ -6,9 +9,6 @@ repo = 'scrooloose/nerdtree'
 
 [[plugins]]
 repo = 'nathanaelkane/vim-indent-guides'
-
-[[plugins]]
-repo = 'Shougo/denite.nvim'
 
 [[plugins]]
 repo = 'tpope/vim-fugitive'
@@ -33,7 +33,3 @@ repo = 'roxma/nvim-yarp'
 
 [[plugins]]
 repo = 'roxma/vim-hug-neovim-rpc'
-
-[[plugins]]
-repo = 'tweekmonster/deoplete-clang2'
-
