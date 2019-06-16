@@ -38,3 +38,7 @@ smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
 [[plugins]]
 repo = 'Shougo/neosnippet-snippets'
 on_event = 'InsertEnter'
+
+[[plugins]]
+repo = 'tweekmonster/deoplete-clang2'
+on_event = 'InsertEnter'
