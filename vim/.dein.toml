@@ -8,6 +8,9 @@ repo = 'tpope/vim-surround'
 repo = 'tpope/vim-fugitive'
 
 [[plugins]]
+repo = 'airblade/vim-gitgutter'
+
+[[plugins]]
 repo = 'tomtom/tcomment_vim'
 
 [[plugins]]
