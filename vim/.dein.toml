@@ -1,8 +1,8 @@
 [[plugins]]
-repo = 'tpope/vim-surround'
+repo = 'Yggdroot/indentLine'
 
 [[plugins]]
-repo = 'nathanaelkane/vim-indent-guides'
+repo = 'tpope/vim-surround'
 
 [[plugins]]
 repo = 'tpope/vim-fugitive'
