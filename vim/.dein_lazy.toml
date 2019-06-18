@@ -48,3 +48,59 @@ repo = 'Shougo/neoinclude.vim'
 on_ft = ['c', 'cpp']
 depends = ['deoplete.nvim']
 on_event = 'InsertEnter' 
+
+[[plugins]]
+repo = 'Shougo/denite.nvim'
+on_event = 'BufRead'
+hook_add = '''
+" Define mappings
+autocmd FileType denite call s:denite_my_settings()
+function! s:denite_my_settings() abort
+  nnoremap <silent><buffer><expr> <CR>
+  \ denite#do_map('do_action')
+  nnoremap <silent><buffer><expr> d
+  \ denite#do_map('do_action', 'delete')
+  nnoremap <silent><buffer><expr> p
+  \ denite#do_map('do_action', 'preview')
+  nnoremap <silent><buffer><expr> q
+  \ denite#do_map('quit')
+  nnoremap <silent><buffer><expr> i
+  \ denite#do_map('open_filter_buffer')
+  nnoremap <silent><buffer><expr> <Space>
+  \ denite#do_map('toggle_select').'j'
+endfunction
+
+" grep under the cursor
+nnoremap <silent> ;cg :<C-u>DeniteCursorWord grep -buffer-name=search line<CR><C-R><C-W><CR>
+" grep
+nnoremap <silent> ;g :<C-u>Denite grep<CR>
+" search in the file
+nnoremap <silent> / :<C-u>Denite -buffer-name=search -auto-resize line<CR> 
+" Sea all files in the current directory
+nnoremap <silent> ;f :<C-u>DeniteBufferDir
+      \ -direction=topleft  file file:new<CR>
+" See all buffer
+nnoremap <silent> ;b :<C-u>Denite -direction=topleft  buffer<CR>
+
+'''
+
+hook_post_source = '''
+call denite#custom#option('default', 'prompt', '>')
+
+if executable('rg')
+  call denite#custom#var('file_rec', 'command',
+        \ ['rg', '--files', '--glob', '!.git'])
+  call denite#custom#var('grep', 'command', ['rg'])
+endif
+" customize ignore globs
+call denite#custom#source('file_rec', 'matchers', ['matcher_fuzzy','matcher_ignore_globs'])
+call denite#custom#filter('matcher_ignore_globs', 'ignore_globs',
+      \ [
+      \ '.git/', 'build/', '__pycache__/',
+      \ 'images/', '*.o', '*.make',
+      \ '*.min.*',
+      \ 'img/', 'fonts/'])
+
+" jj escape
+call denite#custom#map('insert', 'jj', '<denite:enter_mode:normal>')
+'''

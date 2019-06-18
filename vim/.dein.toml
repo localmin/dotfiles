@@ -1,7 +1,4 @@
 [[plugins]]
-repo = 'Shougo/denite.nvim'
-
-[[plugins]]
 repo = 'tpope/vim-surround'
 
 [[plugins]]
