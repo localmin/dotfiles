@@ -85,8 +85,6 @@ nnoremap <silent> ;b :<C-u>Denite -direction=topleft  buffer<CR>
 '''
 
 hook_post_source = '''
-call denite#custom#option('default', 'prompt', '>')
-
 if executable('rg')
   call denite#custom#var('file_rec', 'command',
         \ ['rg', '--files', '--glob', '!.git'])
