@@ -86,12 +86,6 @@ if has('vim_starting') && dein#check_install()
 endif
 " }}}
 
-" starting NERDTree when no argument
-let file_name = expand('%')
-if has('vim_starting') &&  file_name == ''
-  autocmd VimEnter * NERDTree ./
-endif
-
 " deoplete wake
 "call dein#add('Shougo/deoplete.nvim')
 "call dein#add('deoplete-plugin/deoplete-clang')
@@ -195,7 +189,7 @@ call denite#custom#filter('matcher_ignore_globs', 'ignore_globs',
 " grep under the cursor
 nnoremap <silent> ;cg :<C-u>DeniteCursorWord grep -buffer-name=search line<CR><C-R><C-W><CR>
 " grep
-nnoremap <silent> ;g :<C-u>Denite  grep<CR>
+nnoremap <silent> ;g :<C-u>Denite grep<CR>
 " search in the file
 nnoremap <silent> / :<C-u>Denite -buffer-name=search -auto-resize line<CR> 
 " Sea all files in the current directory
@@ -203,3 +197,6 @@ nnoremap <silent> ;f :<C-u>DeniteBufferDir
       \ -direction=topleft  file file:new<CR>
 " See all buffer
 nnoremap <silent> ;b :<C-u>Denite -direction=topleft  buffer<CR>
+
+" jj escape
+call denite#custom#map('insert', 'jj', '<denite:enter_mode:normal>')
