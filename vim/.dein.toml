@@ -2,22 +2,37 @@
 repo = 'Yggdroot/indentLine'
 
 [[plugins]]
-repo = 'tpope/vim-surround'
-
-[[plugins]]
 repo = 'tpope/vim-fugitive'
 
 [[plugins]]
 repo = 'airblade/vim-gitgutter'
 
 [[plugins]]
+repo = 'roxma/nvim-yarp'
+
+[[plugins]]
+repo = 'roxma/vim-hug-neovim-rpc'
+
+[[plugins]]
 repo = 'tomtom/tcomment_vim'
 
 [[plugins]]
-repo = 'vim-syntastic/syntastic'
+repo = 'osyo-manga/vim-watchdogs'
 
 [[plugins]]
-repo = 'osyo-manga/vim-watchdogs'
+repo = "thinca/vim-quickrun"
+
+[[plugins]]
+repo = 'Shougo/vimproc'
+
+[[plugins]]
+repo =  'osyo-manga/shabadou.vim'
+
+[[plugins]]
+repo = 'cohama/vim-hier'
+
+[[plugins]]
+repo = 'dannyob/quickfixstatus'
 
 [[plugins]]
 repo = 'kana/vim-smartinput'
@@ -26,7 +41,4 @@ repo = 'kana/vim-smartinput'
 repo = 'lervag/vimtex'
 
 [[plugins]]
-repo = 'roxma/nvim-yarp'
-
-[[plugins]]
-repo = 'roxma/vim-hug-neovim-rpc'
+repo = 'tpope/vim-surround'

@@ -154,3 +154,20 @@ let g:tex_conceal = ''
 let g:indent_guides_enable_on_vim_startup = 1
 let g:indent_guides_guide_size = 1
 let g:indent_guides_start_level = 2
+
+" watchdogs_checker/_ に設定を記述する事で全ての watchdogs_checker で有効になる
+" hook/close_quickfix/enable_exit 1 で :WatchdogsRun 終了時に quickfix ウィンドウが閉じる
+"let g:quickrun_config = {
+"\   "watchdogs_checker/_" : {
+"\       "hook/close_quickfix/enable_exit" : 1,
+"\   },
+"\}
+"
+"" watchdogs.vim の設定を追加
+"call watchdogs#setup(g:quickrun_config)
+" 書き込み後にシンタックスチェックを行う
+let g:watchdogs_check_BufWritePost_enable = 1
+
+" こっちは一定時間キー入力がなかった場合にシンタックスチェックを行う
+" バッファに書き込み後、1度だけ行われる
+let g:watchdogs_check_CursorHold_enable = 1
