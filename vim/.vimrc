@@ -39,7 +39,6 @@ set shiftwidth=4
 set ruler
 set number
 
-
 " ignore upper case letters when using lower case letters for search
 set smartcase
 
@@ -113,39 +112,6 @@ if has('syntax')
     call ZenkakuSpace()
 endif
 """"""""""""""""""""""""""""""
-
-" change status colors when insert mode or normal mode
-""""""""""""""""""""""""""""""
-let g:hi_insert = 'highlight StatusLine guifg=darkblue guibg=darkyellow gui=none ctermfg=blue ctermbg=yellow cterm=none'
-
-if has('syntax')
-  augroup InsertHook
-    autocmd!
-    autocmd InsertEnter * call s:StatusLine('Enter')
-    autocmd InsertLeave * call s:StatusLine('Leave')
-  augroup END
-endif
-
-let s:slhlcmd = ''
-function! s:StatusLine(mode)
-  if a:mode == 'Enter'
-    silent! let s:slhlcmd = 'highlight ' . s:GetHighlight('StatusLine')
-    silent exec g:hi_insert
-  else
-    highlight clear StatusLine
-    silent exec s:slhlcmd
-  endif
-endfunction
-
-function! s:GetHighlight(hi)
-  redir => hl
-  exec 'highlight '.a:hi
-  redir END
-  let hl = substitute(hl, '[\r\n]', '', 'g')
-  let hl = substitute(hl, 'xxx', '', '')
-  return hl
-endfunction
-""""""""""""""""""""""""""""""
 colorscheme molokai
 syntax on
 
@@ -154,20 +120,47 @@ let g:tex_conceal = ''
 let g:indent_guides_enable_on_vim_startup = 1
 let g:indent_guides_guide_size = 1
 let g:indent_guides_start_level = 2
-
-" watchdogs_checker/_ に設定を記述する事で全ての watchdogs_checker で有効になる
-" hook/close_quickfix/enable_exit 1 で :WatchdogsRun 終了時に quickfix ウィンドウが閉じる
+" Setting of watchdogs
+" Clsoe the quickfix window after using sysntax checking
 "let g:quickrun_config = {
 "\   "watchdogs_checker/_" : {
 "\       "hook/close_quickfix/enable_exit" : 1,
 "\   },
 "\}
 "
-"" watchdogs.vim の設定を追加
-"call watchdogs#setup(g:quickrun_config)
-" 書き込み後にシンタックスチェックを行う
+" Add settting of  watchdogs.vim 
+" call watchdogs#setup(g:quickrun_config)
+" Syntax checking after writng 
 let g:watchdogs_check_BufWritePost_enable = 1
-
-" こっちは一定時間キー入力がなかった場合にシンタックスチェックを行う
-" バッファに書き込み後、1度だけ行われる
+" Auto Syntax checking at regular interval
 let g:watchdogs_check_CursorHold_enable = 1
+
+" Setting for alrline
+let g:airline_powerline_fonts = 1
+set laststatus=2
+let g:airline_theme = 'luna'
+
+if !exists('g:airline_symbols')
+	let g:airline_symbols = {}
+endif
+
+" Separater on the leftside
+let g:airline_left_sep = '⮀'
+let g:airline_left_alt_sep = '⮁'
+
+" Separater on the rightside
+let g:airline_right_sep = '⮂'
+let g:airline_right_alt_sep = '⮃'
+let g:airline_symbols.crypt = '🔒'
+let g:airline_symbols.linenr = '¶'
+let g:airline_symbols.maxlinenr = '㏑'
+let g:airline_symbols.branch = '⭠'
+let g:airline_symbols.paste = 'ρ'
+let g:airline_symbols.spell = 'Ꞩ'
+let g:airline_symbols.notexists = '∄'
+let g:airline_symbols.whitespace = 'Ξ'
+
+" Tab setting on Airline
+let g:airline#extensions#tabline#enabled = 1
+nmap <C-p> <Plug>AirlineSelectPrevTab
+nmap <C-n> <Plug>AirlineSelectNextTab
