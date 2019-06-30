@@ -122,12 +122,11 @@ let g:indent_guides_guide_size = 1
 let g:indent_guides_start_level = 2
 " Setting of watchdogs
 " Clsoe the quickfix window after using sysntax checking
-"let g:quickrun_config = {
-"\   "watchdogs_checker/_" : {
-"\       "hook/close_quickfix/enable_exit" : 1,
-"\   },
-"\}
-"
+let g:quickrun_config = {
+\   "watchdogs_checker/_" : {
+\       "hook/close_quickfix/enable_exit" : 1,
+\   },
+\}
 " Add settting of  watchdogs.vim 
 " call watchdogs#setup(g:quickrun_config)
 " Syntax checking after writng 
@@ -164,3 +163,8 @@ let g:airline_symbols.whitespace = 'Ξ'
 let g:airline#extensions#tabline#enabled = 1
 nmap <C-p> <Plug>AirlineSelectPrevTab
 nmap <C-n> <Plug>AirlineSelectNextTab
+
+" Quickfix setting
+nnoremap <silent><C-o> :copen<CR>
+nnoremap <silent><C-c> :cclose<CR>
+nnoremap <silent>gt <C-w><C-w>
