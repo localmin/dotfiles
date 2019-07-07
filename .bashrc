@@ -45,3 +45,6 @@ alias lmk='latexmk -pvc'
 # ls color
 export LSCOLORS=gxfxcxdxbxegedabagacad
 alias ls='ls -G'
+
+export GOPATH=$HOME
+export PATH=$PATH:$GOPATH/bin
