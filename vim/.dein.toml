@@ -32,9 +32,6 @@ repo =  'osyo-manga/shabadou.vim'
 repo = 'cohama/vim-hier'
 
 [[plugins]]
-repo = 'dannyob/quickfixstatus'
-
-[[plugins]]
 repo = 'vim-airline/vim-airline'
 
 [[plugins]]
