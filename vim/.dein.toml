@@ -42,3 +42,6 @@ repo = 'kana/vim-smartinput'
 
 [[plugins]]
 repo = 'tpope/vim-surround'
+
+[[plugins]]
+repo = 'Shougo/vinarise'
