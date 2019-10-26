@@ -76,9 +76,13 @@ nnoremap <silent> ;cg :<C-u>DeniteCursorWord grep -buffer-name=search line<CR><C
 nnoremap <silent> ;g :<C-u>Denite grep<CR>
 " search in the file
 nnoremap <silent> / :<C-u>Denite -buffer-name=search -auto-resize line<CR> 
-" Sea all files in the current directory
+" Search all files in the current directory
 nnoremap <silent> ;f :<C-u>DeniteBufferDir
-      \ -direction=topleft  file file:new<CR>
+      \ file/rec file:new<CR>
+" Search all project files
+nnoremap <silent> ;F :<C-u>DeniteProjectDir
+      \ file/rec file:new<CR>
+
 " See all buffer
 nnoremap <silent> ;b :<C-u>Denite -direction=topleft  buffer<CR>
 
@@ -86,12 +90,12 @@ nnoremap <silent> ;b :<C-u>Denite -direction=topleft  buffer<CR>
 
 hook_post_source = '''
 if executable('rg')
-  call denite#custom#var('file_rec', 'command',
+  call denite#custom#var('file/rec', 'command',
         \ ['rg', '--files', '--glob', '!.git'])
   call denite#custom#var('grep', 'command', ['rg'])
 endif
 " customize ignore globs
-call denite#custom#source('file_rec', 'matchers', ['matcher_fuzzy','matcher_ignore_globs'])
+call denite#custom#source('file/rec', 'matchers', ['matcher_fuzzy','matcher_ignore_globs'])
 call denite#custom#filter('matcher_ignore_globs', 'ignore_globs',
       \ [
       \ '.git/', 'build/', '__pycache__/',
