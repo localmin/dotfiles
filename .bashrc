@@ -53,3 +53,6 @@ alias g='cd $(ghq root)/$(ghq list | peco)'
 alias gh='hub browse $(ghq list | peco | cut -d "/" -f 2,3)'
 
 alias python="python3"
+
+# Starship
+eval "$(starship init bash)"
