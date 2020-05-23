@@ -28,7 +28,6 @@ inoremap <C-l> <Right>
 
 " insert blank line
 nnoremap O :<C-u>call append(expand('.'), '')<ESC>
-nnoremap o :<C-u>call append(expand('.'), '')<Cr>j
 " Tab setting
 set tabstop=4
 set autoindent
