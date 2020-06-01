@@ -56,3 +56,6 @@ alias python="python3"
 
 # Starship
 eval "$(starship init bash)"
+
+# ghidra
+alias ghidra='/Users/localmin/Downloads/ghidra_9.1.2_PUBLIC/ghidraRun'
