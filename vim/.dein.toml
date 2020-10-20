@@ -42,3 +42,6 @@ repo = 'tpope/vim-surround'
 
 [[plugins]]
 repo = 'Shougo/vinarise'
+
+[[plugins]]
+repo = 'ghifarit53/tokyonight-vim'

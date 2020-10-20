@@ -111,7 +111,14 @@ if has('syntax')
     call ZenkakuSpace()
 endif
 """"""""""""""""""""""""""""""
-colorscheme molokai
+" colorscheme molokai
+set termguicolors
+
+let g:tokyonight_style = 'night' " available: night, storm
+let g:tokyonight_enable_italic = 1
+
+colorscheme tokyonight
+
 syntax on
 
 let g:tex_conceal = ''
