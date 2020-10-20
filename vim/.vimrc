@@ -176,6 +176,8 @@ let g:airline#extensions#tabline#enabled = 1
 nmap <C-p> <Plug>AirlineSelectPrevTab
 nmap <C-n> <Plug>AirlineSelectNextTab
 
+let g:airline_theme = "tokyonight"
+
 " vim -b : edit binary using  Vinaraise
 augroup BinaryXXD
 	autocmd!
