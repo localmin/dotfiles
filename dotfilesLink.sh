@@ -15,3 +15,4 @@ ln -sf ~/dotfiles/vim/.vimrc ~/.vimrc
 
 # etc
 ln -sf ~/dotfiles/.bashrc ~/.bashrc
+ln -sf ~/dotfiles/.tigrc ~/.tigrc
