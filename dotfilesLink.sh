@@ -15,4 +15,5 @@ ln -sf ~/dotfiles/vim/.vimrc ~/.vimrc
 
 # etc
 ln -sf ~/dotfiles/.bashrc ~/.bashrc
+ln -sf ~/dotfiles/.bash_profile  ~/.bash_profile
 ln -sf ~/dotfiles/.tigrc ~/.tigrc
