@@ -21,10 +21,7 @@ if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
 fi
 
 # setting for git prompt & completion
-source /usr/local/etc/bash_completion.d/git-prompt.sh
-source /usr/local/etc/bash_completion.d/git-completion.bash
-GIT_PS1_SHOWDIRTYSTATE=true
-PS1=' \[\033[33m\]\w\[\033[36m\]$(__git_ps1 [%s])\n\[\e[0;32m\]( ╹◡╹) \[\e[0;37m'
+PS1=' \[\033[33m\]\w\[\033[36m\]\n\[\e[0;32m\]( ╹◡╹) \[\e[0;37m'
 
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
@@ -54,3 +51,7 @@ alias gh='hub browse $(ghq list | peco | cut -d "/" -f 2,3)'
 
 # ghidra
 alias ghidra='/Users/localmin/Downloads/ghidra_9.1.2_PUBLIC/ghidraRun'
+
+# brew setting
+alias arm="exec arch -arch arm64e /bin/bash"
+alias x64="exec arch -arch x86_64 /bin/bash"
