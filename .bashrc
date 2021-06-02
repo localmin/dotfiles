@@ -24,7 +24,7 @@ fi
 source /opt/homebrew/etc/bash_completion.d/git-prompt.sh
 source /opt/homebrew/etc/bash_completion.d/git-completion.bash
 GIT_PS1_SHOWDIRTYSTATE=true
-PS1=' \[\033[33m\]\w\[\033[31m\]($(uname -m))\[\033[36m\]$(__git_ps1 [%s])\n\[\e[0;32m\]( ╹◡╹) \[\e[0;37m'
+PS1=' \[\033[33m\]\w\[\033[31m\]:($(uname -m))\[\033[36m\]$(__git_ps1 [%s])\n\[\e[0;32m\]( ╹◡╹) \[\e[0;37m'
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
