@@ -1,6 +1,7 @@
 NODEBREW_HOME=/usr/local/var/nodebrew/current
 export NODEBREW_HOME
 export NODEBREW_ROOT=/usr/local/var/nodebrew
+export PATH="/opt/homebrew/bin:$PATH"
 export PATH=$PATH:$NODEBREW_HOME/bin
 
 export NVM_DIR="$HOME/.nvm"
