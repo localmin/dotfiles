@@ -5,7 +5,6 @@ tap "homebrew/cask-versions"
 tap "homebrew/core"
 tap "homebrew/services"
 tap "keys-pub/tap"
-tap "linux-noah/noah"
 tap "neovim/neovim"
 tap "nyuichi/satysfi"
 tap "orf/brew"
@@ -57,3 +56,4 @@ cask "zoom"
 mas "LINE", id: 539883307
 mas "Pomodoro-Tracker", id: 1396146802
 mas "Spark", id: 1176895641
+mas "Tot", id: 1491071483
