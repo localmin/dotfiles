@@ -4,7 +4,6 @@ tap "homebrew/cask"
 tap "homebrew/cask-versions"
 tap "homebrew/core"
 tap "homebrew/services"
-tap "keys-pub/tap"
 tap "neovim/neovim"
 tap "nyuichi/satysfi"
 tap "orf/brew"
@@ -50,9 +49,9 @@ cask "skim"
 cask "skype"
 cask "slack"
 cask "telegram-desktop"
-cask "thunderbird"
 cask "visual-studio-code"
 cask "zoom"
+mas "Hex Fiend", id: 1342896380
 mas "LINE", id: 539883307
 mas "Pomodoro-Tracker", id: 1396146802
 mas "Spark", id: 1176895641
