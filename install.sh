@@ -6,3 +6,4 @@ curl -OL http://ftp.mozilla.org/pub/thunderbird/releases/78.9.1/mac/ja-JP-mac/Th
 curl -OL https://github.com/coralw/xeyes/releases/download/v1.0/xeyes.app.zip
 curl -OL https://github.com/keys-pub/app/releases/download/v0.2.3/Keys-0.2.3.dmg
 curl -OL https://desktop.linear.app/mac/dmg/arm64
+curl -OL https://github.com/solemnwarning/rehex/releases/download/0.3.91/rehex-0.3.91-mac.dmg
