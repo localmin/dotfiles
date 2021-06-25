@@ -7,3 +7,4 @@ curl -OL https://github.com/coralw/xeyes/releases/download/v1.0/xeyes.app.zip
 curl -OL https://github.com/keys-pub/app/releases/download/v0.2.3/Keys-0.2.3.dmg
 curl -OL https://desktop.linear.app/mac/dmg/arm64
 curl -OL https://github.com/solemnwarning/rehex/releases/download/0.3.91/rehex-0.3.91-mac.dmg
+curl -OL https://dynalist.io/standalone/download?file=Dynalist.dmg
