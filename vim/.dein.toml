@@ -1,7 +1,4 @@
 [[plugins]]
-repo = 'Yggdroot/indentLine'
-
-[[plugins]]
 repo = 'airblade/vim-gitgutter'
 
 [[plugins]]

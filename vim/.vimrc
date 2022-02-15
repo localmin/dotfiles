@@ -84,6 +84,13 @@ if has('vim_starting') && dein#check_install()
 endif
 " }}}
 
+" Delete plugins when they are removed in .dein.toml or .dein_lazy.toml
+let s:removed_plugins = dein#check_clean()
+if len(s:removed_plugins)>0 
+    call map(s:removed_plugins, "delete(v:val, 'rf')")
+    call dein#recache_runtimepath()
+endif
+
 " deoplete wake
 "call dein#add('Shougo/deoplete.nvim')
 "call dein#add('deoplete-plugin/deoplete-clang')
