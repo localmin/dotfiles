@@ -69,12 +69,10 @@ let &runtimepath = s:dein_repo_dir .",". &runtimepath
 
 " read cached & make plugin
 let s:toml_file = fnamemodify(expand('<sfile>'), ':h').'/.dein.toml'
-let s:lazy_file = fnamemodify(expand('<sfile>'), ':h').'/.dein_lazy.toml'
 
 if dein#load_state(s:dein_dir)
   call dein#begin(s:dein_dir)
   call dein#load_toml(s:toml_file, {'lazy': 0})
-  call dein#load_toml(s:lazy_file, {'lazy': 1})
   call dein#end()
   call dein#save_state()
 endif
