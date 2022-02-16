@@ -1,17 +1,18 @@
+" Check vi compatibility
 if &compatible
   set nocompatible
 endif
 
 syntax enable
 
-" Highlight setting of the rows & colums 
+" Highlight setting of the rows.
 set cursorline
 
+" Add file detection and indent setting for the lang you open
 filetype plugin indent on
+
 " Remove the unnesessary preview window
 set completeopt=menuone
-" font size
-" set guifont=Ricty\ Diminished\ Discord\ 11
 
 " key mapping
 "escape with jj  
