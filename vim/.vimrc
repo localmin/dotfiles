@@ -15,13 +15,13 @@ filetype plugin indent on
 set completeopt=menuone
 
 " key mapping
-"escape with jj  
+"escape with jj
 inoremap <silent> jj <ESC>
 
-" visual mode to ESC when Ctrl-j pushed 
+" visual mode to ESC when Ctrl-j pushed
 vnoremap <silent> <C-j> <ESC>
 
-" moving curosr of normal mode 
+" moving curosr of normal mode
 inoremap <C-j> <Down>
 inoremap <C-k> <Up>
 inoremap <C-h> <Left>
@@ -43,13 +43,12 @@ set number
 set smartcase
 
 " show unvisual letters
-set list  
+set list
 " - means "tab"
-set listchars=tab:>-,trail:.  
+set listchars=tab:>-,trail:.
 
 " clipboard setting
 set clipboard=unnamed
-
 
 "dein Scripts-----------------------------
 " reset augroup
@@ -77,7 +76,7 @@ if dein#load_state(s:dein_dir)
   call dein#save_state()
 endif
 
-" auto shortage plugin install 
+" auto shortage plugin install
 if has('vim_starting') && dein#check_install()
   call dein#install()
 endif
@@ -85,7 +84,7 @@ endif
 
 " Delete plugins when they are removed in .dein.toml or .dein_lazy.toml
 let s:removed_plugins = dein#check_clean()
-if len(s:removed_plugins)>0 
+if len(s:removed_plugins)>0
     call map(s:removed_plugins, "delete(v:val, 'rf')")
     call dein#recache_runtimepath()
 endif
@@ -107,7 +106,6 @@ if has('syntax')
     call ZenkakuSpace()
 endif
 """"""""""""""""""""""""""""""
-" colorscheme molokai
 set termguicolors
 
 let g:tokyonight_style = 'night' " available: night, storm
@@ -123,32 +121,13 @@ let g:indent_guides_enable_on_vim_startup = 1
 let g:indent_guides_guide_size = 1
 let g:indent_guides_start_level = 2
 
-" Setting of watchdogs
-" Close the quickfix window after using sysntax checking
-let g:quickrun_config = {
-\   "watchdogs_checker/_" : {
-\       'outputter/quickfix/open_cmd' : '',
-\   },
-\}
-
-" call watchdogs#setup(g:quickrun_config)
-" Syntax checking after writng 
-let g:watchdogs_check_BufWritePost_enable = 1
-" Auto Syntax checking at regular interval
-let g:watchdogs_check_CursorHold_enable = 1
-
-" Quickfix setting
-nnoremap <silent><C-o> :copen<CR>
-nnoremap <silent><C-c> :cclose<CR>
-nnoremap <silent>gt <C-w><C-w>
-
 " Setting for alrline
 let g:airline_powerline_fonts = 1
 set laststatus=2
-let g:airline_theme = 'luna'
+let g:airline_theme = "tokyonight"
 
 if !exists('g:airline_symbols')
-	let g:airline_symbols = {}
+    let g:airline_symbols = {}
 endif
 
 " Separater on the leftside
@@ -156,29 +135,23 @@ let g:airline_left_sep = '⮀'
 let g:airline_left_alt_sep = '⮁'
 
 " Separater on the rightside
-let g:airline_right_sep = '⮂'
-let g:airline_right_alt_sep = '⮃'
 let g:airline_symbols.crypt = '🔒'
 let g:airline_symbols.linenr = '¶'
-let g:airline_symbols.maxlinenr = '㏑'
 let g:airline_symbols.branch = '⭠'
-let g:airline_symbols.paste = 'ρ'
-let g:airline_symbols.spell = 'Ꞩ'
-let g:airline_symbols.notexists = '∄'
 let g:airline_symbols.whitespace = 'Ξ'
+let g:airline_symbols.maxlinenr = '㏑'
 
 " Tab setting on Airline
 let g:airline#extensions#tabline#enabled = 1
 nmap <C-p> <Plug>AirlineSelectPrevTab
 nmap <C-n> <Plug>AirlineSelectNextTab
 
-let g:airline_theme = "tokyonight"
 
 " vim -b : edit binary using  Vinaraise
 augroup BinaryXXD
-	autocmd!
-	autocmd BufReadPre  *.bin let &binary =1
-	autocmd BufReadPost * if &binary | Vinarise
-	autocmd BufWritePre * if &binary | Vinarise | endif
-	autocmd BufWritePost * if &binary | Vinarise 
+autocmd!
+    autocmd BufReadPre  *.bin let &binary =1
+    autocmd BufReadPost * if &binary | Vinarise
+    autocmd BufWritePre * if &binary | Vinarise | endif
+    autocmd BufWritePost * if &binary | Vinarise
 augroup END
