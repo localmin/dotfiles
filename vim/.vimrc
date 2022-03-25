@@ -111,7 +111,9 @@ set termguicolors
 let g:tokyonight_style = 'night' " available: night, storm
 let g:tokyonight_enable_italic = 1
 
-colorscheme tokyonight
+"colorscheme tokyonight
+set background=dark
+colorscheme oceanic_material
 
 syntax on
 

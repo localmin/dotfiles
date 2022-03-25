@@ -18,3 +18,6 @@ repo = 'Shougo/vinarise'
 
 [[plugins]]
 repo = 'ghifarit53/tokyonight-vim'
+
+[[plugins]]
+repo='glepnir/oceanic-material'
