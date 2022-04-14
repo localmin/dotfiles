@@ -2,13 +2,13 @@
 repo = 'airblade/vim-gitgutter'
 
 [[plugins]]
+repo = 'kana/vim-smartinput'
+
+[[plugins]]
 repo = 'vim-airline/vim-airline'
 
 [[plugins]]
 repo =  'vim-airline/vim-airline-themes'
-
-[[plugins]]
-repo = 'kana/vim-smartinput'
 
 [[plugins]]
 repo = 'tpope/vim-surround'

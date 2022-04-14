@@ -57,3 +57,4 @@ alias ghidra='/Users/localmin/Downloads/ghidra_9.1.2_PUBLIC/ghidraRun'
 # brew setting
 alias arm="exec arch -arch arm64e /bin/bash"
 alias x64="exec arch -arch x86_64 /bin/bash"
+
