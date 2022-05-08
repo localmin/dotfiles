@@ -37,6 +37,10 @@ map sk <C-w>k
 map sj <C-w>j
 map sl <C-w>l
 
+" Switch buffer
+nnoremap <S-Tab> :bprev<CR>
+nnoremap <Tab> :bnext<CR>
+
 " insert blank line
 nnoremap O :<C-u>call append(expand('.'), '')<ESC>
 " Tab setting
