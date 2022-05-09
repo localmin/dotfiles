@@ -43,6 +43,10 @@ nnoremap <Tab> :bnext<CR>
 
 " insert blank line
 nnoremap O :<C-u>call append(expand('.'), '')<ESC>
+" Ale jump setting 
+nmap <silent> <C-k> <Plug>(ale_previous_wrap)
+nmap <silent> <C-j> <Plug>(ale_next_wrap)
+
 " Tab setting
 set tabstop=4
 set autoindent

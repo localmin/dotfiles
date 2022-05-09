@@ -21,3 +21,6 @@ repo = 'ghifarit53/tokyonight-vim'
 
 [[plugins]]
 repo='glepnir/oceanic-material'
+
+[[plugins]]
+repo='dense-analysis/ale'
