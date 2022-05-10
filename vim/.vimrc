@@ -2,6 +2,8 @@
 if &compatible
   set nocompatible
 endif
+" language setting
+lan C
 
 syntax enable
 
@@ -158,6 +160,7 @@ let g:airline_symbols.linenr = '¶'
 let g:airline_symbols.branch = '⭠'
 let g:airline_symbols.whitespace = 'Ξ'
 let g:airline_symbols.maxlinenr = '㏑'
+let g:airline_symbols.colnr = 'CL:'
 
 " Tab setting on Airline
 let g:airline#extensions#tabline#enabled = 1
