@@ -45,7 +45,7 @@ nnoremap <Tab> :bnext<CR>
 
 " insert blank line
 nnoremap O :<C-u>call append(expand('.'), '')<ESC>
-" Ale jump setting 
+" Ale jump setting
 nmap <silent> <C-k> <Plug>(ale_previous_wrap)
 nmap <silent> <C-j> <Plug>(ale_next_wrap)
 
@@ -176,3 +176,6 @@ autocmd!
     autocmd BufWritePre * if &binary | Vinarise | endif
     autocmd BufWritePost * if &binary | Vinarise
 augroup END
+
+" For defx setting
+set encoding=utf-8
