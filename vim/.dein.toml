@@ -33,3 +33,12 @@ repo='roxma/nvim-yarp'
 
 [[plugins]]
 repo='Shougo/defx.nvim'
+
+[[plugins]]
+repo='kristijanhusak/defx-git'
+
+[[plugins]]
+repo='kristijanhusak/defx-icons'
+
+[[plugins]]
+repo='ryanoasis/vim-devicons'

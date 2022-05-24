@@ -18,3 +18,4 @@ elif [[ $ARCH == x86_64 ]]; then
     echo "Current Architecture: $ARCH"
 	eval $(/usr/local/bin/brew shellenv)
 fi
+export PATH="/opt/homebrew/opt/python@3.10/bin:$PATH"
