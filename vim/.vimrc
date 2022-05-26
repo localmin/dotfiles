@@ -260,6 +260,17 @@ call defx#custom#column('icon', {
       \ 'opened_icon': '▾',
       \ 'root_icon': ' ',
       \ })
+
+let g:defx_icons_enable_syntax_highlight = 0
+let g:defx_icons_column_length = 2
+let g:defx_icons_directory_icon = ''
+let g:defx_icons_mark_icon = '*'
+let g:defx_icons_copy_icon = ''
+let g:defx_icons_move_icon = ''
+let g:defx_icons_parent_icon = ''
+let g:defx_icons_default_icon = ''
+let g:defx_icons_directory_symlink_icon = ''
+
 call defx#custom#column('git', 'indicators', {
   \ 'Modified'  : 'M',
   \ 'Staged'    : '✚',
@@ -270,3 +281,8 @@ call defx#custom#column('git', 'indicators', {
   \ 'Deleted'   : '✖',
   \ 'Unknown'   : '?'
   \ })
+
+"call defx#custom#option('_', {
+"			\ 'columns': 'indent:git:icons:filename',
+"			\ 'show_ignored_files': 1,
+"			\ })
