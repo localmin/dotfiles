@@ -269,7 +269,11 @@ let g:defx_icons_copy_icon = ''
 let g:defx_icons_move_icon = ''
 let g:defx_icons_parent_icon = ''
 let g:defx_icons_default_icon = ''
+let g:defx_icons_link_icon = ''
 let g:defx_icons_directory_symlink_icon = ''
+let g:defx_icons_root_opened_tree_icon = ''
+let g:defx_icons_nested_opened_tree_icon = ''
+let g:defx_icons_nested_closed_tree_icon = ''
 
 call defx#custom#column('git', 'indicators', {
   \ 'Modified'  : 'M',
@@ -282,7 +286,7 @@ call defx#custom#column('git', 'indicators', {
   \ 'Unknown'   : '?'
   \ })
 
-"call defx#custom#option('_', {
-"			\ 'columns': 'indent:git:icons:filename',
-"			\ 'show_ignored_files': 1,
-"			\ })
+call defx#custom#option('_', {
+			\ 'columns': 'indent:git:icons:filename',
+			\ 'show_ignored_files': 1,
+			\ })
