@@ -180,20 +180,21 @@ augroup END
 " For defx setting
 set encoding=utf-8
 
-"if !exists('g:loaded_defx') | finish | endif
+call defx#custom#option('_', {
+      \'columns': 'indent:git:icons:filename',
+  	  \ 'show_ignored_files': 1,
+			\ })
 
 " Define mappings
 nnoremap <silent>sf :<C-u>Defx -listed -resume
       \ -columns=indent:mark:icon:icons:filename:git:size
       \ -buffer-name=tab`tabpagenr()`
-      \ `expand('%:p:h')` -search=`expand('%:p')`<CR>
-nnoremap <silent>fi :<C-u>Defx -new `expand('%:p:h')` -search=`expand('%:p')`<CR>
+      \ `expand('%:p:h')` -search-recursive=`expand('%:p')`<CR>
+nnoremap <silent>fi :<C-u>Defx -new `expand('%:p:h')` -search-recursive=`expand('%:p')`<CR>
 
 autocmd FileType defx call s:defx_my_settings()
 	function! s:defx_my_settings() abort
     "Define mappings
-	  nnoremap <silent><buffer><expr> <CR>
-	  \ defx#do_action('open')
 	  nnoremap <silent><buffer><expr> c
 	  \ defx#do_action('copy')
 	  nnoremap <silent><buffer><expr> m
@@ -285,8 +286,3 @@ call defx#custom#column('git', 'indicators', {
   \ 'Deleted'   : '✖',
   \ 'Unknown'   : '?'
   \ })
-
-call defx#custom#option('_', {
-			\ 'columns': 'indent:git:icons:filename',
-			\ 'show_ignored_files': 1,
-			\ })
