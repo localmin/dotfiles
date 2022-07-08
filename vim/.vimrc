@@ -34,7 +34,7 @@ nmap ss :split<Return><C-w>w
 nmap sv :vsplit<Return><C-w>w
 
 " Move window
-nmap <Space> <C-w>w
+nmap <Tab> <C-w>w
 map sh <C-w>h
 map sk <C-w>k
 map sj <C-w>j
@@ -44,8 +44,7 @@ map sl <C-w>l
 nmap cc :close<CR>
 
 " Switch buffer
-nnoremap <S-Tab> :bprev<CR>
-nnoremap <Tab> :bnext<CR>
+nnoremap <Space> :bnext<CR>
 " close buffer
 nnoremap bb :bd<CR>
 
@@ -196,7 +195,6 @@ nnoremap <silent>sf :<C-u>Defx -listed -resume
       \ -columns=indent:mark:icon:icons:filename:git:size
       \ -buffer-name=tab`tabpagenr()`
       \ `expand('%:p:h')` -search-recursive=`expand('%:p')`<CR>
-nnoremap <silent>fi :<C-u>Defx -new `expand('%:p:h')` -search-recursive=`expand('%:p')`<CR>
 
 autocmd FileType defx call s:defx_my_settings()
 	function! s:defx_my_settings() abort
@@ -211,8 +209,6 @@ autocmd FileType defx call s:defx_my_settings()
 	  \ defx#do_action('open')
 	  nnoremap <silent><buffer><expr> E
 	  \ defx#do_action('open', 'vsplit')
-	  nnoremap <silent><buffer><expr> P
-	  \ defx#do_action('open', 'pedit')
 	  nnoremap <silent><buffer><expr> o
 	  \ defx#do_action('open_or_close_tree')
 	  nnoremap <silent><buffer><expr> K
