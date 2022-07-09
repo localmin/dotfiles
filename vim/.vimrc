@@ -239,13 +239,14 @@ autocmd FileType defx call s:defx_my_settings()
 	  nnoremap <silent><buffer><expr> <C-l>
 	  \ defx#do_action('redraw')
 	endfunction
-
+" defx default icons setting
 call defx#custom#column('icon', {
       \ 'directory_icon': '▸',
       \ 'opened_icon': '▾',
       \ 'root_icon': ' ',
       \ })
 
+" defx-icons settings 
 let g:defx_icons_enable_syntax_highlight = 0
 let g:defx_icons_column_length = 2
 let g:defx_icons_directory_icon = ''
@@ -260,6 +261,7 @@ let g:defx_icons_root_opened_tree_icon = ''
 let g:defx_icons_nested_opened_tree_icon = ''
 let g:defx_icons_nested_closed_tree_icon = ''
 
+" defx-git setting
 call defx#custom#column('git', 'indicators', {
   \ 'Modified'  : 'M',
   \ 'Staged'    : '✚',
