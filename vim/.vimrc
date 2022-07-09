@@ -216,6 +216,8 @@ autocmd FileType defx call s:defx_my_settings()
 	  nnoremap <silent><buffer><expr> C
 	  \ defx#do_action('toggle_columns',
 	  \                'mark:indent:icon:filename:type:size:time')
+	  nnoremap <silent><buffer><expr> r
+	  \ defx#do_action('rename')
 	  nnoremap <silent><buffer><expr> d
 	  \ defx#do_action('remove')
 	  nnoremap <silent><buffer><expr> c
