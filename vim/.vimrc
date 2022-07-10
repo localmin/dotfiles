@@ -185,6 +185,9 @@ augroup END
 " For defx setting
 set encoding=utf-8
 
+autocmd BufWritePost * call defx#redraw()
+autocmd BufEnter * call defx#redraw()
+
 call defx#custom#option('_', {
       \'columns': 'indent:git:icons:filename',
   	  \ 'show_ignored_files': 1,
