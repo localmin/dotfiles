@@ -41,12 +41,12 @@ map sj <C-w>j
 map sl <C-w>l
 
 " close window
-nmap cc :close<CR>
+nmap cw :close<CR>
 
 " Switch buffer
 nnoremap <Space> :bnext<CR>
 " close buffer
-nnoremap bb :bd<CR>
+nnoremap cb :bd<CR>
 
 " insert blank line
 nnoremap O :<C-u>call append(expand('.'), '')<ESC>
