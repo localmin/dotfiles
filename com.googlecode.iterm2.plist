@@ -211,6 +211,8 @@
 				<key>Red Component</key>
 				<real>0.79607843137254897</real>
 			</dict>
+			<key>Automatically Log</key>
+			<true/>
 			<key>BM Growl</key>
 			<true/>
 			<key>Background Color</key>
@@ -629,6 +631,8 @@
 				<key>Red Component</key>
 				<real>0.0</real>
 			</dict>
+			<key>Log Directory</key>
+			<string>/Users/localmin/log/iterm2_log</string>
 			<key>Mouse Reporting</key>
 			<true/>
 			<key>Name</key>
@@ -641,6 +645,8 @@
 			<string>Monaco 12</string>
 			<key>Option Key Sends</key>
 			<integer>0</integer>
+			<key>Plain Text Logging</key>
+			<true/>
 			<key>Prompt Before Closing 2</key>
 			<false/>
 			<key>Right Option Key Sends</key>
@@ -650,7 +656,7 @@
 			<key>Screen</key>
 			<integer>-1</integer>
 			<key>Scrollback Lines</key>
-			<integer>1000</integer>
+			<integer>0</integer>
 			<key>Selected Text Color</key>
 			<dict>
 				<key>Blue Component</key>
@@ -823,7 +829,7 @@
 			<key>Transparency</key>
 			<real>0.092910357603092783</real>
 			<key>Unlimited Scrollback</key>
-			<false/>
+			<true/>
 			<key>Use Bold Font</key>
 			<true/>
 			<key>Use Bright Bold</key>
