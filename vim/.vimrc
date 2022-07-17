@@ -282,55 +282,43 @@ call ddu#custom#patch_global({
     \   'sources': [
     \        {
     \            'name':'file_rec',
-    \             'params': {
+    \            'params': {
     \               'ignoredDirectories': ['.git']
     \            }
     \        },
-    \        {
-    \            'name':'mr'
-    \        },
-    \        {
-    \            'name':'register'
-    \        },
-    \        {
-    \            'name':'buffer'
-    \        }
+    \        {'name':'mr'},
+    \        {'name':'register'},
+    \        {'name':'buffer'},
+    \        {'name': 'rg','options': {'matchers': []}},
     \   ],
     \   'sourceOptions': {
     \     '_': {
     \       'matchers': ['matcher_substring'],
     \     },
     \   },
-    \   'kindOptions': {
+    \   'kindoptions': {
     \     'file': {
-    \       'defaultAction': 'open',
+    \       'defaultaction': 'open',
     \     },
     \   },
-    \   'filterParams': {
+    \   'filterparams': {
     \     'matcher_substring': {
-    \       'highlightMatched': 'Title',
+    \       'highlightmatched': 'title',
     \     }
     \   },
-    \   'uiParams': {
+    \   'sourceParams' : {
+    \     'rg' : {
+    \       'args': ['--column', '--no-heading', '--color', 'never'],
+    \     },
+    \   },
+    \   'uiparams': {
     \     'ff': {
-    \       'startFilter': v:true,
+    \       'startfilter': v:true,
     \       'prompt': '>'
     \     }
     \   },
+    \   'volatile': v:true,
     \ })
-
-call ddu#custom#patch_local('grep', {
-\   'sourceParams' : {
-\     'rg' : {
-\       'args': ['--column', '--no-heading', '--color', 'never'],
-\     },
-\   },
-\   'uiParams': {
-\     'ff': {
-\       'startFilter': v:false,
-\     }
-\   },
-\ })
 
 autocmd FileType ddu-ff call s:ddu_my_settings()
 function! s:ddu_my_settings() abort
@@ -363,9 +351,9 @@ endfunction
 "ddu keymapping.
 nnoremap <SID>[ug] <Nop>
 nmap ; <SID>[ug]
-
 nnoremap <silent> <SID>[ug]m :<C-u>Ddu mr<CR>
 nnoremap <silent> <SID>[ug]b :<C-u>Ddu buffer<CR>
 nnoremap <silent> <SID>[ug]r :<C-u>Ddu register<CR>
 nnoremap <silent> <SID>[ug]n :<C-u>Ddu file -source-param-new -volatile<CR>
 nnoremap <silent> <SID>[ug]f :<C-u>Ddu file file_rec -source-param-path=.<CR>
+nnoremap <silent> <SID>[ug]a :<C-u>Ddu -name=search rg -ui-param-ignoreEmpty -source-param-input=`input('Pattern: ')`<CR>
