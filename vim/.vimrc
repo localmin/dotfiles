@@ -283,41 +283,34 @@ call ddu#custom#patch_global({
     \        {
     \            'name':'file_rec',
     \            'params': {
-    \               'ignoredDirectories': ['.git']
+    \               'ignoreddirectories': ['.git']
     \            }
     \        },
     \        {'name':'mr'},
     \        {'name':'register'},
     \        {'name':'buffer'},
-    \        {'name': 'rg','options': {'matchers': []}},
     \   ],
     \   'sourceOptions': {
     \     '_': {
     \       'matchers': ['matcher_substring'],
     \     },
     \   },
-    \   'kindoptions': {
+    \   'kindOptions': {
     \     'file': {
-    \       'defaultaction': 'open',
+    \       'defaultAction': 'open',
     \     },
     \   },
-    \   'filterparams': {
+    \   'filterParams': {
     \     'matcher_substring': {
-    \       'highlightmatched': 'title',
+    \       'highlightMatched': 'Title',
     \     }
     \   },
-    \   'sourceParams' : {
-    \     'rg' : {
-    \       'args': ['--column', '--no-heading', '--color', 'never'],
-    \     },
-    \   },
-    \   'uiparams': {
+    \   'uiParams': {
     \     'ff': {
-    \       'startfilter': v:true,
+    \       'startFilter': v:true,
     \       'prompt': '>'
     \     }
     \   },
-    \   'volatile': v:true,
     \ })
 
 autocmd FileType ddu-ff call s:ddu_my_settings()
@@ -356,4 +349,3 @@ nnoremap <silent> <SID>[ug]b :<C-u>Ddu buffer<CR>
 nnoremap <silent> <SID>[ug]r :<C-u>Ddu register<CR>
 nnoremap <silent> <SID>[ug]n :<C-u>Ddu file -source-param-new -volatile<CR>
 nnoremap <silent> <SID>[ug]f :<C-u>Ddu file file_rec -source-param-path=.<CR>
-nnoremap <silent> <SID>[ug]a :<C-u>Ddu -name=search rg -ui-param-ignoreEmpty -source-param-input=`input('Pattern: ')`<CR>
