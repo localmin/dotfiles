@@ -59,9 +59,6 @@ repo='Shougo/ddu-ui-ff'
 repo='Shougo/ddu-source-file_rec'
 
 [[plugins]]
-repo='shun/ddu-source-rg'
-
-[[plugins]]
 repo='Shougo/ddu-filter-matcher_substring'
 
 [[plugins]]
