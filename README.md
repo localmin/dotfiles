@@ -1,9 +1,13 @@
 # dotfiles
 
-Setting for Sabayon Linux & macOS.
+Setting up the development environment on macOS. 
 
-## usage
+## Usage
 
-After downloading the necessary applications, execute the following command
+After downloading the necessary applications(brew, curl etc...), run the following command
 
-`./dotfilesLinks.sh`
+``` sh
+./dotfilesLinks.sh
+Brew bundle
+./install.sh
+```
