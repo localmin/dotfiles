@@ -84,3 +84,6 @@ repo='Shougo/ddu-commands.vim'
 
 [[plugins]]
 repo='hrsh7th/vim-searchx'
+
+[[plugins]]
+repo='shun/ddu-source-rg'

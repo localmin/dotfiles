@@ -286,10 +286,16 @@ call ddu#custom#patch_global({
     \               'ignoreddirectories': ['.git']
     \            }
     \        },
+    \        {'name': 'rg','options': {'matchers': []}},
     \        {'name':'mr'},
     \        {'name':'register'},
     \        {'name':'buffer'},
     \   ],
+    \   'sourceParams' : {
+    \     'rg' : {
+    \       'args': ['-uu', '--column', '--no-heading', '--color', 'never'],
+    \     },
+    \   },
     \   'sourceOptions': {
     \     '_': {
     \       'matchers': ['matcher_substring'],
@@ -349,6 +355,7 @@ nnoremap <silent> <SID>[ug]b :<C-u>Ddu buffer<CR>
 nnoremap <silent> <SID>[ug]r :<C-u>Ddu register<CR>
 nnoremap <silent> <SID>[ug]n :<C-u>Ddu file -source-param-new -volatile<CR>
 nnoremap <silent> <SID>[ug]f :<C-u>Ddu file file_rec -source-param-path=.<CR>
+nnoremap <silent> <SID>[ug]g :<C-u>Ddu -name=search rg -ui-param-ignoreEmpty -source-param-input=`input('Pattern: ')`<CR>
 
 " vim-serarhx  config
 " Overwrite / and ?.
