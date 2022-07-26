@@ -14,7 +14,11 @@ set cursorline
 filetype plugin indent on
 
 " Remove the unnesessary preview window
-set completeopt=menuone
+set completeopt=menuone,noinsert
+inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+inoremap <expr> <cr>    pumvisible() ? asyncomplete#close_popup() : "\<cr>"
+
 
 " key mapping
 "escape with jj

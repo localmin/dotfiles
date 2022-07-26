@@ -87,3 +87,18 @@ repo='hrsh7th/vim-searchx'
 
 [[plugins]]
 repo='shun/ddu-source-rg'
+
+[[plugins]]
+repo='prabirshrestha/vim-lsp'
+
+[[plugins]]
+repo='mattn/vim-lsp-settings'
+
+[[plugins]]
+repo='prabirshrestha/asyncomplete.vim'
+
+[[plugins]]
+repo='prabirshrestha/asyncomplete-lsp.vim'
+
+[[plugins]]
+repo='rhysd/vim-lsp-ale'
