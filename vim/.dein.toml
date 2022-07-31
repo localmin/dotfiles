@@ -102,3 +102,11 @@ repo='prabirshrestha/asyncomplete-lsp.vim'
 
 [[plugins]]
 repo='rhysd/vim-lsp-ale'
+
+[[plugins]]
+repo='hrsh7th/vim-vsnip'
+
+[[plugins]]
+repo='hrsh7th/vim-vsnip-integ'
+
+
