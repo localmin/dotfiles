@@ -48,10 +48,6 @@ nnoremap cb :bd<CR>
 
 " insert blank line
 nnoremap O :<C-u>call append(expand('.'), '')<ESC>
-" Ale jump setting
-nmap <silent> <C-k> <Plug>(ale_previous_wrap)
-nmap <silent> <C-j> <Plug>(ale_next_wrap)
-
 " Tab setting
 set tabstop=4
 set autoindent
@@ -434,3 +430,26 @@ augroup END
 let g:asyncomplete_auto_popup = 1
 let g:asyncomplete_auto_completeopt = 0
 let g:lsp_text_edit_enabled = 1
+
+" Ale config
+let g:ale_floating_preview = 1
+"let g:ale_linters_explicit = 1 " Enable necessary lint
+let g:ale_fix_on_save = 1 " Automatic fix when saved
+let g:ale_fixers = {}
+let g:ale_linters = {}
+let g:ale_python_auto_poetry = 1
+let g:ale_sign_column_always = 1
+let g:ale_open_list = 0
+let g:ale_sign_error = '!!'
+let g:ale_sign_warning = '=='
+let g:ale_statusline_format = ['⨉ %d', '⚠ %d', '⬥ ok']
+let g:ale_echo_msg_error_str = 'E'
+let g:ale_echo_msg_warning_str = 'W'
+let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
+
+nmap <C-K> <Plug>(ale_detail)
+"nmap g] <Plug>(ale_next)
+"nmap g[ <Plug>(ale_previous)
+" Ale jump setting
+nmap <silent> <C-k> <Plug>(ale_previous_wrap)
+nmap <silent> <C-j> <Plug>(ale_next_wrap)
