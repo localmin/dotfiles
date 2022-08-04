@@ -104,9 +104,4 @@ repo='prabirshrestha/asyncomplete-lsp.vim'
 repo='rhysd/vim-lsp-ale'
 
 [[plugins]]
-repo='hrsh7th/vim-vsnip'
-
-[[plugins]]
-repo='hrsh7th/vim-vsnip-integ'
-
-
+repo='Yggdroot/indentLine'
