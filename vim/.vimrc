@@ -431,7 +431,7 @@ let g:asyncomplete_auto_popup = 1
 let g:asyncomplete_auto_completeopt = 0
 let g:lsp_text_edit_enabled = 1
 
-" Ale config
+"" Ale config
 let g:ale_floating_preview = 1
 "let g:ale_linters_explicit = 1 " Enable necessary lint
 let g:ale_fix_on_save = 1 " Automatic fix when saved
@@ -453,3 +453,8 @@ nmap <C-K> <Plug>(ale_detail)
 " Ale jump setting
 nmap <silent> <C-k> <Plug>(ale_previous_wrap)
 nmap <silent> <C-j> <Plug>(ale_next_wrap)
+
+" Indent Line config
+let g:indentLine_color_term =239
+let g:indentLine_color_gui = '#708090'
+let g:indentLine_char = '┊'

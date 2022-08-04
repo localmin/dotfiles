@@ -92,6 +92,9 @@ repo='shun/ddu-source-rg'
 repo='prabirshrestha/vim-lsp'
 
 [[plugins]]
+repo='rhysd/vim-lsp-ale'
+
+[[plugins]]
 repo='mattn/vim-lsp-settings'
 
 [[plugins]]
@@ -99,9 +102,6 @@ repo='prabirshrestha/asyncomplete.vim'
 
 [[plugins]]
 repo='prabirshrestha/asyncomplete-lsp.vim'
-
-[[plugins]]
-repo='rhysd/vim-lsp-ale'
 
 [[plugins]]
 repo='Yggdroot/indentLine'
