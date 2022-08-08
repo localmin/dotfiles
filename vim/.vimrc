@@ -403,6 +403,9 @@ endfunction
 " LSP configs
 set completeopt& completeopt+=menuone,popup,noinsert,noselect
 set completepopup=height:10,width:60,highlight:InfoPopup
+"" LSP highlight reference
+let g:lsp_document_highlight_enabled = 1
+highlight lspReference ctermfg=red guifg=red ctermbg=green guibg=green
 
 inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
