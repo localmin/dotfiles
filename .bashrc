@@ -60,3 +60,6 @@ alias x64="exec arch -arch x86_64 /bin/bash"
 
 # exa config
 alias ls="exa -hGF --icons"
+
+# bat config
+alias cat="bat -p"
