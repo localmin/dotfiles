@@ -105,3 +105,6 @@ repo='prabirshrestha/asyncomplete-lsp.vim'
 
 [[plugins]]
 repo='Yggdroot/indentLine'
+
+[[plugins]]
+repo='luochen1990/rainbow'

@@ -457,7 +457,10 @@ nmap <C-K> <Plug>(ale_detail)
 nmap <silent> <C-k> <Plug>(ale_previous_wrap)
 nmap <silent> <C-j> <Plug>(ale_next_wrap)
 
-" Indent Line config
+" Indent Line plugin  config
 let g:indentLine_color_term =239
 let g:indentLine_color_gui = '#708090'
 let g:indentLine_char = '┊'
+
+" Rainbow config
+let g:rainbow_active = 1
