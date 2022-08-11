@@ -461,6 +461,10 @@ nmap <silent> <C-j> <Plug>(ale_next_wrap)
 let g:indentLine_color_term =239
 let g:indentLine_color_gui = '#708090'
 let g:indentLine_char = '┊'
-
 " Rainbow config
 let g:rainbow_active = 1
+" Matching brackets
+set showmatch
+set matchtime=1
+set matchpairs& matchpairs+=<:>
+hi MatchParen cterm=underline ctermbg=black guibg=white
