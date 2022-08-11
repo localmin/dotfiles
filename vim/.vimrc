@@ -113,7 +113,7 @@ endif
 " view EM space
 """"""""""""""""""""""""""""""
 function! ZenkakuSpace()
-    highlight ZenkakuSpace cterm=underline ctermfg=lightblue guibg=darkgray
+    highlight ZenkakuSpace cterm=underline ctermfg=lightblue ctermbg=white
 endfunction
 
 if has('syntax')
