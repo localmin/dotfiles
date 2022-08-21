@@ -4,6 +4,31 @@ if &compatible
 endif
 " language setting
 lan C
+" Spell checking 
+set spelllang=en,cjk
+
+fun! s:SpellConf()
+  redir! => syntax
+  silent syntax
+  redir END
+
+  set spell
+
+  if syntax =~? '/<comment\>'
+    syntax spell default
+    syntax match SpellMaybeCode /\<\h\l*[_A-Z]\h\{-}\>/ contains=@NoSpell transparent containedin=Comment contained
+  else
+    syntax spell toplevel
+    syntax match SpellMaybeCode /\<\h\l*[_A-Z]\h\{-}\>/ contains=@NoSpell transparent
+  endif
+
+  syntax cluster Spell add=SpellNotAscii,SpellMaybeCode
+endfunc
+
+augroup spell_check
+  autocmd!
+  autocmd BufReadPost,BufNewFile,Syntax * call s:SpellConf()
+augroup END
 
 syntax enable
 
@@ -12,7 +37,6 @@ set cursorline
 
 " Add file detection and indent setting for the lang you open
 filetype plugin indent on
-
 
 " key mapping
 "escape with jj
@@ -457,7 +481,7 @@ nmap <C-K> <Plug>(ale_detail)
 nmap <silent> <C-k> <Plug>(ale_previous_wrap)
 nmap <silent> <C-j> <Plug>(ale_next_wrap)
 
-" Indent Line plugin  config
+" Indent Line plugin config
 let g:indentLine_color_term =239
 let g:indentLine_color_gui = '#708090'
 let g:indentLine_char = '┊'
