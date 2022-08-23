@@ -108,3 +108,6 @@ repo='Yggdroot/indentLine'
 
 [[plugins]]
 repo='luochen1990/rainbow'
+
+[[plugins]]
+repo='simeji/winresizer'
