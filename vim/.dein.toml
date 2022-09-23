@@ -111,3 +111,6 @@ repo='luochen1990/rainbow'
 
 [[plugins]]
 repo='simeji/winresizer'
+
+[[plugins]]
+repo='RRethy/vim-illuminate'
