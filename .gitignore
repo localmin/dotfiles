@@ -1,3 +1,4 @@
 dein/
 *.swp
 .DS_Store
+.gitconfig
