@@ -1,6 +1,4 @@
 #!/bin/sh
-#gitconfig
-ln -sf ~/dotfiles/.gitconfig ~/.gitconfig
 # vim
 # Maybe you should wake up gvim once...
 mkdir -p ~/.vim
