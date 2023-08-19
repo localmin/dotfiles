@@ -48,8 +48,8 @@ alias ls='ls -G'
 export GOPATH=$HOME
 export PATH=$PATH:$GOPATH/bin
 
-alias g='cd $(ghq root)/$(ghq list | peco)'
-alias gh='hub browse $(ghq list | peco | cut -d "/" -f 2,3)'
+alias g='cd $(ghq list --full-path | peco)'
+alias gh='hub browse $(ghq list --full-path| peco | cut -d "/" -f 2,3)'
 
 # ghidra
 alias ghidra='/Users/localmin/Downloads/ghidra_9.1.2_PUBLIC/ghidraRun'
