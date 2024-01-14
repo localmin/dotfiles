@@ -71,3 +71,5 @@ export NVM_DIR="$HOME/.nvm"
 
 # setting nodebrew
 export PATH=$HOME/.nodebrew/current/bin:$PATH
+
+alias vim="nvim"
