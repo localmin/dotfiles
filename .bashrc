@@ -59,7 +59,8 @@ alias arm="exec arch -arch arm64e /bin/bash"
 alias x64="exec arch -arch x86_64 /bin/bash"
 
 # exa config
-alias ls="exa -hGF --icons"
+# alias ls="exa -hGF --icons"
+alias ls="eza --icons --git --time-style relative"
 
 # bat config
 alias cat="bat -p"
