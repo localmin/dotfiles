@@ -334,6 +334,8 @@
 			<real>1</real>
 			<key>Idle Code</key>
 			<integer>0</integer>
+			<key>Idle Period</key>
+			<real>30</real>
 			<key>Jobs to Ignore</key>
 			<array>
 				<string>rlogin</string>
@@ -686,7 +688,7 @@
 				<real>0.027450980392156862</real>
 			</dict>
 			<key>Send Code When Idle</key>
-			<false/>
+			<true/>
 			<key>Shortcut</key>
 			<string></string>
 			<key>Show Status Bar</key>
