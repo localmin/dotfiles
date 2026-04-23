@@ -75,3 +75,4 @@ export PATH=$HOME/.nodebrew/current/bin:$PATH
 
 alias vim="nvim"
 alias vi="nvim"
+export PATH="$HOME/.local/bin:$PATH"
