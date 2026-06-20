@@ -2,3 +2,6 @@ dein/
 *.swp
 .DS_Store
 .gitconfig
+
+# Claude Code: machine-local settings (keep settings.json shared, this per-machine)
+.claude/settings.local.json
