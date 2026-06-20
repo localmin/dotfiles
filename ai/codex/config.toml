@@ -1,0 +1,24 @@
+# Codex CLI 設定
+# ガイダンスファイルを CLAUDE.md に統一(Claude Code / Antigravity CLI と共通)
+project_doc_fallback_filenames = ["CLAUDE.md", "README.md"]
+
+[projects."/Users/localmin/dotfiles"]
+trust_level = "trusted"
+
+[projects."/Users/localmin"]
+trust_level = "trusted"
+
+[tui]
+status_line = ["model-with-reasoning", "current-dir", "git-branch", "project-name", "context-used", "five-hour-limit", "run-state"]
+
+# Inkdrop MCP server.
+# Secrets are injected by `op run` from 1Password (vault: code, item: Inkdrop Local HTTP Server).
+[mcp_servers.inkdrop]
+enabled = false
+command = "op"
+args = ["run", "--env-file=/Users/localmin/dotfiles/ai/inkdrop.op.env", "--", "npx", "-y", "@inkdropapp/mcp-server"]
+
+[marketplaces.openai-bundled]
+last_updated = "2026-05-05T16:31:35Z"
+source_type = "local"
+source = "/Users/localmin/.codex/.tmp/bundled-marketplaces/openai-bundled"

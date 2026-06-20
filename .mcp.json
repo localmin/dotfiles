@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "inkdrop": {
+      "type": "stdio",
+      "command": "op",
+      "args": [
+        "run",
+        "--env-file=/Users/localmin/dotfiles/ai/inkdrop.op.env",
+        "--",
+        "npx",
+        "-y",
+        "@inkdropapp/mcp-server"
+      ]
+    }
+  }
+}

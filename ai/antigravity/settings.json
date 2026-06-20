@@ -1,0 +1,20 @@
+{
+  "allowNonWorkspaceAccess": true,
+  "permissions": {
+    "allow": [
+      "command(~/dotfiles/ai/skills/inbox-capture/scripts/list-windows.sh)",
+      "command(~/dotfiles/ai/skills/inbox-capture/scripts/window-urls.sh)",
+      "command(cat)",
+      "command(ls)",
+      "command(jq)",
+      "command(op)",
+      "command(mkdir)",
+      "command(head)",
+      "command(osascript)"
+    ]
+  },
+  "trustedWorkspaces": [
+    "/Users/localmin",
+    "/Users/localmin/dotfiles"
+  ]
+}

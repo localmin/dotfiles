@@ -1,0 +1,19 @@
+# Vendored external agent skills — single source of truth for ai/vendor/fetch.sh
+#
+# Skills listed here are fetched from an upstream repo at a PINNED commit and
+# written into ../skills/<name>/ (gitignored payload). Only this manifest,
+# fetch.sh and README.md are tracked. To update: bump PIN, re-run ./fetch.sh.
+#
+# Config lines (KEY=value):
+REPO=https://github.com/mizchi/skills
+PIN=89c1b34018ba0d85a770c065ba22f83a8d004d34
+LICENSE=MIT (mizchi/skills repo default; no per-skill LICENSE.txt upstream)
+#
+# Skill lines: <local-name><TAB><upstream-path>
+retrospective-codify	meta/retrospective-codify
+ast-grep-practice	tooling/ast-grep-practice
+optimizing-descriptions	meta/optimizing-descriptions
+skill-selector	meta/skill-selector
+skill-finder	meta/skill-finder
+empirical-prompt-tuning	meta/empirical-prompt-tuning
+waxa-eval	meta/waxa-eval
