@@ -1,25 +1,25 @@
 # {{TITLE}}
 
-> Created: {{DATE}} / slug: {{SLUG}}
+> 作成日: {{DATE}} / slug: {{SLUG}}
 
 ## Goals
 
-- What to achieve / definition of done
+- 何を達成するか / 完了条件
 
 ## Spec
 
-- Specs, constraints, assumptions
+- 仕様・制約・前提
 
-## Task breakdown
+## Task 分割
 
 - [ ] 
 
-## Implementation approach
+## 実装の進め方
 
-- Which files to change and how
-- Existing implementations to reuse (paths)
-- Order of implementation
+- どのファイルをどう変えるか
+- 再利用する既存実装（パス）
+- 実装順序
 
-## Verification
+## 動作確認
 
-- How to test end-to-end (run / MCP / tests)
+- end-to-end でどうテストするか（実行 / MCP / テスト）

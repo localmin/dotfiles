@@ -46,12 +46,12 @@ fi
 
 # Upsert INDEX.md
 if [[ ! -f "$index" ]]; then
-  printf '# Plans Index\n\nIndex of in-progress and past design docs. On resume, read this first and open only the relevant entries.\n\n' > "$index"
+  printf '# Plans Index\n\n進行中・過去の設計 doc 索引。再開時はまずここを読み、関連エントリだけ詳細を開く。\n\n' > "$index"
   echo "created: $index"
 fi
 
 rel="${date_str}-${slug}.md"
-line="- [${date_str}-${slug}](${rel}) — (write a hook)"
+line="- [${date_str}-${slug}](${rel}) — （フックを記入）"
 if grep -qF "(${rel})" "$index"; then
   echo "skip   : already in INDEX → $rel"
 else
@@ -60,4 +60,4 @@ else
 fi
 
 echo
-echo "Next: fill in each heading of $doc (Goals / Spec / Task breakdown / Implementation approach / Verification) and update the hook in INDEX."
+echo "次: $doc の各見出し（Goals/Spec/Task分割/実装の進め方/動作確認）を埋め、INDEX のフックを書き換えてください。"
