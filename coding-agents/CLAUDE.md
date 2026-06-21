@@ -40,6 +40,7 @@
 - skill が必要とする横断情報(ノートブック構成・タグ運用・MCPの補足など)は **skill 自身に書く**(CLAUDE.md には書かない)
 - 関連スクリプトは `skills/<name>/scripts/` に配置
 - **複数行の実行コードは SKILL.md / CLAUDE.md に直接書かない**。`skills/<name>/scripts/<name>.sh` に切り出し、SKILL.md からはそのパスを1行で参照する（1行コマンドは inline 可）
+- **新規 skill の作成は `skill-creator`(公式プラグイン)を使う**: scaffold・frontmatter・初期 eval を公式ツールで統一する。手書きや第三者の `superpowers:writing-skills` には依存しない。作成後、運用しながらの継続チューニングは `empirical-prompt-tuning`(方法論)+ `waxa`(実測エンジン)で行う（作成と改善は別系統）。
 
 ### 新規 skill の配置先
 
