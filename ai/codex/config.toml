@@ -1,6 +1,8 @@
-# Codex CLI 設定
-# ガイダンスファイルを CLAUDE.md に統一(Claude Code / Antigravity CLI と共通)
+# Codex CLI configuration
+# Unify the guidance file on CLAUDE.md (shared with Claude Code / Antigravity CLI)
 project_doc_fallback_filenames = ["CLAUDE.md", "README.md"]
+model = "gpt-5.5"
+model_reasoning_effort = "high"
 
 [projects."/Users/localmin/dotfiles"]
 trust_level = "trusted"
@@ -10,6 +12,9 @@ trust_level = "trusted"
 
 [tui]
 status_line = ["model-with-reasoning", "current-dir", "git-branch", "project-name", "context-used", "five-hour-limit", "run-state"]
+
+[tui.model_availability_nux]
+"gpt-5.5" = 1
 
 # Inkdrop MCP server.
 # Secrets are injected by `op run` from 1Password (vault: code, item: Inkdrop Local HTTP Server).

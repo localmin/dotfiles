@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# window-urls.sh — Chrome の指定ウィンドウから全タブの URL を取得
-# 出力: 1行1URL
-# 引数: ウィンドウ番号(省略時はfzfで選択、ウィンドウが1つなら自動選択)
-# 制限: macOS + Google Chrome 専用(osascript依存)
+# window-urls.sh — get the URLs of all tabs in a given Chrome window
+# Output: one URL per line
+# Args: window number (if omitted, pick via fzf; auto-selected when only one window is open)
+# Limitation: macOS + Google Chrome only (depends on osascript)
 
 set -euo pipefail
 
-# ウィンドウ一覧を取得: "番号|タブ数|アクティブタブタイトル"
+# Get the window list: "number|tab count|active tab title"
 WINDOWS=$(osascript <<'APPLESCRIPT'
 tell application "Google Chrome"
   if (count of windows) is 0 then
@@ -25,7 +25,7 @@ APPLESCRIPT)
 
 WIN_COUNT=$(echo "$WINDOWS" | grep -c '|')
 
-# ウィンドウ番号を決定
+# Determine the window number
 if [[ "${1:-}" =~ ^[0-9]+$ ]]; then
   WIN_INDEX="$1"
 elif [ "$WIN_COUNT" -eq 1 ]; then
@@ -38,7 +38,7 @@ else
   WIN_INDEX=$(echo "$SELECTED" | grep -o '^\[[0-9]*\]' | tr -d '[]')
 fi
 
-# 指定ウィンドウの全タブ URL を出力
+# Output the URLs of all tabs in the chosen window
 osascript <<APPLESCRIPT
 tell application "Google Chrome"
   set urlList to ""

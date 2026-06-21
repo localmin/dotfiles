@@ -8,7 +8,7 @@ AI_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # ── helpers ───────────────────────────────────────────────────────────────────
 
-# Claude Code CLI の user スコープに MCP サーバーを登録する(冪等)
+# Register an MCP server in the Claude Code CLI user scope (idempotent)
 mcp_add() {
   local name="$1" cmd="$2"; shift 2
   claude mcp remove "$name" -s user 2>/dev/null || true
@@ -16,11 +16,11 @@ mcp_add() {
   echo "  mcp    : $name → $cmd $*"
 }
 
-# SKILL.md に YAML frontmatter (name + description) があるか検証
+# Validate that SKILL.md has YAML frontmatter (name + description)
 validate_skill() {
   local skill_md="$1"
   [[ -f "$skill_md" ]] || { echo "  ERROR  : $skill_md not found" >&2; return 1; }
-  # 1行目が `---` で始まり、name と description フィールドが含まれることを確認
+  # Ensure line 1 begins with `---` and that name and description fields exist
   if ! head -n 1 "$skill_md" | grep -q '^---$'; then
     echo "  ERROR  : $skill_md missing YAML frontmatter (---)" >&2
     return 1
@@ -54,7 +54,7 @@ link() {
   echo "        -> $src"
 }
 
-# ファイルに内容がある場合のみリンク(空のプレースホルダーをリンクしない)
+# Link only when the file has content (do not link empty placeholders)
 link_if_nonempty() {
   local src="$1" dst="$2"
   if [[ ! -s "$src" ]]; then
@@ -71,10 +71,10 @@ echo "=== ai/install.sh ==="
 # 1. Global CLAUDE.md (read by Claude Code, Antigravity CLI, Codex CLI)
 link "$AI_DIR/CLAUDE.md" "$HOME/CLAUDE.md"
 
-# 2. Claude Desktop app — MCP config を jq マージ
-# このファイルは Claude Desktop アプリ自身が preferences 等を書き込む「アプリ所有」ファイル。
-# symlink するとアプリが実ファイルへ戻す/アプリの状態を repo へ漏らすため、symlink せず
-# dotfiles が管理したい mcpServers だけを既存ファイルへマージする(他キーは保全・冪等)。
+# 2. Claude Desktop app — merge MCP config with jq
+# This is an "app-owned" file: the Claude Desktop app writes its own preferences etc. into it.
+# Symlinking would let the app replace it with a real file / leak app state into the repo, so rather
+# than symlinking, merge only the mcpServers we manage into the existing file (other keys kept, idempotent).
 desktop_cfg="$HOME/Library/Application Support/Claude/claude_desktop_config.json"
 mcp_fragment="$AI_DIR/claude/claude_desktop_mcp.json"
 if command -v jq >/dev/null 2>&1; then
@@ -87,23 +87,23 @@ if command -v jq >/dev/null 2>&1; then
     else
       cp "$desktop_cfg" "$desktop_cfg.bak.$(date +%Y%m%d%H%M%S)"
       mv "$merged" "$desktop_cfg"
-      echo "  merged : claude_desktop_config.json (mcpServers) — 既存は .bak.<timestamp> に退避"
+      echo "  merged : claude_desktop_config.json (mcpServers) — previous file saved to .bak.<timestamp>"
     fi
   else
-    rm -f "$merged"; echo "  warn   : claude_desktop_config.json のマージ失敗 (未変更のまま)"
+    rm -f "$merged"; echo "  warn   : claude_desktop_config.json merge failed (left unchanged)"
   fi
 else
-  echo "  warn   : jq not found; Claude Desktop の MCP マージをスキップ"
+  echo "  warn   : jq not found; skipping Claude Desktop MCP merge"
 fi
 
-# 3. Antigravity CLI — context + MCP config (設定が書かれたら有効になる)
+# 3. Antigravity CLI — context + MCP config (active once settings are written)
 link_if_nonempty "$AI_DIR/antigravity/settings.json" "$HOME/.gemini/antigravity-cli/settings.json"
 
-# 4. Codex CLI — fallback filenames + MCP config (設定が書かれたら有効になる)
+# 4. Codex CLI — fallback filenames + MCP config (active once settings are written)
 link_if_nonempty "$AI_DIR/codex/config.toml" "$HOME/.codex/config.toml"
 
-# 5. Skills → ~/.claude/skills/ + ~/.gemini/skills/ + ~/.codex/skills/ (全 CLI で auto-discovery)
-# 外部 vendored skill (ai/vendor/manifest.tsv) を欠けていれば pinned commit から取得
+# 5. Skills → ~/.claude/skills/ + ~/.gemini/skills/ + ~/.codex/skills/ (auto-discovery across all CLIs)
+# Fetch external vendored skills (ai/vendor/manifest.tsv) at their pinned commit if missing
 if [[ -x "$AI_DIR/vendor/fetch.sh" ]]; then
   "$AI_DIR/vendor/fetch.sh" --if-missing || echo "  warn   : vendor fetch failed; vendored skills skipped"
 fi
@@ -117,14 +117,14 @@ for skill_dir in "$AI_DIR/skills"/*/; do
   link "$skill_dir" "$HOME/.codex/skills/$skill_name"
 done
 
-# 6. Claude Code CLI — Inkdrop MCP は user スコープに登録しない
-# 代わりに ~/dotfiles/.mcp.json をプロジェクトスコープで読ませる
-# (Claude を ~/dotfiles から起動した時のみ inkdrop が有効化される)
-# 既存の user スコープ登録があれば削除する(冪等)
+# 6. Claude Code CLI — do not register the Inkdrop MCP in the user scope
+# Instead, let ~/dotfiles/.mcp.json provide it at project scope
+# (inkdrop is enabled only when Claude is launched from ~/dotfiles)
+# Remove any existing user-scope registration (idempotent)
 claude mcp remove inkdrop -s user 2>/dev/null || true
 
 # 7. Language servers for enabled LSP plugins (typescript-lsp / pyright-lsp / ruby-lsp / clangd-lsp)
-#    Plugins only enable Claude Code's built-in LSP; the server binaries are required per machine.
+#    Plugins only enable Claude Code's built-in LSP; the server binaries are needed per machine.
 if command -v npm >/dev/null 2>&1; then
   npm install -g typescript-language-server typescript pyright >/dev/null 2>&1 \
     && echo "  ok     : npm LSP servers (typescript-language-server, typescript, pyright)" \
@@ -132,7 +132,7 @@ if command -v npm >/dev/null 2>&1; then
 else
   echo "  warn   : npm not found; skip typescript/pyright LSP servers"
 fi
-# ruby-lsp requires ruby >= 3.0 (macOS bundled 2.6 cannot build prism)
+# ruby-lsp requires ruby >= 3.0 (macOS's bundled 2.6 cannot build prism)
 if command -v gem >/dev/null 2>&1 && ruby -e 'exit(RUBY_VERSION.to_f >= 3.0 ? 0 : 1)' 2>/dev/null; then
   gem install ruby-lsp >/dev/null 2>&1 && echo "  ok     : ruby-lsp gem" || echo "  warn   : ruby-lsp gem install failed"
 else

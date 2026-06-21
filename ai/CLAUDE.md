@@ -11,7 +11,7 @@
 - **再開時の規律**: プロジェクト作業を始めたら、まず `<project-root>/.claude/plans/INDEX.md` の有無を確認する。あれば「進行中の設計ログ」として関連エントリを読んでから plan に入る（セッション越え・compaction 後の継続性のため）。
 - **生成ドキュメントは git 管理外が既定**: 私が生成するドキュメント（設計メモ・調査結果・要約など）は、特別な指示がない限りそのプロジェクトの git 管理対象に含めない（commit しない・成果物を汚さない）。共有が必要な場合のみ明示的に追跡する。
 - **GitHub 参照は `gh` コマンド優先**: GitHub の情報取得は可能な限り `gh` コマンドを使う（WebFetch は文字数が多いと取得漏れ・要約精度低下が起きるため）。`gh` で取れない情報のみ WebFetch にフォールバックする。
-- **コード comment / commit message / issue / PR は英語、ドキュメント md は日本語でよい**: ソースコード中の comment（`*.sh` 等のスクリプト含む）、`git commit` の message、`gh issue create` / `gh pr create` の本文・タイトルは**最終的に英語**で書く。一方、この chat での会話、および CLAUDE.md・関連 policy/doc の `.md`・`SKILL.md` などの**ドキュメント markdown は日本語でよい**。
+- **日本語は「この chat」と「coding agent 設定 MD」だけ、それ以外はすべて英語**: 日本語でよいのは ① 私（coding agent）とのこの chat、② coding agent の設定 markdown（`CLAUDE.md` / `ai/policy/*.md` / 各 skill の `SKILL.md`）のみ。**それ以外はすべて英語**で書く——ソースコードの comment（`*.sh` 等のスクリプト含む）、`git commit` の message、`gh issue create` / `gh pr create` の本文・タイトル、`README.md` を含む他のすべての `.md`・ドキュメント。既存の日本語コメントも対象（英語へ統一する）。
 - **push / PR 作成前に commit 粒度を整える**: `git push` や `gh pr create` の前に `git log` / `git status` を確認し、巨大な1コミットや無意味な細切れを避けて論理単位に squash / 分割してから実行する。
 - **push 前にセキュリティレビュー必須**: コードを push する前に必ず security-guidance 相当のレビューを通す。Claude Code では `security-guidance` プラグインが `git commit` / `git push` をフックして自動発火する（手動起動の `/security-review` コマンドとは別物。プラグインは自動・補完的なファーストパス）。他 CLI では同等のレビューを忘れず実施する。
 - **不明瞭な指示は質問して明確にする**: 推測で進めて手戻りするより、着手前に曖昧さを 1 回潰す。

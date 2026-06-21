@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# list-windows.sh — 開いているChromeウィンドウの一覧を取得
-# 出力: 番号|タブ数|アクティブタブタイトル
-# 制限: macOS + Google Chrome 専用(osascript依存)
+# list-windows.sh — list the currently open Chrome windows
+# Output: number|tab count|active tab title
+# Limitation: macOS + Google Chrome only (depends on osascript)
 
 set -euo pipefail
 

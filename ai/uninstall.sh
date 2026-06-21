@@ -26,10 +26,10 @@ unlink_restore() {
 echo "=== ai/uninstall.sh ==="
 
 unlink_restore "$HOME/CLAUDE.md"
-# Claude Desktop の config は install.sh で symlink でなく jq マージ管理に変更済み。
-# mcpServers だけを差し込んでおりアプリ所有ファイルのため、ここでは自動 revert しない
-# (手動で mcpServers.inkdrop を消すか .bak.<timestamp> から戻す)。
-echo "  note    : claude_desktop_config.json は merge 管理 (revert は手動)"
+# The Claude Desktop config switched from symlink to jq-merge management in install.sh.
+# We only inject mcpServers, and it is an app-owned file, so we do not auto-revert here
+# (manually remove mcpServers.inkdrop or restore from .bak.<timestamp>).
+echo "  note    : claude_desktop_config.json is merge-managed (revert manually)"
 unlink_restore "$HOME/.gemini/antigravity-cli/settings.json"
 unlink_restore "$HOME/.codex/config.toml"
 

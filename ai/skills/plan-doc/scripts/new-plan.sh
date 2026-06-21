@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# new-plan.sh — plan doc 雛形を <project-root>/.claude/plans/ に生成し INDEX.md へ登録する。
+# new-plan.sh — generate a plan-doc template under <project-root>/.claude/plans/ and register it in INDEX.md.
 # usage: new-plan.sh <slug> [<project-root>]
 set -euo pipefail
 
@@ -11,11 +11,11 @@ if [[ -z "$slug" ]]; then
   echo "usage: new-plan.sh <slug> [<project-root>]" >&2
   exit 1
 fi
-# slug を安全化（英数・ハイフン・アンダースコアのみ）
+# Sanitize the slug (alphanumerics, hyphen, underscore only)
 slug="$(printf '%s' "$slug" | tr ' ' '-' | tr -cd 'A-Za-z0-9._-')"
-[[ -n "$slug" ]] || { echo "ERROR: slug が空です" >&2; exit 1; }
+[[ -n "$slug" ]] || { echo "ERROR: slug is empty" >&2; exit 1; }
 
-# project-root: 引数 > git トップ > カレント
+# project-root: argument > git top-level > current directory
 if [[ -n "${2:-}" ]]; then
   root="$2"
 elif root_git="$(git rev-parse --show-toplevel 2>/dev/null)"; then
@@ -25,7 +25,7 @@ else
 fi
 root="$(cd "$root" && pwd)"
 
-[[ -f "$TEMPLATE" ]] || { echo "ERROR: template が見つかりません: $TEMPLATE" >&2; exit 1; }
+[[ -f "$TEMPLATE" ]] || { echo "ERROR: template not found: $TEMPLATE" >&2; exit 1; }
 
 date_str="$(date +%Y-%m-%d)"
 plans_dir="$root/.claude/plans"
@@ -35,7 +35,7 @@ index="$plans_dir/INDEX.md"
 mkdir -p "$plans_dir"
 
 if [[ -e "$doc" ]]; then
-  echo "skip   : 既に存在します → $doc"
+  echo "skip   : already exists → $doc"
 else
   sed -e "s/{{TITLE}}/${slug}/g" \
       -e "s/{{DATE}}/${date_str}/g" \
@@ -44,20 +44,20 @@ else
   echo "created: $doc"
 fi
 
-# INDEX.md を upsert
+# Upsert INDEX.md
 if [[ ! -f "$index" ]]; then
-  printf '# Plans Index\n\n進行中・過去の設計 doc 索引。再開時はまずここを読み、関連エントリだけ詳細を開く。\n\n' > "$index"
+  printf '# Plans Index\n\nIndex of in-progress and past design docs. On resume, read this first and open only the relevant entries.\n\n' > "$index"
   echo "created: $index"
 fi
 
 rel="${date_str}-${slug}.md"
-line="- [${date_str}-${slug}](${rel}) — （フックを記入）"
+line="- [${date_str}-${slug}](${rel}) — (write a hook)"
 if grep -qF "(${rel})" "$index"; then
-  echo "skip   : INDEX に登録済み → $rel"
+  echo "skip   : already in INDEX → $rel"
 else
   printf '%s\n' "$line" >> "$index"
   echo "indexed: $rel"
 fi
 
 echo
-echo "次: $doc の各見出し（Goals/Spec/Task分割/実装の進め方/動作確認）を埋め、INDEX のフックを書き換えてください。"
+echo "Next: fill in each heading of $doc (Goals / Spec / Task breakdown / Implementation approach / Verification) and update the hook in INDEX."
