@@ -1,8 +1,11 @@
 # Vendored external agent skills — single source of truth for coding-agents/vendor/fetch.sh
 #
-# Skills listed here are fetched from an upstream repo at a PINNED commit and
+# Skills listed here are fetched from upstream repos at a PINNED commit and
 # written into ../skills/<name>/ (gitignored payload). Only this manifest,
 # fetch.sh and README.md are tracked. To update: bump PIN, re-run ./fetch.sh.
+#
+# The file is read top-to-bottom: REPO/PIN/LICENSE set the current source for
+# the skill lines that follow, so multiple REPO/PIN blocks can coexist.
 #
 # Config lines (KEY=value):
 REPO=https://github.com/mizchi/skills
@@ -17,3 +20,9 @@ skill-selector	meta/skill-selector
 skill-finder	meta/skill-finder
 empirical-prompt-tuning	meta/empirical-prompt-tuning
 waxa-eval	meta/waxa-eval
+
+# Second source: official ast-grep agent skill (authoritative rule reference)
+REPO=https://github.com/ast-grep/agent-skill
+PIN=577f4d4507678f2c8cee150fae25e6ce309f70b1
+LICENSE=none (no LICENSE file upstream; payload is gitignored, not redistributed)
+ast-grep	ast-grep/skills/ast-grep

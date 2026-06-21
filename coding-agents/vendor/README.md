@@ -36,17 +36,21 @@ machines). To move to the latest:
 
 ## Vendored skills
 
-Source: <https://github.com/mizchi/skills> (`PIN` is in `manifest.tsv` / license: MIT, repo default)
+Pinned per block in `manifest.tsv`. Two upstream sources:
 
-| local name | upstream path | purpose |
-|---|---|---|
-| retrospective-codify | meta/retrospective-codify | codify learnings into ast-grep rules / CLAUDE.md / skills |
-| ast-grep-practice | tooling/ast-grep-practice | how-to for running ast-grep as a project lint |
-| optimizing-descriptions | meta/optimizing-descriptions | audit and rewrite SKILL.md descriptions |
-| skill-selector | meta/skill-selector | pick skills to adopt from a curated catalog |
-| skill-finder | meta/skill-finder | cross-source skill discovery + waxa eval gate |
-| empirical-prompt-tuning | meta/empirical-prompt-tuning | empirical instruction tuning via a subagent executor |
-| waxa-eval | meta/waxa-eval | operating manual for the `waxa` CLI (skill eval) |
+- [mizchi/skills](https://github.com/mizchi/skills) — license: MIT (repo default)
+- [ast-grep/agent-skill](https://github.com/ast-grep/agent-skill) — no upstream license (payload is gitignored, not redistributed)
+
+| local name | source | upstream path | purpose |
+|---|---|---|---|
+| retrospective-codify | mizchi/skills | meta/retrospective-codify | codify learnings into ast-grep rules / CLAUDE.md / skills |
+| ast-grep-practice | mizchi/skills | tooling/ast-grep-practice | how-to for running ast-grep as a project lint |
+| optimizing-descriptions | mizchi/skills | meta/optimizing-descriptions | audit and rewrite SKILL.md descriptions |
+| skill-selector | mizchi/skills | meta/skill-selector | pick skills to adopt from a curated catalog |
+| skill-finder | mizchi/skills | meta/skill-finder | cross-source skill discovery + waxa eval gate |
+| empirical-prompt-tuning | mizchi/skills | meta/empirical-prompt-tuning | empirical instruction tuning via a subagent executor |
+| waxa-eval | mizchi/skills | meta/waxa-eval | operating manual for the `waxa` CLI (skill eval) |
+| ast-grep | ast-grep/agent-skill | ast-grep/skills/ast-grep | authoritative ast-grep rule-writing reference (rule_reference.md) for structural code search |
 
 ### Runtime dependencies (note)
 

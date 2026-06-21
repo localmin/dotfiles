@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
-# fetch.sh — vendor external agent skills from an upstream repo, pinned by commit.
+# fetch.sh — vendor external agent skills from upstream repos, pinned by commit.
 #
-# Source of truth: manifest.tsv (REPO / PIN / LICENSE + per-skill upstream paths).
+# Source of truth: manifest.tsv. The manifest is read top-to-bottom; REPO / PIN /
+# LICENSE lines set the "current source" that applies to the skill lines that
+# follow, so several REPO/PIN blocks can coexist (multiple upstreams).
 # Fetched skill dirs are written into ../skills/<name>/ and are gitignored:
 # the *mechanism* (this script + manifest) is committed, the *payload* is
 # repopulated on each machine from upstream at the pinned commit.
 #
 # Usage:
-#   ./fetch.sh              # (re)fetch all skills to the pinned commit
+#   ./fetch.sh              # (re)fetch all skills to their pinned commits
 #   ./fetch.sh --if-missing # only fetch when a skill dir is absent (bootstrap)
 #
-# To update a skill: bump PIN in manifest.tsv, then ./fetch.sh.
+# To update a skill: bump the PIN of its block in manifest.tsv, then ./fetch.sh.
 
 set -euo pipefail
 
@@ -21,27 +23,27 @@ MANIFEST="$VENDOR_DIR/manifest.tsv"
 IF_MISSING=0
 [[ "${1:-}" == "--if-missing" ]] && IF_MISSING=1
 
-# ── parse manifest ────────────────────────────────────────────────────────────
-REPO=""; PIN=""; LICENSE=""
-NAMES=(); PATHS=()
+# ── parse manifest (REPO/PIN/LICENSE set the current source for later skills) ──
+cur_repo=""; cur_pin=""; cur_license=""
+NAMES=(); PATHS=(); REPOS=(); PINS=(); LICENSES=()
 while IFS= read -r raw || [[ -n "$raw" ]]; do
-  line="${raw%%#*}"                      # strip comments
+  line="${raw%%#*}"                        # strip comments
   line="${line%"${line##*[![:space:]]}"}"  # rstrip
   [[ -z "$line" ]] && continue
   case "$line" in
-    REPO=*)    REPO="${line#REPO=}" ;;
-    PIN=*)     PIN="${line#PIN=}" ;;
-    LICENSE=*) LICENSE="${line#LICENSE=}" ;;
+    REPO=*)    cur_repo="${line#REPO=}" ;;
+    PIN=*)     cur_pin="${line#PIN=}" ;;
+    LICENSE=*) cur_license="${line#LICENSE=}" ;;
     *)
       name="${line%%$'\t'*}"
       path="${line##*$'\t'}"
       [[ "$name" == "$path" ]] && { echo "manifest: bad skill line (need TAB): $line" >&2; exit 1; }
-      NAMES+=("$name"); PATHS+=("$path")
+      [[ -n "$cur_repo" && -n "$cur_pin" ]] || { echo "manifest: skill '$name' has no REPO/PIN block above it" >&2; exit 1; }
+      NAMES+=("$name"); PATHS+=("$path"); REPOS+=("$cur_repo"); PINS+=("$cur_pin"); LICENSES+=("$cur_license")
       ;;
   esac
 done < "$MANIFEST"
 
-[[ -n "$REPO" && -n "$PIN" ]] || { echo "manifest: REPO and PIN are required" >&2; exit 1; }
 [[ ${#NAMES[@]} -gt 0 ]] || { echo "manifest: no skills listed" >&2; exit 1; }
 
 # ── decide whether to fetch ───────────────────────────────────────────────────
@@ -56,14 +58,6 @@ fi
 
 command -v git >/dev/null || { echo "vendor: git is required" >&2; exit 1; }
 
-# ── blobless sparse checkout at the pinned commit ─────────────────────────────
-tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
-echo "vendor: cloning $REPO @ ${PIN:0:12} (blobless, sparse)"
-git clone --filter=blob:none --no-checkout --quiet "$REPO" "$tmp/repo"
-git -C "$tmp/repo" sparse-checkout init --cone >/dev/null
-git -C "$tmp/repo" sparse-checkout set "${PATHS[@]}" >/dev/null
-git -C "$tmp/repo" checkout --quiet "$PIN"
-
 # ── (re)generate gitignore for the payload ────────────────────────────────────
 gitignore="$SKILLS_DIR/.gitignore"
 {
@@ -71,25 +65,49 @@ gitignore="$SKILLS_DIR/.gitignore"
   echo "# Edit ../vendor/manifest.tsv and re-run fetch.sh, never this file by hand."
   echo ".DS_Store"
 } > "$gitignore"
+for n in "${NAMES[@]}"; do echo "/$n/" >> "$gitignore"; done
 
-# ── materialise each skill ────────────────────────────────────────────────────
-for i in "${!NAMES[@]}"; do
-  name="${NAMES[$i]}"; path="${PATHS[$i]}"
-  src="$tmp/repo/$path"
-  [[ -d "$src" ]] || { echo "  ERROR: '$path' not found in $REPO@$PIN" >&2; exit 1; }
-  dst="$SKILLS_DIR/$name"
-  rm -rf "$dst"; mkdir -p "$dst"
-  cp -R "$src/." "$dst/"
-  cat > "$dst/.upstream" <<EOF
-repo:    $REPO
+# ── fetch per unique (repo, pin), blobless + sparse ───────────────────────────
+seen_keys=" "
+for i in "${!REPOS[@]}"; do
+  key="${REPOS[$i]}@@${PINS[$i]}"
+  case "$seen_keys" in *" $key "*) continue ;; esac
+  seen_keys+="$key "
+  repo="${REPOS[$i]}"; pin="${PINS[$i]}"
+
+  # collect the skill indices that belong to this (repo, pin)
+  idxs=(); paths=()
+  for j in "${!REPOS[@]}"; do
+    if [[ "${REPOS[$j]}" == "$repo" && "${PINS[$j]}" == "$pin" ]]; then
+      idxs+=("$j"); paths+=("${PATHS[$j]}")
+    fi
+  done
+
+  tmp="$(mktemp -d)"
+  echo "vendor: cloning $repo @ ${pin:0:12} (blobless, sparse)"
+  git clone --filter=blob:none --no-checkout --quiet "$repo" "$tmp/repo"
+  git -C "$tmp/repo" sparse-checkout init --cone >/dev/null
+  git -C "$tmp/repo" sparse-checkout set "${paths[@]}" >/dev/null
+  git -C "$tmp/repo" checkout --quiet "$pin"
+
+  for j in "${idxs[@]}"; do
+    name="${NAMES[$j]}"; path="${PATHS[$j]}"; license="${LICENSES[$j]}"
+    src="$tmp/repo/$path"
+    [[ -d "$src" ]] || { echo "  ERROR: '$path' not found in $repo@$pin" >&2; rm -rf "$tmp"; exit 1; }
+    dst="$SKILLS_DIR/$name"
+    rm -rf "$dst"; mkdir -p "$dst"
+    cp -R "$src/." "$dst/"
+    cat > "$dst/.upstream" <<EOF
+repo:    $repo
 path:    $path
-commit:  $PIN
-license: $LICENSE
+commit:  $pin
+license: $license
 fetched: $(date -u +%Y-%m-%dT%H:%M:%SZ)
 note:    vendored via coding-agents/vendor/fetch.sh — do not edit here; bump PIN in coding-agents/vendor/manifest.tsv
 EOF
-  echo "/$name/" >> "$gitignore"
-  echo "  vendored: $name  <-  $path @ ${PIN:0:12}"
+    echo "  vendored: $name  <-  $path @ ${pin:0:12}"
+  done
+  rm -rf "$tmp"
 done
 
 echo "vendor: done (${#NAMES[@]} skills). Run coding-agents/install.sh to (re)link them into the CLIs."
