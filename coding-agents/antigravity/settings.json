@@ -2,8 +2,8 @@
   "allowNonWorkspaceAccess": true,
   "permissions": {
     "allow": [
-      "command(~/dotfiles/ai/skills/inbox-capture/scripts/list-windows.sh)",
-      "command(~/dotfiles/ai/skills/inbox-capture/scripts/window-urls.sh)",
+      "command(~/dotfiles/coding-agents/skills/inbox-capture/scripts/list-windows.sh)",
+      "command(~/dotfiles/coding-agents/skills/inbox-capture/scripts/window-urls.sh)",
       "command(cat)",
       "command(ls)",
       "command(jq)",

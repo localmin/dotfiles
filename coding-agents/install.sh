@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# install.sh — AI tools setup (information pipeline)
+# install.sh — coding-agent setup (information pipeline)
 # Creates symlinks to activate CLAUDE.md, MCP configs, and Skills.
 
 set -euo pipefail
 
-AI_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+AGENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # ── helpers ───────────────────────────────────────────────────────────────────
 
@@ -66,17 +66,17 @@ link_if_nonempty() {
 
 # ── main ──────────────────────────────────────────────────────────────────────
 
-echo "=== ai/install.sh ==="
+echo "=== coding-agents/install.sh ==="
 
 # 1. Global CLAUDE.md (read by Claude Code, Antigravity CLI, Codex CLI)
-link "$AI_DIR/CLAUDE.md" "$HOME/CLAUDE.md"
+link "$AGENT_DIR/CLAUDE.md" "$HOME/CLAUDE.md"
 
 # 2. Claude Desktop app — merge MCP config with jq
 # This is an "app-owned" file: the Claude Desktop app writes its own preferences etc. into it.
 # Symlinking would let the app replace it with a real file / leak app state into the repo, so rather
 # than symlinking, merge only the mcpServers we manage into the existing file (other keys kept, idempotent).
 desktop_cfg="$HOME/Library/Application Support/Claude/claude_desktop_config.json"
-mcp_fragment="$AI_DIR/claude/claude_desktop_mcp.json"
+mcp_fragment="$AGENT_DIR/claude/claude_desktop_mcp.json"
 if command -v jq >/dev/null 2>&1; then
   mkdir -p "$(dirname "$desktop_cfg")"
   [[ -f "$desktop_cfg" ]] || echo '{}' > "$desktop_cfg"
@@ -97,18 +97,18 @@ else
 fi
 
 # 3. Antigravity CLI — context + MCP config (active once settings are written)
-link_if_nonempty "$AI_DIR/antigravity/settings.json" "$HOME/.gemini/antigravity-cli/settings.json"
+link_if_nonempty "$AGENT_DIR/antigravity/settings.json" "$HOME/.gemini/antigravity-cli/settings.json"
 
 # 4. Codex CLI — fallback filenames + MCP config (active once settings are written)
-link_if_nonempty "$AI_DIR/codex/config.toml" "$HOME/.codex/config.toml"
+link_if_nonempty "$AGENT_DIR/codex/config.toml" "$HOME/.codex/config.toml"
 
 # 5. Skills → ~/.claude/skills/ + ~/.gemini/skills/ + ~/.codex/skills/ (auto-discovery across all CLIs)
-# Fetch external vendored skills (ai/vendor/manifest.tsv) at their pinned commit if missing
-if [[ -x "$AI_DIR/vendor/fetch.sh" ]]; then
-  "$AI_DIR/vendor/fetch.sh" --if-missing || echo "  warn   : vendor fetch failed; vendored skills skipped"
+# Fetch external vendored skills (coding-agents/vendor/manifest.tsv) at their pinned commit if missing
+if [[ -x "$AGENT_DIR/vendor/fetch.sh" ]]; then
+  "$AGENT_DIR/vendor/fetch.sh" --if-missing || echo "  warn   : vendor fetch failed; vendored skills skipped"
 fi
 mkdir -p "$HOME/.claude/skills" "$HOME/.gemini/skills" "$HOME/.codex/skills"
-for skill_dir in "$AI_DIR/skills"/*/; do
+for skill_dir in "$AGENT_DIR/skills"/*/; do
   [[ -d "$skill_dir" ]] || continue
   skill_name="$(basename "$skill_dir")"
   validate_skill "$skill_dir/SKILL.md" || { echo "  abort  : $skill_name (frontmatter invalid)"; exit 1; }

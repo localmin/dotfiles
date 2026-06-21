@@ -21,7 +21,7 @@ status_line = ["model-with-reasoning", "current-dir", "git-branch", "project-nam
 [mcp_servers.inkdrop]
 enabled = false
 command = "op"
-args = ["run", "--env-file=/Users/localmin/dotfiles/ai/inkdrop.op.env", "--", "npx", "-y", "@inkdropapp/mcp-server"]
+args = ["run", "--env-file=/Users/localmin/dotfiles/coding-agents/inkdrop.op.env", "--", "npx", "-y", "@inkdropapp/mcp-server"]
 
 [marketplaces.openai-bundled]
 last_updated = "2026-05-05T16:31:35Z"

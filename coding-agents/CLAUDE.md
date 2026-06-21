@@ -1,6 +1,6 @@
 # Global Guidance — 情報収集パイプライン
 
-ブラウザで読んだ情報を Inkdrop に集約し、日次/週次/月次/年次でレビューするパイプライン。各機能は `~/dotfiles/ai/skills/<name>/SKILL.md` に skill として実装され、各 CLI で自動発見される。
+ブラウザで読んだ情報を Inkdrop に集約し、日次/週次/月次/年次でレビューするパイプライン。各機能は `~/dotfiles/coding-agents/skills/<name>/SKILL.md` に skill として実装され、各 CLI で自動発見される。
 
 ## 開発ポリシー（索引）
 
@@ -11,7 +11,7 @@
 - **再開時の規律**: プロジェクト作業を始めたら、まず `<project-root>/.claude/plans/INDEX.md` の有無を確認する。あれば「進行中の設計ログ」として関連エントリを読んでから plan に入る（セッション越え・compaction 後の継続性のため）。
 - **生成ドキュメントは git 管理外が既定**: 私が生成するドキュメント（設計メモ・調査結果・要約など）は、特別な指示がない限りそのプロジェクトの git 管理対象に含めない（commit しない・成果物を汚さない）。共有が必要な場合のみ明示的に追跡する。
 - **GitHub 参照は `gh` コマンド優先**: GitHub の情報取得は可能な限り `gh` コマンドを使う（WebFetch は文字数が多いと取得漏れ・要約精度低下が起きるため）。`gh` で取れない情報のみ WebFetch にフォールバックする。
-- **日本語は「この chat」と「coding agent 設定 MD」だけ、それ以外はすべて英語**: 日本語でよいのは ① 私（coding agent）とのこの chat、② coding agent の設定 markdown（`CLAUDE.md` / `ai/policy/*.md` / 各 skill の `SKILL.md`）のみ。**それ以外はすべて英語**で書く——ソースコードの comment（`*.sh` 等のスクリプト含む）、`git commit` の message、`gh issue create` / `gh pr create` の本文・タイトル、`README.md` を含む他のすべての `.md`・ドキュメント。既存の日本語コメントも対象（英語へ統一する）。
+- **日本語は「この chat」と「coding agent 設定 MD」だけ、それ以外はすべて英語**: 日本語でよいのは ① 私（coding agent）とのこの chat、② coding agent の設定 markdown（`CLAUDE.md` / `coding-agents/policy/*.md` / 各 skill の `SKILL.md`）のみ。**それ以外はすべて英語**で書く——ソースコードの comment（`*.sh` 等のスクリプト含む）、`git commit` の message、`gh issue create` / `gh pr create` の本文・タイトル、`README.md` を含む他のすべての `.md`・ドキュメント。既存の日本語コメントも対象（英語へ統一する）。
 - **push / PR 作成前に commit 粒度を整える**: `git push` や `gh pr create` の前に `git log` / `git status` を確認し、巨大な1コミットや無意味な細切れを避けて論理単位に squash / 分割してから実行する。
 - **push 前にセキュリティレビュー必須**: コードを push する前に必ず security-guidance 相当のレビューを通す。Claude Code では `security-guidance` プラグインが `git commit` / `git push` をフックして自動発火する（手動起動の `/security-review` コマンドとは別物。プラグインは自動・補完的なファーストパス）。他 CLI では同等のレビューを忘れず実施する。
 - **不明瞭な指示は質問して明確にする**: 推測で進めて手戻りするより、着手前に曖昧さを 1 回潰す。
@@ -21,21 +21,21 @@
 
 | 詳細 doc | いつ読むか |
 |---|---|
-| `~/dotfiles/ai/policy/planning-workflow.md` | 機能の計画・実装に入るとき（plan mode→doc 化、`.claude/plans/` 運用、`plan-doc` skill） |
-| `~/dotfiles/ai/policy/development-style.md` | コードを書くとき（TDD: 探索→Red→Green→Refactor、関心の分離、コントラクト層と実装層、linter/ast-grep でのルール強制） |
-| `~/dotfiles/ai/policy/parallelization.md` | タスク着手時（並列 dispatch / subagent 化 / run_in_background の判断、避けるべきパターン） |
+| `~/dotfiles/coding-agents/policy/planning-workflow.md` | 機能の計画・実装に入るとき（plan mode→doc 化、`.claude/plans/` 運用、`plan-doc` skill） |
+| `~/dotfiles/coding-agents/policy/development-style.md` | コードを書くとき（TDD: 探索→Red→Green→Refactor、関心の分離、コントラクト層と実装層、linter/ast-grep でのルール強制） |
+| `~/dotfiles/coding-agents/policy/parallelization.md` | タスク着手時（並列 dispatch / subagent 化 / run_in_background の判断、避けるべきパターン） |
 
 ## 変更反映ルール（全 Coding Agent 共通）
 
-`~/dotfiles/ai/skills/` 以下のファイルは `install.sh` により Claude / Antigravity / Codex の全 CLI にシンボリックリンクされている。そのため **ファイルを編集すれば即座に全 CLI へ反映される**。
+`~/dotfiles/coding-agents/skills/` 以下のファイルは `install.sh` により Claude / Antigravity / Codex の全 CLI にシンボリックリンクされている。そのため **ファイルを編集すれば即座に全 CLI へ反映される**。
 
 - 既存ファイルの編集 → 追加作業不要（シンボリックリンクが実体を共有）
-- **新規 skill / 新規 config を追加した場合のみ `~/dotfiles/ai/install.sh` を実行**してリンクを作成する
+- **新規 skill / 新規 config を追加した場合のみ `~/dotfiles/coding-agents/install.sh` を実行**してリンクを作成する
 - skill や config を修正したあとは必ず「Claude / Antigravity / Codex の3つに反映済み」と明示する
 
 ## Skills 規約
 
-- 配置: `~/dotfiles/ai/skills/<name>/SKILL.md`(`install.sh` で各CLIの規定パスへリンク)
+- 配置: `~/dotfiles/coding-agents/skills/<name>/SKILL.md`(`install.sh` で各CLIの規定パスへリンク)
 - SKILL.md 冒頭に YAML frontmatter (`name` + `description`) 必須(`install.sh` で検証、欠落時はエラー停止)
 - skill が必要とする横断情報(ノートブック構成・タグ運用・MCPの補足など)は **skill 自身に書く**(CLAUDE.md には書かない)
 - 関連スクリプトは `skills/<name>/scripts/` に配置
@@ -46,7 +46,7 @@
 新規 skill を作るときは配置先を次の指針で決める:
 
 - **project 固有**（`<repo>/.claude/skills/` に置く）: 特定 repo のドメイン知識・規約・ファイルレイアウトに依存し、他 repo で使う見込みがない。
-- **グローバル**（`~/dotfiles/ai/skills/<name>/` に置き `install.sh` で各 CLI へリンク）: 言語・ツール横断で複数 repo で再利用でき、運用ノウハウ的なもの。
+- **グローバル**（`~/dotfiles/coding-agents/skills/<name>/` に置き `install.sh` で各 CLI へリンク）: 言語・ツール横断で複数 repo で再利用でき、運用ノウハウ的なもの。
 - **判断不能なとき**: 「project 固有かグローバルか」をユーザーに質問してから作成する。後から移動するとパス参照や配布設定が壊れやすいため。
 
 > 未整備の前方参照: ユーザー構想では「外部公開・他 repo から参照されうるものは upstream repo に置いて APM 登録、自分環境専用は chezmoi 管理。境界は `chezmoi-management` skill 参照」とする予定。ただし **APM / `apm.yml` / `chezmoi-management` skill は現時点で未存在**。整備したらこの節から正式参照に置き換える。

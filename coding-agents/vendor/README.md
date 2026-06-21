@@ -2,13 +2,13 @@
 
 A mechanism for fetching and using agent skills from external repositories at a
 **pinned commit**. It pulls in skills that mizchi distributes via APM, adapting
-them to this dotfiles' existing model (`ai/skills/<name>/` →
+them to this dotfiles' existing model (`coding-agents/skills/<name>/` →
 `install.sh` symlinks them to the Claude / Antigravity / Codex CLIs).
 
 ## Policy
 
 - **Mechanism is tracked** (this directory: `manifest.tsv` / `fetch.sh` / `README.md`).
-- **Payload is untracked** (expanded into `ai/skills/<name>/`, excluded by `ai/skills/.gitignore`).
+- **Payload is untracked** (expanded into `coding-agents/skills/<name>/`, excluded by `coding-agents/skills/.gitignore`).
   We do not vendor other repos' code into our own repo; we fetch from upstream each
   time, and the pin guarantees reproducibility.
 - Provenance is stated in three layers: `manifest.tsv` (single source of the pin),
@@ -17,12 +17,12 @@ them to this dotfiles' existing model (`ai/skills/<name>/` →
 ## Usage
 
 ```bash
-ai/vendor/fetch.sh              # (re)fetch all skills at their pinned commits
-ai/vendor/fetch.sh --if-missing # fetch only what is missing (called by install.sh during bootstrap)
-ai/install.sh                   # after fetching, symlink to the 3 CLIs
+coding-agents/vendor/fetch.sh              # (re)fetch all skills at their pinned commits
+coding-agents/vendor/fetch.sh --if-missing # fetch only what is missing (called by install.sh during bootstrap)
+coding-agents/install.sh                   # after fetching, symlink to the 3 CLIs
 ```
 
-On a fresh machine `ai/install.sh` calls `fetch.sh --if-missing` first, so
+On a fresh machine `coding-agents/install.sh` calls `fetch.sh --if-missing` first, so
 `clone` → `install.sh` is enough to also bring in the vendored skills.
 
 ## Updating (tracking upstream)
@@ -31,7 +31,7 @@ The pin does not follow upstream automatically (so versions do not drift between
 machines). To move to the latest:
 
 1. Update `PIN=` in `manifest.tsv` to the new commit / tag
-2. Run `ai/vendor/fetch.sh`
+2. Run `coding-agents/vendor/fetch.sh`
 3. Review the diff and commit
 
 ## Vendored skills

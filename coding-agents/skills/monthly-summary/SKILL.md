@@ -13,11 +13,11 @@ description: 当月にInkdrop inboxから昇格したノートを集計してテ
 特に 1Password (`op run`) による認証が走るため、不要なタイミングでの認証ポップアップを防ぐ必要がある。
 
 - **Claude Code**: `~/dotfiles/` から `claude` を起動する（`~/dotfiles/.mcp.json` で自動読み込み）
-- **Codex**: `~/dotfiles/ai/codex/config.toml` の `enabled = false` を削除
+- **Codex**: `~/dotfiles/coding-agents/codex/config.toml` の `enabled = false` を削除
 - **Antigravity**:
   Antigravity CLI では `antigravity mcp enable inkdrop` による常時有効化は行わないこと（関係ない操作でも 1Password が立ち上がるのを防ぐため）。
   代わりに、一時的なスクリプト等を生成し、以下のように `run_shell_command` 経由で MCP サーバーの stdio に直接 JSON-RPC を流し込んで単発実行（Stateless Invocation）すること。
-  例: `echo '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"search-notes","arguments":{"keyword":"book:tech/AI"}}}' | op run --env-file=~/dotfiles/ai/inkdrop.op.env -- npx --prefer-offline -y @inkdropapp/mcp-server`
+  例: `echo '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"search-notes","arguments":{"keyword":"book:tech/AI"}}}' | op run --env-file=~/dotfiles/coding-agents/inkdrop.op.env -- npx --prefer-offline -y @inkdropapp/mcp-server`
 
 Stateless Invocation は1回あたり起動コスト（認証 + npm 解決）が大きいため、**MCP 呼び出し回数の最小化** と **並列化可能な呼び出しの同時実行** で起動コストを隠すこと。
 

@@ -3,7 +3,7 @@
 
 set -euo pipefail
 
-AI_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+AGENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # ── helpers ───────────────────────────────────────────────────────────────────
 
@@ -23,7 +23,7 @@ unlink_restore() {
 
 # ── main ──────────────────────────────────────────────────────────────────────
 
-echo "=== ai/uninstall.sh ==="
+echo "=== coding-agents/uninstall.sh ==="
 
 unlink_restore "$HOME/CLAUDE.md"
 # The Claude Desktop config switched from symlink to jq-merge management in install.sh.
@@ -33,7 +33,7 @@ echo "  note    : claude_desktop_config.json is merge-managed (revert manually)"
 unlink_restore "$HOME/.gemini/antigravity-cli/settings.json"
 unlink_restore "$HOME/.codex/config.toml"
 
-for skill_dir in "$AI_DIR/skills"/*/; do
+for skill_dir in "$AGENT_DIR/skills"/*/; do
   [[ -d "$skill_dir" ]] || continue
   skill_name="$(basename "$skill_dir")"
   unlink_restore "$HOME/.claude/skills/$skill_name"

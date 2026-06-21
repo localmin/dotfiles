@@ -4,7 +4,7 @@
       "command": "op",
       "args": [
         "run",
-        "--env-file=/Users/localmin/dotfiles/ai/inkdrop.op.env",
+        "--env-file=/Users/localmin/dotfiles/coding-agents/inkdrop.op.env",
         "--",
         "npx",
         "-y",

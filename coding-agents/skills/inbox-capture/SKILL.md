@@ -13,11 +13,11 @@ Chrome ウィンドウから URL を取得し、記事を fetch して要約し�
 特に 1Password (`op run`) による認証が走るため、不要なタイミングでの認証ポップアップを防ぐ必要がある。
 
 - **Claude Code**: `~/dotfiles/` から `claude` を起動する（`~/dotfiles/.mcp.json` で自動読み込み）
-- **Codex**: `~/dotfiles/ai/codex/config.toml` の `enabled = false` を削除
+- **Codex**: `~/dotfiles/coding-agents/codex/config.toml` の `enabled = false` を削除
 - **Antigravity**:
   Antigravity CLI では `antigravity mcp enable inkdrop` による常時有効化は行わないこと（関係ない操作でも 1Password が立ち上がるのを防ぐため）。
   代わりに、一時的なスクリプト等を生成し、以下のように `run_shell_command` 経由で MCP サーバーの stdio に直接 JSON-RPC を流し込んで単発実行（Stateless Invocation）すること。
-  - 短いクエリ（検索など）の例: `echo '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"search-notes","arguments":{"keyword":"..."}}}' | op run --env-file=~/dotfiles/ai/inkdrop.op.env -- npx --prefer-offline -y @inkdropapp/mcp-server`
+  - 短いクエリ（検索など）の例: `echo '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"search-notes","arguments":{"keyword":"..."}}}' | op run --env-file=~/dotfiles/coding-agents/inkdrop.op.env -- npx --prefer-offline -y @inkdropapp/mcp-server`
   - 長いテキスト（ノート更新など）の例: 下記の「安全なJSON構築」セクションを参照。
 
 ## 入力
@@ -31,7 +31,7 @@ Chrome ウィンドウから URL を取得し、記事を fetch して要約し�
 スキル起動後、まず以下のスクリプトを実行してウィンドウ選択・URL 取得を行う:
 
 ```bash
-~/dotfiles/ai/skills/inbox-capture/scripts/window-urls.sh
+~/dotfiles/coding-agents/skills/inbox-capture/scripts/window-urls.sh
 ```
 
 - ウィンドウが複数ある場合は fzf でインタラクティブ選択
@@ -75,7 +75,7 @@ Antigravity CLI における Stateless MCP 呼び出しは起動コスト（認�
    - 代わりに、必ず以下の手順でユーザーにウィンドウを選択させること：
      1. 以下のコマンドで開いているChromeウィンドウの一覧を取得する。
         ```bash
-        ~/dotfiles/ai/skills/inbox-capture/scripts/list-windows.sh
+        ~/dotfiles/coding-agents/skills/inbox-capture/scripts/list-windows.sh
         ```
      2. 取得したウィンドウ一覧をチャット上で提示し、「どのウィンドウ（番号）を処理しますか？」とユーザーに入力を求める。
      3. ユーザーが番号を指定したら、`window-urls.sh <番号>` のように引数付きで実行してURLリストを取得する。
@@ -177,5 +177,5 @@ dailyの時点で読むかどうかを判定する。**「即読了」と「要�
 
 - **安易なリトライの禁止**: `op run` を介したコマンド実行が失敗した際（例: 環境変数パスのミス、JSONフォーマットエラー、コマンドインジェクション警告など）、**原因を修正せずにリトライを繰り返してはならない**。短時間の連続失敗は、ユーザーに大量の1Password認証ポップアップを発生させる。
 - **安全なJSON構築 (jqの必須使用)**: 長いMarkdownテキスト（改行やクォートを含む）をMCPサーバーへ送信する際、シェル上で文字列補間（例: `echo '{"body": "'$BODY'"}'`）を行ったり、Python等の外部スクリプトで回避しようとしてはならない。**必ず `jq -nc --rawfile body <ファイルパス> '{...}'` を使用して安全にJSONエンコードおよび1行化（minify）を行うこと**。
-  - 成功例: `jq -nc --rawfile body ./tmp.md '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"create-note","arguments":{"body":$body,"title":"inbox ...","bookId":"book:...","status":"active"}}}' | op run --env-file=~/dotfiles/ai/inkdrop.op.env -- npx --prefer-offline -y @inkdropapp/mcp-server`
+  - 成功例: `jq -nc --rawfile body ./tmp.md '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"create-note","arguments":{"body":$body,"title":"inbox ...","bookId":"book:...","status":"active"}}}' | op run --env-file=~/dotfiles/coding-agents/inkdrop.op.env -- npx --prefer-offline -y @inkdropapp/mcp-server`
 - **テストノートの作成禁止**: 認証やペイロードのエラーを調査するために、本番のInkdropデータベースに中身のないテストノート（例: `{"body": "test"}`）を作成してはならない。どうしても作成してしまった場合は、速やかに `update-note` で `status: "dropped"` に更新してクリーンアップすること。エラーの調査は、`op run` を介さないローカルでの JSON 文字列検証（`jq` の出力確認など）に留めること。

@@ -86,10 +86,10 @@ path:    $path
 commit:  $PIN
 license: $LICENSE
 fetched: $(date -u +%Y-%m-%dT%H:%M:%SZ)
-note:    vendored via ai/vendor/fetch.sh — do not edit here; bump PIN in ai/vendor/manifest.tsv
+note:    vendored via coding-agents/vendor/fetch.sh — do not edit here; bump PIN in coding-agents/vendor/manifest.tsv
 EOF
   echo "/$name/" >> "$gitignore"
   echo "  vendored: $name  <-  $path @ ${PIN:0:12}"
 done
 
-echo "vendor: done (${#NAMES[@]} skills). Run ai/install.sh to (re)link them into the CLIs."
+echo "vendor: done (${#NAMES[@]} skills). Run coding-agents/install.sh to (re)link them into the CLIs."

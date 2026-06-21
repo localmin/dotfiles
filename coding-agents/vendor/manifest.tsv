@@ -1,4 +1,4 @@
-# Vendored external agent skills — single source of truth for ai/vendor/fetch.sh
+# Vendored external agent skills — single source of truth for coding-agents/vendor/fetch.sh
 #
 # Skills listed here are fetched from an upstream repo at a PINNED commit and
 # written into ../skills/<name>/ (gitignored payload). Only this manifest,
