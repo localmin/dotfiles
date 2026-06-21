@@ -50,7 +50,9 @@
 - **グローバル**（`~/dotfiles/coding-agents/skills/<name>/` に置き `install.sh` で各 CLI へリンク）: 言語・ツール横断で複数 repo で再利用でき、運用ノウハウ的なもの。
 - **判断不能なとき**: 「project 固有かグローバルか」をユーザーに質問してから作成する。後から移動するとパス参照や配布設定が壊れやすいため。
 
-> 未整備の前方参照: ユーザー構想では「外部公開・他 repo から参照されうるものは upstream repo に置いて APM 登録、自分環境専用は chezmoi 管理。境界は `chezmoi-management` skill 参照」とする予定。ただし **APM / `apm.yml` / `chezmoi-management` skill は現時点で未存在**。整備したらこの節から正式参照に置き換える。
+### skill の探索・選定・採用
+
+skill を「探す / 選ぶ / 採用する」ときは **`skill-curation` skill** に集約する（catalog-first → クロスソース探索 → 7軸ルーブリック → waxa audit/eval ゲート → pin して採用）。この環境は **APM を使わず**、採用は **vendor 機構**（`coding-agents/vendor/manifest.tsv` に `REPO`/`PIN` ブロックを足す → `fetch.sh` → `install.sh`）で全 CLI へ配布する。eval を通した commit SHA で pin する。新規作成は `skill-creator`。
 
 ## Inkdrop MCP（接続情報）
 

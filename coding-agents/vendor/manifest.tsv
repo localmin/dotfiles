@@ -16,10 +16,9 @@ LICENSE=MIT (mizchi/skills repo default; no per-skill LICENSE.txt upstream)
 retrospective-codify	meta/retrospective-codify
 ast-grep-practice	tooling/ast-grep-practice
 optimizing-descriptions	meta/optimizing-descriptions
-skill-selector	meta/skill-selector
-skill-finder	meta/skill-finder
 empirical-prompt-tuning	meta/empirical-prompt-tuning
 waxa-eval	meta/waxa-eval
+# skill-selector / skill-finder were folded into the first-party skill-curation skill.
 
 # Second source: official ast-grep agent skill (authoritative rule reference)
 REPO=https://github.com/ast-grep/agent-skill
