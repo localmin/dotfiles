@@ -19,3 +19,7 @@ elif [[ $ARCH == x86_64 ]]; then
 	eval $(/usr/local/bin/brew shellenv)
 fi
 export PATH="/opt/homebrew/opt/python@3.10/bin:$PATH"
+
+
+# Added by Antigravity CLI installer
+export PATH="/Users/localmin/.local/bin:$PATH"

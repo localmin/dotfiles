@@ -76,3 +76,10 @@ export PATH=$HOME/.nodebrew/current/bin:$PATH
 alias vim="nvim"
 alias vi="nvim"
 export PATH="$HOME/.local/bin:$PATH"
+
+# Inkdrop credentials have been migrated to 1Password (vault: code / item: Inkdrop Local HTTP Server).
+# Each CLI's MCP config retrieves them via `op run --env-file=~/dotfiles/coding-agents/inkdrop.op.env`.
+
+
+# Added by Antigravity CLI installer
+export PATH="/Users/localmin/.local/bin:$PATH"
