@@ -24,3 +24,5 @@ ln -sf ~/dotfiles/.claude/statusline-command.sh ~/.claude/statusline-command.sh
 mkdir -p ~/.claude/hooks
 ln -sf ~/dotfiles/.claude/hooks/resume-context.sh ~/.claude/hooks/resume-context.sh
 ln -sf ~/dotfiles/.claude/hooks/precompact-flush.sh ~/.claude/hooks/precompact-flush.sh
+# Pre-push review gate (PreToolUse): blocks `git push` until /code-review + /security-review run.
+ln -sf ~/dotfiles/.claude/hooks/pre-push-review-gate.sh ~/.claude/hooks/pre-push-review-gate.sh
