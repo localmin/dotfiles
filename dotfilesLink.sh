@@ -20,3 +20,7 @@ ln -sf ~/dotfiles/.tmux.conf ~/.tmux.conf
 mkdir -p ~/.claude
 ln -sf ~/dotfiles/.claude/settings.json ~/.claude/settings.json
 ln -sf ~/dotfiles/.claude/statusline-command.sh ~/.claude/statusline-command.sh
+# Resume-context hooks (SessionStart surfaces WIP.md + git status; PreCompact reminds to flush).
+mkdir -p ~/.claude/hooks
+ln -sf ~/dotfiles/.claude/hooks/resume-context.sh ~/.claude/hooks/resume-context.sh
+ln -sf ~/dotfiles/.claude/hooks/precompact-flush.sh ~/.claude/hooks/precompact-flush.sh

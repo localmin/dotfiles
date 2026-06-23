@@ -36,9 +36,27 @@
 - 1 plan につき INDEX.md に1行だけ追記する。形式: `- [<slug>](<file>) — <一言フック>`
 - doc 本文は肥大化を避け、関心ごとに plan を分ける。1 機能 = 1 doc を基本とする。
 
+## WIP.md（途中状態の随時保存）— 中断からの再開
+
+plan-doc は「設計を詰めた機能」の永続ログ。一方で、plan mode に入らない ad-hoc な複数ステップ作業（設定の段階的な編集・調査の途中など）も、中断や compaction で状態が失われると再開が辛い。これを救うのが `WIP.md`。
+
+- **置き場所**: `<project-root>/.claude/plans/WIP.md`。1 プロジェクト1ファイル（plan-doc とは別物。plan-doc は機能ごと、WIP.md は「今まさに進行中の状態」のスナップショット）。
+- **書く内容**: 現タスク / 完了済み / 進行中 / 次の一手 / 未コミットの関連ファイル / 直近の決定。
+- **更新タイミング（随時）**: 着手時に作成し、論理的な節目を終えるごと、そして**中断・compaction の前には必ず flush**する。状態を会話コンテキストにだけ持たせない。
+- **完了したら**: 作業が決着したら WIP.md は空にする（または該当エントリを消す）。残骸を残さない。設計として残す価値があるものは plan-doc 化して INDEX.md に登録する。
+
+### Claude Code の hook 裏打ち（他 CLI はテキストルールで運用）
+
+`~/dotfiles/.claude/settings.json` に2つの hook を設定済み（`~/dotfiles/.claude/hooks/` に実体、`dotfilesLink.sh` で `~/.claude/hooks/` へリンク）:
+
+- **SessionStart** (`resume-context.sh`): 起動 / 再開時に WIP.md と `git status --short` を自動で context に注入する。ルールを忘れても再開時に途中状態が必ず目に入る（クリーンかつ WIP.md 無しなら何も出さない）。
+- **PreCompact** (`precompact-flush.sh`): compaction 直前に「WIP.md に flush せよ」とリマインドする（未コミット変更があるときのみ）。
+
+これらは Claude Code 専用。Antigravity / Codex では同等 hook が無いため、上記の更新タイミング規律をテキストルールとして守る。
+
 ## 継続性（セッション越え / compaction 後）
 
-作業を再開したら、まず `<project-root>/.claude/plans/INDEX.md` の有無を確認する。あれば「進行中の設計ログ」として関連エントリを読んでから plan に入る。これにより議論をやり直さずに済む。
+作業を再開したら、まず `<project-root>/.claude/plans/INDEX.md`（設計ログ）と `WIP.md`（途中状態）の有無を確認する。あれば関連エントリを読んでから作業に入る。これにより議論をやり直さずに済む。
 
 ## git とプライバシー
 
