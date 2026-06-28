@@ -18,6 +18,7 @@
 - **不明瞭な指示は質問して明確にする**: 推測で進めて手戻りするより、着手前に曖昧さを 1 回潰す。
 - **破壊的操作の前に最低 1 回表示**: ツール（home-manager / brew / chezmoi / pre-commit / pip / npm 等）が auto-rename した `*.backup` / `*.orig` / `*.pre-*` 系を `rm` / 上書きする前に、内容を `cat` で会話に出すか別ファイルに dump し、最低 1 回表示してから消す。自分が作ったファイルではなく、消すと元の内容が永久に失われる（`/etc/zshenv` のような system-level の置き土産が紛れていても気づけなくなる）。
 - **着手時にまず並列化を検討**: タスクを受けたら最初に「並列化できる subtask」「subagent に投げて main context を空けられるか」を洗い出す。default は subagent / 並列優先（判断基準は `parallelization.md`）。
+- **長時間/対話コマンドは tmux で**: 常駐コマンド（dev server・watch・テスト・ビルド）や対話型 CLI（prompt・REPL・`create-*` 系）は tmux セッションで回す——セッション越えで生存し、`tmux ls`/`capture-pane` で観測でき、他 CLI・人間と共有・引き継ぎできる。対話は `send-keys` で駆動し「対話型だから不可」と諦めない。短い fire-and-forget は通常の Bash でよい。詳細は `tmux-usage.md`。
 - **設定・導入したら dotfiles 反映を必ず検討**: ツールやプラグインの導入・設定変更・新規 config 作成・global install（brew / npm -g / plugin / MCP / symlink 等）を行ったら、その場で「これを dotfiles に永続化すべきか」を**必ず検討して提示する**。検討軸は ① 版管理対象に入れるか（実体を repo に置き symlink、`dotfilesLink.sh` 追記）② Brewfile / `install.sh` 等の再現スクリプトに足すか ③ マシン固有なので `*.local` に留め gitignore するか。新マシン（特に Linux）で再現できない設定を無言で増やさない。判断はユーザーに委ねてよいが、**反映要否の提示自体は省略しない**。
 
 | 詳細 doc | いつ読むか |
@@ -25,6 +26,7 @@
 | `~/dotfiles/coding-agents/policy/planning-workflow.md` | 機能の計画・実装に入るとき（plan mode→doc 化、`.claude/plans/` 運用、`plan-doc` skill） |
 | `~/dotfiles/coding-agents/policy/development-style.md` | コードを書くとき（TDD: 探索→Red→Green→Refactor、関心の分離、コントラクト層と実装層、linter/ast-grep でのルール強制） |
 | `~/dotfiles/coding-agents/policy/parallelization.md` | タスク着手時（並列 dispatch / subagent 化 / run_in_background の判断、避けるべきパターン） |
+| `~/dotfiles/coding-agents/policy/tmux-usage.md` | 長時間/対話コマンドを tmux で回すとき（when-to-use、基本コマンド、命名・ログ規約、アンチパターン） |
 
 ## 変更反映ルール（全 Coding Agent 共通）
 
