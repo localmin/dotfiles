@@ -1,6 +1,6 @@
 ---
 name: skill-curation
-description: 'Meta-skill for finding, selecting, and adopting agent skills in THIS dotfiles setup. Invoke ONLY when the user explicitly asks to add a skill, find a skill ("is there a skill for X?"), or evaluate a candidate before adopting — do NOT auto-invoke on routine work. Catalog-first (read references/catalog.md before searching the wild), then a tiered cross-source search, a 7-axis rubric, and a mandatory waxa audit/eval gate, then adopt by pinning into coding-agents/vendor/manifest.tsv (the vendor mechanism — this setup does NOT use APM).'
+description: 'この dotfiles 環境で agent skill を探す/選ぶ/採用するための meta-skill。ユーザーが明示的に「skill を追加したい」「〜の skill はある?」と言ったとき、または採用前に候補を評価するときだけ起動する——通常作業では auto-invoke しない。catalog-first（references/catalog.md を先に読んでから外を探す）→ 段階的なクロスソース探索 → 7軸ルーブリック → 必須の waxa audit/eval ゲート → coding-agents/vendor/manifest.tsv に pin して採用（vendor 機構。この環境は APM を使わない）。'
 ---
 
 # skill-curation

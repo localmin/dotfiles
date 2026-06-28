@@ -1,18 +1,14 @@
 ---
 name: tmux-runner
 description: >-
-  Run interactive CLIs and long-running/daemon commands inside a tmux session
-  instead of a one-shot Bash call — start detached, drive prompts with
-  send-keys, observe with capture-pane, log to a file, and hand a live session
-  to the human via attach. Use this whenever a command is INTERACTIVE (waits for
-  keyboard input: prompts, REPLs, scaffolders like `create-next-app` / `npm init`
-  / `prisma init`, login or auth flows, `gh auth login`, anything that asks
-  questions), OR LONG-RUNNING / PERSISTENT (dev server, `watch` mode, test suite,
-  build, log tail) that should survive across turns, be observed while running,
-  or be shared with the human or another CLI. Reach for this even if the user
-  never says "tmux": if you would otherwise answer "this command is interactive,
-  please run it yourself" or block the turn waiting on a server, use this skill
-  instead.
+  対話型 CLI や長時間/常駐コマンドを、一発の Bash 実行ではなく tmux セッションで回す——detached
+  で起動し、send-keys でプロンプトに答え、capture-pane で観測し、ログをファイルに残し、attach で
+  人間に生きたセッションを引き継ぐ。次のときは必ず使う: 入力待ちで止まる対話型コマンド（プロンプト・
+  REPL・`create-next-app` / `npm init` / `prisma init` 等の scaffold・`gh auth login` 等の
+  ログイン・質問してくるもの全般）、または長時間/常駐コマンド（dev server・`watch`・テストスイート・
+  ビルド・ログ追従）でターンを跨いで生かしたい/動かしながら観測したい/人間や別 CLI と共有したいもの。
+  ユーザーが「tmux」と言わなくても使う——「対話型なので自分で実行してください」と返しそうな時、
+  サーバ待ちでターンが止まりそうな時は、代わりにこの skill を使う。
 ---
 
 # tmux-runner

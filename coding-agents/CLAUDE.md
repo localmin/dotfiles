@@ -39,6 +39,7 @@
 
 - 配置: `~/dotfiles/coding-agents/skills/<name>/SKILL.md`(`install.sh` で各CLIの規定パスへリンク)
 - SKILL.md 冒頭に YAML frontmatter (`name` + `description`) 必須(`install.sh` で検証、欠落時はエラー停止)
+- **first-party skill は `description` 含め日本語で書く**(英語のツール名・コマンド名は inline 可)。vendored skill は upstream のまま英語で可(`.upstream` がある skill は編集しない)。
 - skill が必要とする横断情報(ノートブック構成・タグ運用・MCPの補足など)は **skill 自身に書く**(CLAUDE.md には書かない)
 - 関連スクリプトは `skills/<name>/scripts/` に配置
 - **複数行の実行コードは SKILL.md / CLAUDE.md に直接書かない**。`skills/<name>/scripts/<name>.sh` に切り出し、SKILL.md からはそのパスを1行で参照する（1行コマンドは inline 可）
