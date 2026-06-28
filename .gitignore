@@ -5,3 +5,12 @@ dein/
 
 # Claude Code: machine-local settings (keep settings.json shared, this per-machine)
 .claude/settings.local.json
+
+# Machine-specific tool state (Antigravity/Gemini project config symlink into ~/.gemini)
+.antigravitycli/
+
+# Generated design/planning memos, kept local for cross-session reference but not tracked
+/doc/
+
+# inbox-capture scratch output at repo root
+/tmp*.md
