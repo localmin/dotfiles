@@ -26,3 +26,5 @@ ln -sf ~/dotfiles/.claude/hooks/resume-context.sh ~/.claude/hooks/resume-context
 ln -sf ~/dotfiles/.claude/hooks/precompact-flush.sh ~/.claude/hooks/precompact-flush.sh
 # Pre-push review gate (PreToolUse): blocks `git push` until /code-review + /security-review run.
 ln -sf ~/dotfiles/.claude/hooks/pre-push-review-gate.sh ~/.claude/hooks/pre-push-review-gate.sh
+# Codify nudge (PostToolUse): after a successful git push, suggest running retrospective-codify.
+ln -sf ~/dotfiles/.claude/hooks/codify-prompt.sh ~/.claude/hooks/codify-prompt.sh
