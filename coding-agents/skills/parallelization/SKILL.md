@@ -1,6 +1,9 @@
-# 並列化と subagent
+---
+name: parallelization
+description: タスクに着手するとき最初に読む、並列化と subagent 化の判断基準。独立 subtask の並列 dispatch、大量探索の subagent への隔離、bias-free 評価、long-running batch の逃がし方と、並列化すべきでないパターンを定める。新しいタスクを受けた直後の作業設計で参照する。
+---
 
-全プロジェクト共通。タスク着手時の並列化・subagent 化の判断基準。CLAUDE.md「開発ポリシー」索引から必要時に読み込む詳細 doc。
+# 並列化と subagent
 
 ## 基本姿勢
 
@@ -18,3 +21,7 @@
 - 直列依存（前 task の結果が次 task の入力）を無理に並列化する。
 - 1-step / short lookup を subagent に投げる（overhead がコストに見合わない）。
 - subagent と main で同じ作業を二重に走らせる。
+
+## 大規模 dispatch 前の確認
+
+ユーザーの回答が曖昧で、その解釈次第でタスクの規模がスキルの通常処理単位を大きく超える場合（例: 1件処理が前提のスキルで複数件の回答を受け取り、複数 subagent・大量外部 fetch へ拡大解釈する等）、文字通りの解釈で即座に並列 dispatch せず、規模をユーザーに確認してから実行する（理由: 曖昧な回答を最大解釈して大規模な subagent 群を無確認で起動すると、ユーザーの意図と乖離した実行がその場で走ってしまい、途中で止めるコストが高くつく）。

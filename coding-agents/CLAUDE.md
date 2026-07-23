@@ -1,69 +1,51 @@
-# Global Guidance — 情報収集パイプライン
+# グローバル開発ポリシー（全プロジェクト共通）
 
-ブラウザで読んだ情報を Inkdrop に集約し、日次/週次/月次/年次でレビューするパイプライン。各機能は `~/dotfiles/coding-agents/skills/<name>/SKILL.md` に skill として実装され、各 CLI で自動発見される。
+全 coding agent（Claude / Antigravity / Codex）が全プロジェクトで従う共通ポリシー。実体は `~/dotfiles/coding-agents/CLAUDE.md`（`install.sh` が `~/CLAUDE.md` へリンク）。手順の詳細は skill 側に置き、場面に応じて自動ロードさせる。
 
-## 開発ポリシー（索引）
+## 開発ポリシー
 
-全プロジェクト共通の開発の進め方。詳細は肥大化を避けるため関心ごとに分離してある。**ここは索引のみ**。必要と判断したときだけ該当 doc を Read で開く（`@import` ではなく on-demand）。
-
-- **事実と推測を混ぜて語らない**: 確認した事実と、推測・未検証の内容を**断定として混ぜない**。推測は「推測」「未確認」と明示し、根拠を示す。検証できるものは検証してから述べる。
-- **プロジェクト固有のルールが優先**: 作業中のプロジェクトに独自の `CLAUDE.md` や上位ルールがあれば、本ポリシーより**そちらを優先**する。
-- **再開時の規律**: プロジェクト作業を始めたら、まず `<project-root>/.claude/plans/INDEX.md` の有無を確認する。あれば「進行中の設計ログ」として関連エントリを読んでから plan に入る（セッション越え・compaction 後の継続性のため）。
-- **途中状態を随時 WIP.md に残す**: 複数ステップにまたがる作業（plan mode に入らない ad-hoc な複数ファイル編集も含む）は、途中で中断・compaction されても再開できるよう、`<project-root>/.claude/plans/WIP.md` に「現タスク / 完了済み / 進行中 / 次の一手 / 未コミットの関連ファイル / 直近の決定」を**随時**書き残す。着手時に作成し、節目ごと・中断/compaction の前に必ず flush する。会話コンテキストにだけ状態を持たせない。Claude Code では SessionStart hook が WIP.md と `git status` を再開時に自動提示し、PreCompact hook が flush をリマインドする（他 CLI は本ルールのテキストで運用）。詳細は `planning-workflow.md`。
-- **push 後に codify を促す**: 試行錯誤・ユーザー訂正・筋悪だった方針・非自明な修正があったセッションは、push という区切りで `retrospective-codify` を実行し「最初に知っていれば回り道しなかった知見」を固定する。出力先は4分類——ast-grep ルール（静的に検出できるコードパターン）/ **hookify ルール（繰り返す望ましくない挙動を hook で防ぐ）** / CLAUDE.md ルール（短い常時ルール）/ skill（複数ステップの手順）。propose→approve→write を維持し勝手に書かない。trivial な作業はスキップ（ゼロ提案でよい）。Claude Code では PostToolUse hook が成功した `git push` を検知して非ブロックで促す。hook は Claude Code 専用——他 CLI では push 時に手動で codify する。
-- **GitHub 参照は `gh` コマンド優先**: GitHub の情報取得は可能な限り `gh` コマンドを使う（WebFetch は文字数が多いと取得漏れ・要約精度低下が起きるため）。`gh` で取れない情報のみ WebFetch にフォールバックする。
-- **日本語は「この chat」と「coding agent 設定 MD」だけ、それ以外はすべて英語**: 日本語でよいのは ① 私（coding agent）とのこの chat、② coding agent の設定 markdown（`CLAUDE.md` / `coding-agents/policy/*.md` / 各 skill の `SKILL.md`）、③ skill が生成・利用する agent 作業文書（plan-doc の `template.md` と生成される `.claude/plans/` 文書など）のみ。**それ以外はすべて英語**で書く——ソースコードの comment（`*.sh` 等のスクリプト含む）、`git commit` の message、`gh issue create` / `gh pr create` の本文・タイトル、`README.md` を含む他のすべての `.md`・ドキュメント。既存の日本語コメントも対象（英語へ統一する）。
-- **push / PR 作成前に commit 粒度を整える**: `git push` や `gh pr create` の前に `git log` / `git status` を確認し、巨大な1コミットや無意味な細切れを避けて論理単位に squash / 分割してから実行する。
-- **push 前にレビュー必須（code-review + security-review）**: コードを push する前に必ず `/code-review` と `/security-review` を通す。Claude Code では PreToolUse hook（`pre-push-review-gate.sh`）が `git push` をブロックし、両レビュー実施 → 承認マーカー記録（`git rev-parse HEAD > "$(git rev-parse --git-dir)/review-ok"`）→ push を強制する。マーカーは push 対象の HEAD sha に紐づき、新規コミットで自動再武装する。加えて `security-guidance` プラグインが `git commit` / `git push` をフックして自動発火する（手動起動の `/security-review` とは別物。プラグインは自動・補完的なファーストパス）。hook は Claude Code 専用——他 CLI では両レビューを忘れず手動実施する。
+- **事実と推測を混ぜない**: 確認した事実と推測・未検証の内容を断定として混ぜない。推測は「推測」「未確認」と明示し、検証できるものは検証してから述べる。
+- **プロジェクト固有のルールが優先**: 作業中プロジェクトの `CLAUDE.md` 等が本ポリシーと矛盾したらそちらを優先する。
+- **再開時の規律**: 作業再開時は `<project-root>/.claude/plans/` の INDEX.md / WIP.md を確認し、**最初の応答で WIP を読んだ旨・現状・次の一手を、動く前に明示する**（黙読はユーザーに伝わらない）。決着済みの判断は蒸し返さない。詳細は `planning-workflow` skill。
+- **途中状態を WIP.md に随時残す**: 複数ステップ作業は `<project-root>/.claude/plans/WIP.md` に着手時から随時 flush し、状態を会話コンテキストにだけ持たせない。詳細は `planning-workflow` skill。
+- **コードを書くときは TDD**: 探索→Red→Green→Refactor のサイクルで書く。テスト規律・設計原則含め詳細は `development-style` skill（TDD ループの実施規律は `test-driven-development` skill）。
+- **着手時にまず並列化を検討**: タスクを受けたら最初に並列化できる subtask と subagent への隔離を洗い出す。default は subagent / 並列優先。判断基準は `parallelization` skill。
+- **長時間 / 対話コマンドは herdr で**: 常駐コマンドや対話型 CLI は herdr の pane で回し、`pane run` / `pane read` / `pane send-keys` / `wait output` で駆動・観測する。「対話型だから不可」と諦めない。手順は `herdr` skill。ただし herdr skill は `HERDR_ENV=1`（herdr 内で起動した agent）でのみ有効——herdr 外で起動されている場合は pane 操作を試みず、ユーザーに herdr 内での起動を促すか、バックグラウンド実行等の代替手段を使う。
+- **push 前にレビュー必須**: push 前に必ず `/code-review` と `/security-review` を通す。Claude Code では PreToolUse hook（`pre-push-review-gate.sh`）が未レビューの push をブロックし、ブロック時に hook 自身が手順を提示する。他 CLI では手動で両レビューを実施する。
+- **push / PR 作成前に commit 粒度を整える**: `git log` / `git status` を確認し、巨大な1コミットや無意味な細切れを避けて論理単位に squash / 分割してから実行する。
+- **push 後に codify**: 試行錯誤・ユーザー訂正・非自明な修正があったセッションは、push を区切りに `retrospective-codify` を実行して知見を固定する（propose→approve→write を維持し勝手に書かない。trivial ならゼロ提案でよい）。Claude Code では PostToolUse hook が push 成功時に非ブロックで促す。
+- **GitHub 参照は `gh` コマンド優先**: WebFetch は長文で取得漏れが起きるため、`gh` で取れない情報のみ WebFetch にフォールバックする。
+- **日本語は「この chat」と「coding agent 設定 MD」だけ、それ以外はすべて英語**: 日本語でよいのは ① ユーザーとの chat ② coding agent の設定 markdown（`CLAUDE.md` / 各 skill の `SKILL.md`）③ skill が生成・利用する agent 作業文書（`.claude/plans/` 文書・template 等）のみ。それ以外——ソースコードの comment（`*.sh` 含む）・`git commit` message・`gh issue` / `gh pr` の本文・タイトル・`README.md` 含む他のすべての md——は英語で書く。既存の日本語コメントも英語へ統一する。
 - **不明瞭な指示は質問して明確にする**: 推測で進めて手戻りするより、着手前に曖昧さを 1 回潰す。
-- **破壊的操作の前に最低 1 回表示**: ツール（home-manager / brew / chezmoi / pre-commit / pip / npm 等）が auto-rename した `*.backup` / `*.orig` / `*.pre-*` 系を `rm` / 上書きする前に、内容を `cat` で会話に出すか別ファイルに dump し、最低 1 回表示してから消す。自分が作ったファイルではなく、消すと元の内容が永久に失われる（`/etc/zshenv` のような system-level の置き土産が紛れていても気づけなくなる）。
-- **着手時にまず並列化を検討**: タスクを受けたら最初に「並列化できる subtask」「subagent に投げて main context を空けられるか」を洗い出す。default は subagent / 並列優先（判断基準は `parallelization.md`）。
-- **長時間/対話コマンドは tmux で**: 常駐コマンド（dev server・watch・テスト・ビルド）や対話型 CLI（prompt・REPL・`create-*` 系）は tmux セッションで回す——セッション越えで生存し、`tmux ls`/`capture-pane` で観測でき、他 CLI・人間と共有・引き継ぎできる。対話は `send-keys` で駆動し「対話型だから不可」と諦めない。短い fire-and-forget は通常の Bash でよい。手順は `tmux-runner` skill（場面で自動発火）。
-- **設定・導入したら dotfiles 反映を必ず検討**: ツールやプラグインの導入・設定変更・新規 config 作成・global install（brew / npm -g / plugin / MCP / symlink 等）を行ったら、その場で「これを dotfiles に永続化すべきか」を**必ず検討して提示する**。検討軸は ① 版管理対象に入れるか（実体を repo に置き symlink、`dotfilesLink.sh` 追記）② Brewfile / `install.sh` 等の再現スクリプトに足すか ③ マシン固有なので `*.local` に留め gitignore するか。新マシン（特に Linux）で再現できない設定を無言で増やさない。判断はユーザーに委ねてよいが、**反映要否の提示自体は省略しない**。
-
-| 詳細 doc | いつ読むか |
-|---|---|
-| `~/dotfiles/coding-agents/policy/planning-workflow.md` | 機能の計画・実装に入るとき（plan mode→doc 化、`.claude/plans/` 運用、`plan-doc` skill） |
-| `~/dotfiles/coding-agents/policy/development-style.md` | コードを書くとき（TDD: 探索→Red→Green→Refactor、関心の分離、コントラクト層と実装層、linter/ast-grep でのルール強制） |
-| `~/dotfiles/coding-agents/policy/parallelization.md` | タスク着手時（並列 dispatch / subagent 化 / run_in_background の判断、避けるべきパターン） |
+- **AskUserQuestion で列挙リストを省略しない**: 選択肢が少数の「よくある候補」に絞れない列挙リスト（全項目が等しく答えになりうるもの。例: 開いているウィンドウ一覧、ファイル一覧）をユーザーに選ばせる場面では `AskUserQuestion` の選択式 UI を使わず、全件を素のテキストで提示し自由入力（番号等）で答えさせる（理由: `AskUserQuestion` は選択肢を絞る必要があり、機械的に上位数件+「その他」に切り詰めると残りの項目がユーザーから見えなくなる）。
+- **破壊的操作の前に最低 1 回表示**: ツールが auto-rename した `*.backup` / `*.orig` / `*.pre-*` 系を rm / 上書きする前に、内容を会話に出すか別ファイルへ dump し、最低 1 回表示してから消す。自分が作ったファイルではなく、消すと原本が永久に失われる。
+- **設定・導入したら dotfiles 反映を必ず検討**: ツール導入・設定変更・global install（brew / npm -g / plugin / MCP / symlink 等）をしたら、その場で「dotfiles に永続化すべきか」を提示する。検討軸は ① 版管理+symlink ② Brewfile / install.sh 等の再現スクリプト ③ マシン固有なので `*.local` + gitignore。判断はユーザーに委ねてよいが、提示自体は省略しない。
 
 ## 変更反映ルール（全 Coding Agent 共通）
 
-`~/dotfiles/coding-agents/skills/` 以下のファイルは `install.sh` により Claude / Antigravity / Codex の全 CLI にシンボリックリンクされている。そのため **ファイルを編集すれば即座に全 CLI へ反映される**。
+`~/dotfiles/coding-agents/skills/` 以下は `install.sh` により Claude / Antigravity / Codex の全 CLI へ symlink 済み。既存ファイルの編集は即座に全 CLI へ反映される。
 
-- 既存ファイルの編集 → 追加作業不要（シンボリックリンクが実体を共有）
-- **新規 skill / 新規 config を追加した場合のみ `~/dotfiles/coding-agents/install.sh` を実行**してリンクを作成する
+- **新規 skill / 新規 config を追加したときだけ `~/dotfiles/coding-agents/install.sh` を実行**してリンクを作成する
 - skill や config を修正したあとは必ず「Claude / Antigravity / Codex の3つに反映済み」と明示する
 
 ## Skills 規約
 
-- 配置: `~/dotfiles/coding-agents/skills/<name>/SKILL.md`(`install.sh` で各CLIの規定パスへリンク)
-- SKILL.md 冒頭に YAML frontmatter (`name` + `description`) 必須(`install.sh` で検証、欠落時はエラー停止)
-- **first-party skill は `description` 含め日本語で書く**(英語のツール名・コマンド名は inline 可)。vendored skill は upstream のまま英語で可(`.upstream` がある skill は編集しない)。
-- skill が必要とする横断情報(ノートブック構成・タグ運用・MCPの補足など)は **skill 自身に書く**(CLAUDE.md には書かない)
-- 関連スクリプトは `skills/<name>/scripts/` に配置
-- **複数行の実行コードは SKILL.md / CLAUDE.md に直接書かない**。`skills/<name>/scripts/<name>.sh` に切り出し、SKILL.md からはそのパスを1行で参照する（1行コマンドは inline 可）
-- **新規 skill の作成は `skill-creator`(公式プラグイン)を使う**: scaffold・frontmatter・初期 eval を公式ツールで統一する。手書きや第三者の `superpowers:writing-skills` には依存しない。作成後、運用しながらの継続チューニングは `empirical-prompt-tuning`(方法論)+ `waxa`(実測エンジン)で行う（作成と改善は別系統）。
+- 配置: `~/dotfiles/coding-agents/skills/<name>/SKILL.md`（`install.sh` で各 CLI の規定パスへリンク）
+- SKILL.md 冒頭に YAML frontmatter（`name` + `description`）必須（`install.sh` で検証、欠落時はエラー停止）
+- **first-party skill は `description` 含め日本語で書く**（英語のツール名・コマンド名は inline 可）。vendored skill（`.upstream` がある skill）は upstream のまま英語で可、編集しない。
+- skill が必要とする横断情報（ノートブック構成・タグ運用・MCP の補足など）は **skill 自身に書く**（CLAUDE.md には書かない）
+- 関連スクリプトは `skills/<name>/scripts/` に配置。**複数行の実行コードは SKILL.md / CLAUDE.md に直接書かない**——script に切り出し、SKILL.md からパスを1行で参照する（1行コマンドは inline 可）
+- **新規 skill の作成は `skill-creator`（公式プラグイン）を使う**: scaffold・frontmatter・初期 eval を公式ツールで統一する。作成後の継続チューニングは `empirical-prompt-tuning`（方法論）+ `waxa`（実測エンジン）で行う（作成と改善は別系統）。
 
 ### 新規 skill の配置先
 
-新規 skill を作るときは配置先を次の指針で決める:
-
-- **project 固有**（`<repo>/.claude/skills/` に置く）: 特定 repo のドメイン知識・規約・ファイルレイアウトに依存し、他 repo で使う見込みがない。
-- **グローバル**（`~/dotfiles/coding-agents/skills/<name>/` に置き `install.sh` で各 CLI へリンク）: 言語・ツール横断で複数 repo で再利用でき、運用ノウハウ的なもの。
-- **判断不能なとき**: 「project 固有かグローバルか」をユーザーに質問してから作成する。後から移動するとパス参照や配布設定が壊れやすいため。
+- **project 固有**（`<repo>/.claude/skills/`）: 特定 repo のドメイン知識・規約・ファイルレイアウトに依存し、他 repo で使う見込みがない。
+- **グローバル**（`~/dotfiles/coding-agents/skills/<name>/` に置き `install.sh` でリンク）: 言語・ツール横断で複数 repo で再利用できる運用ノウハウ。
+- **判断不能なとき**: ユーザーに質問してから作成する。後から移動するとパス参照や配布設定が壊れやすい。
 
 ### skill の探索・選定・採用
 
-skill を「探す / 選ぶ / 採用する」ときは **`skill-curation` skill** に集約する（catalog-first → クロスソース探索 → 7軸ルーブリック → waxa audit/eval ゲート → pin して採用）。この環境は **APM を使わず**、採用は **vendor 機構**（`coding-agents/vendor/manifest.tsv` に `REPO`/`PIN` ブロックを足す → `fetch.sh` → `install.sh`）で全 CLI へ配布する。eval を通した commit SHA で pin する。新規作成は `skill-creator`。
-
-## Inkdrop MCP（接続情報）
-
-接続: `localhost:19840`(`@inkdropapp/mcp-server` 経由、各CLI で設定済み)
-
-検索修飾子: `book:` / `tag:` / `status:` / `title:`
-
-ノート status: `active`(通常) / `completed`(アーカイブ用) / `dropped` / `none`
+skill を「探す / 選ぶ / 採用する」ときは **`skill-curation` skill** に集約する（catalog-first → クロスソース探索 → 7軸ルーブリック → waxa audit/eval ゲート → pin して採用）。この環境は **APM を使わず**、採用は **vendor 機構**（`coding-agents/vendor/manifest.tsv` に追記 → `fetch.sh` → `install.sh`）で全 CLI へ配布し、eval を通した commit SHA で pin する。新規作成は `skill-creator`。
 
 ## 口調
 
