@@ -13,6 +13,7 @@
 - **長時間 / 対話コマンドは herdr で**: 常駐コマンドや対話型 CLI は herdr の pane で回し、`pane run` / `pane read` / `pane send-keys` / `wait output` で駆動・観測する。「対話型だから不可」と諦めない。手順は `herdr` skill。ただし herdr skill は `HERDR_ENV=1`（herdr 内で起動した agent）でのみ有効——herdr 外で起動されている場合は pane 操作を試みず、ユーザーに herdr 内での起動を促すか、バックグラウンド実行等の代替手段を使う。
 - **push 前にレビュー必須**: push 前に必ず `/code-review` と `/security-review` を通す。Claude Code では PreToolUse hook（`pre-push-review-gate.sh`）が未レビューの push をブロックし、ブロック時に hook 自身が手順を提示する。他 CLI では手動で両レビューを実施する。
 - **push / PR 作成前に commit 粒度を整える**: `git log` / `git status` を確認し、巨大な1コミットや無意味な細切れを避けて論理単位に squash / 分割してから実行する。
+- **commit 直前は path を絞らず `git status` で index 全体を確認する**: `git commit` は index 全体を対象にするため、特定 path だけ `git add` しても、その path に絞った `git status` では他に既に stage 済みの無関係な変更を見落とす（理由: 意図しない変更が同一 commit に混入する）。
 - **push 後に codify**: 試行錯誤・ユーザー訂正・非自明な修正があったセッションは、push を区切りに `retrospective-codify` を実行して知見を固定する（propose→approve→write を維持し勝手に書かない。trivial ならゼロ提案でよい）。Claude Code では PostToolUse hook が push 成功時に非ブロックで促す。
 - **GitHub 参照は `gh` コマンド優先**: WebFetch は長文で取得漏れが起きるため、`gh` で取れない情報のみ WebFetch にフォールバックする。
 - **日本語は「この chat」と「coding agent 設定 MD」だけ、それ以外はすべて英語**: 日本語でよいのは ① ユーザーとの chat ② coding agent の設定 markdown（`CLAUDE.md` / 各 skill の `SKILL.md`）③ skill が生成・利用する agent 作業文書（`.claude/plans/` 文書・template 等）のみ。それ以外——ソースコードの comment（`*.sh` 含む）・`git commit` message・`gh issue` / `gh pr` の本文・タイトル・`README.md` 含む他のすべての md——は英語で書く。既存の日本語コメントも英語へ統一する。
