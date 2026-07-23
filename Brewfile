@@ -8,6 +8,7 @@ tap "nyuichi/satysfi"
 tap "orf/brew"
 tap "sinelaw/fresh"
 tap "xykong/tap"
+tap "yusukebe/tap"
 # Cryptography and SSL/TLS Toolkit
 brew "openssl@3"
 # High performance message passing library
@@ -18,6 +19,8 @@ brew "ast-grep"
 brew "autoconf"
 # Tool for generating GNU Standards-compliant Makefiles
 brew "automake"
+# The AI-era curl: fetch, discover, extract (agent-shaped HTTP/HTML tool)
+brew "yusukebe/tap/ax"
 # Clone of cat(1) with syntax highlighting and Git integration
 brew "bat"
 # Core application library for C

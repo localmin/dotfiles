@@ -90,8 +90,8 @@ Antigravity CLI における Stateless MCP 呼び出しは起動コスト（認�
          - issues / pull / releases / discussions → 対応する `gh issue view` / `gh pr view` / `gh release view` または `gh api`
          - **上記に当てはまらない github 所有ホストのパスも、WebFetch には流さず最も近い `gh api` リソースで取る**（既定ブランチ）。
          - 本文が長い場合は一時ファイルに落として Read で読む。
-       - **その他**（zenn / Qiita / speakerdeck / ニュース等）は WebFetch。
-     - バッチを組むとき、先頭で URL を「GitHub 系 / その他」に振り分けてから流すこと。一律 WebFetch に流す運用は禁止（GitHub の本文は WebFetch だと薄く要約され、後段の週次判定を誤らせる）。
+       - **その他**（zenn / Qiita / speakerdeck / ニュース等）は **`ax`**（`ax <URL> --md` で本文を markdown 取得。CLAUDE.md「Web 取得・HTML 抽出は `ax` を既定にする」の使用地点側の徹底）。WebFetch は ax で取れないときのフォールバック。
+     - バッチを組むとき、先頭で URL を「GitHub 系 / その他」に振り分けてから流すこと（GitHub 系 → `gh`、その他 → `ax`）。GitHub の本文を `gh` 以外で取ると薄く要約され、後段の週次判定を誤らせる。
      - **取得失敗の扱い**: fetch はコード列挙でなく**カテゴリ**で判定する — 4xx（404 等）/ 5xx / ネットワークタイムアウト / レート制限（429）はいずれも**リトライせず**「取得失敗」リストへ積んで続行。**GitHub 系が `gh` で失敗しても WebFetch にフォールバックしない**（薄い要約で代替するより、欠落として明示する方が週次判定を誤らせない）。取得失敗リストはノート末尾に `## 取得失敗` セクションとしてまとめる。
    - 系統B（当日ノート準備）: 下記「ノート ID 解決ロジック」に従って `_id` と `_rev` を取得する。
 3. **Phase 2 (1回のみ): 一括書き込み**:
@@ -126,7 +126,7 @@ URL fetch と要約生成は記事ごとに独立しているため並列化で�
 ```
 Phase 1 — 並列
   系統A: 全 URL を fetch → 要約 → 読了判定 (5〜10 件ずつバッチ)
-         ※ github.com のリポジトリ/gist は WebFetch ではなく gh で本文取得
+         ※ GitHub 系は gh、その他は ax --md で本文取得（WebFetch はフォールバック）
          ※ 404 / 429 / タイムアウトはリトライせず「取得失敗」リストに追加して続行
   系統B: ノート ID 解決ロジックを実行し _id / _rev / 既存本文を取得
          ※ read-note 失敗時は search-notes にフォールバック
