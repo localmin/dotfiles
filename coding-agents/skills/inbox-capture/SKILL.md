@@ -36,11 +36,13 @@ Chrome ウィンドウから URL を取得し、記事を fetch して要約し�
 
 - ウィンドウが複数ある場合は fzf でインタラクティブ選択
 - macOS + Google Chrome 専用
+- **sandbox下でのosascript失敗に注意**: `list-windows.sh` / `window-urls.sh` は内部で osascript を使い Chrome を操作するが、sandbox環境では Apple Events 通信がブロックされ、典型的な "Operation not permitted" ではなく「アプリケーションは実行されていません (-600)」のような誤解を招くエラーを返すことがある。このエラーだけを見て Chrome 未起動と判断してはならない。まず `dangerouslyDisableSandbox` を付けて再実行し、それでも失敗する場合のみ Chrome 未起動を疑う。
 
 ## 当日まとめノートのフォーマット
 
 - タイトル: `inbox YYYY-MM-DD`(例: `inbox 2026-05-02`)
-- bookId: `inbox`
+- bookId: inbox ノートブックの **book `_id`**（`inbox` という表示名をそのまま渡さないこと）。`create-note` の `bookId` は `^(book:|trash$)` パターンの実IDが必須で、表示名 `inbox` や `book:inbox` では通らない。**`list-notebooks` を呼び、`name == "inbox"` の `_id`（例 `book:51GBqxKj`）を引いて渡す**。この解決は系統B（ノート ID 解決）内で新規作成が確定したときに行う。
+  - 注意: `search-notes` の `book:inbox` は**表示名フィルタ**なのでそのまま使える。`bookId` 引数（`create-note` / `update-note`）だけが実 `_id` を要求する。混同しない。
 - 本文構造:
 
 ```markdown
@@ -90,13 +92,15 @@ Antigravity CLI における Stateless MCP 呼び出しは起動コスト（認�
          - issues / pull / releases / discussions → 対応する `gh issue view` / `gh pr view` / `gh release view` または `gh api`
          - **上記に当てはまらない github 所有ホストのパスも、WebFetch には流さず最も近い `gh api` リソースで取る**（既定ブランチ）。
          - 本文が長い場合は一時ファイルに落として Read で読む。
-       - **その他**（zenn / Qiita / speakerdeck / ニュース等）は **`ax`**（`ax <URL> --md` で本文を markdown 取得。CLAUDE.md「Web 取得・HTML 抽出は `ax` を既定にする」の使用地点側の徹底）。WebFetch は ax で取れないときのフォールバック。
-     - バッチを組むとき、先頭で URL を「GitHub 系 / その他」に振り分けてから流すこと（GitHub 系 → `gh`、その他 → `ax`）。GitHub の本文を `gh` 以外で取ると薄く要約され、後段の週次判定を誤らせる。
+       - **その他（HTML 記事）**（zenn / Qiita / speakerdeck / ニュース等）は **`ax`**（`ax <URL> --md` で本文を markdown 取得。CLAUDE.md「Web 取得・HTML 抽出は `ax` を既定にする」の使用地点側の徹底）。WebFetch は ax で取れないときのフォールバック。
+         - `ax --md` は既定で出力を capped（末尾に「N more hidden — `--all` / `--offset` / `--budget`」の注記が出る）。**要約には既定出力で足りるので `--all` で全文を引かない**（トークン浪費）。既定で足りない長文だけ `--budget <T>` で上限を上げる。
+       - **PDF**（`.pdf` で終わる URL、または `ax --md` に投げたら本文でなく `%PDF-...` の生バイナリが返ってきたもの。**ホストに依存せず content-type で判定する** — TDnet / 論文 / スライド PDF 等）は **`ax --md` で読めない**。`ax <URL> -o <一時ファイル.pdf>` で保存し、**Read ツールの `pages` 引数**で読む（10 ページ超は `pages` 指定必須、1 回最大 20 ページ）。表紙・目次・冒頭数ページで要約に足りることが多いので全ページを読み込まない。
+     - バッチを組むとき、先頭で URL を「GitHub 系 / HTML / PDF」に振り分けてから流すこと（GitHub 系 → `gh`、HTML → `ax --md`、PDF → `ax -o` + Read）。GitHub の本文を `gh` 以外で取ると薄く要約され、後段の週次判定を誤らせる。
      - **取得失敗の扱い**: fetch はコード列挙でなく**カテゴリ**で判定する — 4xx（404 等）/ 5xx / ネットワークタイムアウト / レート制限（429）はいずれも**リトライせず**「取得失敗」リストへ積んで続行。**GitHub 系が `gh` で失敗しても WebFetch にフォールバックしない**（薄い要約で代替するより、欠落として明示する方が週次判定を誤らせない）。取得失敗リストはノート末尾に `## 取得失敗` セクションとしてまとめる。
    - 系統B（当日ノート準備）: 下記「ノート ID 解決ロジック」に従って `_id` と `_rev` を取得する。
 3. **Phase 2 (1回のみ): 一括書き込み**:
    - Phase 1 で揃った全セクションをまとめて当日ノートに追記する。
-   - 新規作成の場合は `create-note` (必ず `status: "active"` を指定) を呼び出し、作成された `_id` をキャッシュ (`~/.cache/inbox-capture/today-note-id`) に保存する。
+   - 新規作成の場合は `create-note` (必ず `status: "active"` を指定、`bookId` は上記「当日まとめノートのフォーマット」の通り `list-notebooks` で引いた実 `_id`) を呼び出し、作成された `_id` をキャッシュ (`~/.cache/inbox-capture/today-note-id`) に保存する。
    - 既存ノートへの追記の場合は `update-note` を呼ぶ。`update-note` には `_id` と `_rev` が必須。
    - 書き込み時の MCP 呼び出しは **1回だけ** にすること。
    - 追記時は `read-note` で取得した既存本文を絶対に消さず、末尾にセクションを追加するだけにする。
@@ -106,17 +110,22 @@ Antigravity CLI における Stateless MCP 呼び出しは起動コスト（認�
 ```
 1. ~/.cache/inbox-capture/today-note-id を読む
 2a. キャッシュあり: read-note を実行
-    - 成功 → _id, _rev, 本文を取得して終了 (MCP 1回)
     - 失敗 (404 / not_found / 削除済み) → キャッシュを破棄し 2b へフォールバック
+    - 成功 → 取得した title が `inbox <今日の日付>` と一致するか必ず検証する
+        - 一致 → _id, _rev, 本文を確定して終了 (MCP 1回)
+        - 不一致（日付をまたいでキャッシュが前日以前のノートを指していた等）
+          → キャッシュを破棄し 2b へフォールバック
 2b. キャッシュなし or フォールバック: search-notes で
     `book:inbox title:"inbox YYYY-MM-DD"` を検索
     - ヒット → _id をキャッシュに保存し、read-note で本文と _rev を取得 (MCP 2回)
-    - ミス  → 新規作成扱い。Phase 2 で create-note を呼ぶ (MCP 1回)
+    - ミス  → 新規作成扱い。**bookId を `list-notebooks` で解決**（`name == "inbox"` の実 `_id`。「当日まとめノートのフォーマット」参照）してから、Phase 2 で create-note を呼ぶ (MCP 1回)
 ```
 
+**read-note の成功は「今日のノートである」ことを保証しない**（ノート自体は削除されず存在し続けるため）。title 検証を省略しないこと。
+
 呼び出し回数まとめ:
-- ベストケース（キャッシュヒット）: read-note + update-note = **2 回**
-- キャッシュミス / 無効: search-notes + read-note + update-note = **3 回**
+- ベストケース（キャッシュヒット かつ title 一致）: read-note + update-note = **2 回**
+- キャッシュミス / 無効 / title 不一致: search-notes + read-note + update-note = **3 回**
 - 当日初回: search-notes + create-note = **2 回**
 
 ## 処理フェーズの設計
@@ -126,10 +135,10 @@ URL fetch と要約生成は記事ごとに独立しているため並列化で�
 ```
 Phase 1 — 並列
   系統A: 全 URL を fetch → 要約 → 読了判定 (5〜10 件ずつバッチ)
-         ※ GitHub 系は gh、その他は ax --md で本文取得（WebFetch はフォールバック）
+         ※ GitHub 系は gh、HTML は ax --md、PDF は ax -o + Read の pages で本文取得（WebFetch はフォールバック）
          ※ 404 / 429 / タイムアウトはリトライせず「取得失敗」リストに追加して続行
   系統B: ノート ID 解決ロジックを実行し _id / _rev / 既存本文を取得
-         ※ read-note 失敗時は search-notes にフォールバック
+         ※ read-note 失敗時、または成功しても title が今日の日付と不一致な場合は search-notes にフォールバック
 
 Phase 2 — 書き込み（1回のみ）
   全セクションをまとめて当日ノートに append
