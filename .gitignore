@@ -14,3 +14,6 @@ dein/
 
 # inbox-capture scratch output at repo root
 /tmp*.md
+
+# Playwright MCP snapshots (tool writes here; cannot target the scratchpad)
+.playwright-mcp/
