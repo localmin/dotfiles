@@ -14,6 +14,8 @@
 - **push 前にレビュー必須**: push 前に必ず `/code-review` と `/security-review` を通す。Claude Code では PreToolUse hook（`pre-push-review-gate.sh`）が未レビューの push をブロックし、ブロック時に hook 自身が手順を提示する。他 CLI では手動で両レビューを実施する。
 - **push / PR 作成前に commit 粒度を整える**: `git log` / `git status` を確認し、巨大な1コミットや無意味な細切れを避けて論理単位に squash / 分割してから実行する。
 - **commit 直前は path を絞らず `git status` で index 全体を確認する**: `git commit` は index 全体を対象にするため、特定 path だけ `git add` しても、その path に絞った `git status` では他に既に stage 済みの無関係な変更を見落とす（理由: 意図しない変更が同一 commit に混入する）。
+- **`git commit` は sandbox 外で実行する**: 署名に 1Password の SSH agent socket が必要で、sandbox 内では `1Password: Could not connect to socket` / `failed to write commit object` で必ず失敗する。`dangerouslyDisableSandbox` を付ける（理由: エラー文が repo 側の問題に見えるため、原因を取り違えて無関係な調査に入りやすい）。
+- **sandbox 内かどうかを `$TMPDIR` で判定しない**: `$TMPDIR` の値は sandbox 外でも変わるので根拠にならない。確かめるなら**書き込みが拒否される副作用**で見る（例: `touch ~/.config/gh/__probe`）（理由: sandbox 外での成功を「その制約は存在しない」の根拠にして誤結論を出した実例がある。sandbox 起因の失敗を 404 や認証切れと混同すると、取得失敗として黙って記録してしまう）。
 - **push 後に codify**: 試行錯誤・ユーザー訂正・非自明な修正があったセッションは、push を区切りに `retrospective-codify` を実行して知見を固定する（propose→approve→write を維持し勝手に書かない。trivial ならゼロ提案でよい）。Claude Code では PostToolUse hook が push 成功時に非ブロックで促す。
 - **GitHub 参照は `gh` コマンド優先**: WebFetch は長文で取得漏れが起きるため、`gh` で取れない情報のみ WebFetch にフォールバックする。
 - **Web 取得・HTML 抽出は `ax` を既定にする**: 非 GitHub の HTTP 取得・記事や docs の読み込み・HTML/JSON からの構造抽出は、`curl` + 書き捨てパーススクリプトや WebFetch ではなく `ax`（AI 向けの curl。ローカル・決定論的・トークン節約）を使う。fetch は status/headers 付きで必ず報告、`--md` で md 読み込み、`--outline` / `--locate` で構造探索、`--row` / `--table` で構造抽出、`--budget` でトークン制御（全 flag は `ax agent-context`）。GitHub 参照は上の bullet どおり `gh`、JS 描画が必須の SPA は playwright / chrome-devtools。curl は Claude Code では deny 済みだが Antigravity / Codex でも同様に ax へ寄せる。
