@@ -19,6 +19,8 @@ Chrome ウィンドウから URL を取得し、記事を fetch して要約し�
   - 短いクエリ: `echo '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"search-notes","arguments":{"keyword":"..."}}}' | op run --env-file=~/dotfiles/coding-agents/inkdrop.op.env -- npx --prefer-offline -y @inkdropapp/mcp-server`
   - 長いテキスト（ノート本文）は後述「1Password 認証爆発の防止」の `jq --rawfile` 形式を必ず使う。
 
+`jq --rawfile` 経路は Antigravity 専用ではない。**どの CLI でも、既存本文が大きいノートへの追記はこの経路を使う**（理由は Phase 2 の「既存本文が大きいときは MCP ツールの `body` 引数を使わない」）。
+
 ## Phase 0: URL 取得
 
 1. ウィンドウ一覧を取得する: `~/dotfiles/coding-agents/skills/inbox-capture/scripts/list-windows.sh`
@@ -27,6 +29,7 @@ Chrome ウィンドウから URL を取得し、記事を fetch して要約し�
 
 - **`window-urls.sh` を引数なしで実行しない**: 引数なしだと fzf に落ちるが、エージェント環境ではターミナルを占有してフリーズする。番号は必ずユーザーに聞いてから渡す。
 - **sandbox 下の osascript 失敗に注意**: 両スクリプトは内部で osascript を使う。sandbox では Apple Events がブロックされ、"Operation not permitted" ではなく「アプリケーションは実行されていません (-600)」という誤解を招くエラーになる。**これを見て Chrome 未起動と判断してはならない**。まず `dangerouslyDisableSandbox` を付けて再実行し、それでも失敗したときだけ未起動を疑う。
+- **ウィンドウ一覧が空（exit 0 で出力なし）なら、残留 playwright Chrome を疑う**: playwright MCP は `--user-data-dir=~/Library/Caches/ms-playwright-mcp/...` で別インスタンスの Chrome を起動する。これが残っていると AppleScript の宛先がそちらへ向き、**`count of windows` が 0 を返す**（エラーにならないので Chrome 未起動にも全ウィンドウ閉鎖にも見える）。判別は `pgrep -f "ms-playwright-mcp/mcp-chrome"` が当たるかで、当たったら playwright の `browser_close` で閉じてから再実行する。**実際にこれで Phase 0 が空振りした**（`osascript` が 0 を返す一方 System Events は 2 ウィンドウを認識、という食い違いが出る）。
 - macOS + Google Chrome 専用。
 
 ## Phase 1（並列）: fetch + 要約 ∥ 当日ノート準備
@@ -50,11 +53,13 @@ Chrome ウィンドウから URL を取得し、記事を fetch して要約し�
 - `status` の意味:
   - `ok` — 本文取得済み、打ち切りの報告なし
   - `partial` — ax が「N more result(s) hidden」を報告した＝**末尾が欠けている**。`-b` を上げて該当 URL だけ取り直す。記事の結論は末尾に多いので、部分取得のまま要約すると読了判定を誤る
-  - `empty` — 取得はできたが本文が空（JS 描画の SPA）。**playwright / chrome-devtools でスナップショットを取り、自分で抽出・要約する**。WebFetch は playwright も使えないときの最終手段（弱いモデルの要約を経由するので忠実度が落ちる）。**playwright はスクラッチパッドへ書けず（許可ルート外）スナップショットを `<repo>/.playwright-mcp/` に残す**ので、使ったらその旨を該当記事の `### メモ` に1行残す（ファイル自体は gitignore 済み）
+  - `empty` — 取得はできたが本文が空（JS 描画の SPA）。**playwright / chrome-devtools でスナップショットを取り、自分で抽出・要約する**。WebFetch は playwright も使えないときの最終手段（弱いモデルの要約を経由するので忠実度が落ちる）。**playwright はスクラッチパッドへ書けず（許可ルート外）スナップショットを `<repo>/.playwright-mcp/` に残す**ので、使ったらその旨を該当記事の `### メモ` に1行残す（ファイル自体は gitignore 済み）。**使い終わったら必ず `browser_close` で閉じる**——閉じ忘れた Chrome インスタンスは次回以降の Phase 0 を壊す（上記「ウィンドウ一覧が空」参照）。subagent に系統A を委譲するときは、この1行を subagent のプロンプトにも入れる（閉じるのは起動した側の責任で、main からは見えない）
   - `failed` — 取得失敗。理由は `NNN.err`
 - **`status` は自動検出の下限であって、十分性の保証ではない**。`ok` でも本文が要約に足りないほど薄いなら（SPA が一部だけ描画した等）、`empty` と同じエスカレーション（playwright / chrome-devtools）に載せる。判断するのは status ではなく読んだ自分。
 - 主な引数: `-b <budget>`（HTML の `ax --budget`、既定 6000）/ `-j <並列数>`（既定 8。特定ホストで 429 が出るなら下げる）/ `-o <出力先>`。URL 総数は 1 回で何件渡してもよい（制御するのは同時接続数）。
 - **GitHub URL を含むときは `dangerouslyDisableSandbox` を付けて実行する**: sandbox は `~/.config/gh` の読み取りを拒否し、`gh` が `failed to read configuration ... operation not permitted` で全滅する。これは 404 でも認証切れでもないので「取得失敗」に積んではならない。
+  - **settings.json の `sandbox.excludedCommands` に `gh *` があっても効かない**: この照合はコマンド文字列の先頭に対して行われるため、`fetch-batch.sh` の**内部から**呼ばれる `gh` は sandbox の外に出ない。スクリプト自体が除外対象に入っていない限り、`gh *` の登録を「だから大丈夫」の根拠にしない。
+  - **`dangerouslyDisableSandbox` が permission 側で拒否されたら、そのまま sandbox 内で走らせて終わりにしない**: 拒否されると GitHub 系だけが静かに失敗する。その場合は ① GitHub 系 URL を別リストに分けて `gh` で個別に取り直す（`gh` 単体なら `excludedCommands` の `gh *` が効く）② それも拒否されたらユーザーに permission 追加を求める、の順で対応し、**取れなかった旨を必ず報告する**。
   - **sandbox 内かどうかは `$TMPDIR` では判断できない**（sandbox 外でも値が変わる）。確かめるなら `touch ~/.config/gh/__probe` が拒否されるかで見る。sandbox 外で `gh` が通ったことを「この制約は存在しない」の根拠にしない——過去に一度、この取り違えで誤った結論が出ている。
 
 **振り分け規則**（スクリプトが URL から自動判定。`--plan <URL>` で fetch せず判定だけ確認でき、回帰テストは `scripts/test-fetch-batch.sh`）:
@@ -107,7 +112,10 @@ Chrome ウィンドウから URL を取得し、記事を fetch して要約し�
 Phase 1 で揃った全セクションをまとめて当日ノートに書く。**MCP 呼び出しは 1 回だけ**。
 
 - 新規作成: `create-note`。**`status: "active"` を必ず指定する**（省略すると `none` になり Inkdrop に表示されない）。作成された `_id` を `~/.cache/inbox-capture/today-note-id` に保存する。
+  - **キャッシュ書き込みは sandbox 内では失敗する**（`~/.cache` は既定の書き込み許可範囲外で `Operation not permitted`）。`dangerouslyDisableSandbox` を付けて実行する。恒久対策は settings.json の `sandbox.filesystem.allowWrite` に `~/.cache/inbox-capture` を追加すること。
 - 追記: `update-note`。引数は `_id` と `_rev`（`noteId` ではない）で、`read-note` の結果から取る。**`read-note` で得た既存本文を絶対に消さず、末尾にセクションを追加するだけにする。**
+  - **既存本文が大きいときは MCP ツールの `body` 引数を使わない**: `update-note` は body 全文を引数に取るため、既存本文を一度 main の文脈へ載せることになる。当日ノートは 20 件ほどで 60,000 字を超え（実測: `read-note` がトークン上限を超えてファイルへ退避された）、これを丸ごと文脈に置くと以降の作業が潰れる。この規模では**全 CLI 共通で** `jq --rawfile` + stdio 経路（後述「1Password 認証爆発の防止」）を使い、既存本文をファイル上で連結して流す——文脈に載せるのは追記する新セクションだけにする。
+  - **退避された `read-note` の結果から `_rev` / `title` を拾うときは pretty-print を前提にする**: 退避 JSON は整形済みなので `"_rev":"` では引っかからない（`"_rev": "` と空白が入る）。`grep -o -E '"(_rev|title)": "[^"]*"'` の形で取る。
 - **`bookId` は inbox ノートブックの実 `_id`**（例 `book:51GBqxKj`）。`^(book:|trash$)` パターン必須で、表示名 `inbox` や `book:inbox` では通らない。`list-notebooks` の `name == "inbox"` から引く。
   - 混同注意: `search-notes` の `book:inbox` は**表示名フィルタ**なのでそのまま使える。実 `_id` を要求するのは `create-note` / `update-note` の `bookId` 引数だけ。
 - **タグは付けない**（週次レビューで「育てる」判定して昇格したときだけ付ける）。
