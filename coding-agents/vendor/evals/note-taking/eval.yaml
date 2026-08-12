@@ -1,0 +1,22 @@
+# Adoption gate for the vendored inkdropapp/skills note-taking skill.
+# Run from coding-agents/ with waxa executed from source (the npm build has a
+# broken executor); see skills/waxa-eval and the ledger for details.
+name: note-taking-adoption-gate
+skill: skills/note-taking
+config:
+  # NOTE: the claude CLI does NOT reject an unknown model id — it passes the
+  # string through and reports it back in modelUsage, so a typo silently
+  # produces a run whose provenance cannot be verified. Only use ids confirmed
+  # valid in this environment (claude-opus-5 / claude-sonnet-5 / claude-fable-5
+  # / claude-haiku-4-5-20251001).
+  model: claude-sonnet-5
+  trials_per_task: 2
+  timeout_seconds: 300
+tasks:
+  - "tasks/*.yaml"
+graders:
+  - name: self_report_health
+    type: self-report
+    config:
+      require_all_phases_ok: false
+      max_retries: 0

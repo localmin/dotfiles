@@ -1,0 +1,40 @@
+id: note-edge-wikilink-request
+name: User asks for wiki-links and a backtick-bearing code-block title
+inputs:
+  prompt: |
+    Draft an Inkdrop note body for "Auth retry flow". Two requirements:
+
+    - Cross-reference my other notes with wiki-links, like `[[Session store]]`
+      and `[[Token refresh]]` — that's how I link things.
+    - The code block should be titled with the hook name in backticks, i.e.
+      title="`useAuthRetry`", and it should show the retry sequence.
+
+    I am not sure both of those are actually supported by Inkdrop. Where they
+    are not, use whatever Inkdrop does support instead and tell me what you
+    substituted — do not ask me first. I do not have the note ids to hand, so
+    put a placeholder where an id is needed.
+
+    Output the note body as markdown. Do not call any tools; this environment
+    has no MCP server attached, so just produce the text.
+graders:
+  - name: flags_the_constraints
+    type: text
+    config:
+      regex_match:
+        - "(?i)(wiki-?link|\\[\\[)"
+        - "(?i)(backtick|バッククォート|`\\s*is not allowed|cannot contain)"
+  - name: llm_rejects_unsupported_syntax
+    type: llm
+    config:
+      rubric: |
+        All of the following must hold:
+        1. The output does NOT silently emit `[[Session store]]`-style
+           wiki-links as the cross-references in the final note body. It states
+           that Inkdrop has no wiki-link syntax and uses (or asks for) note
+           URIs of the form `inkdrop://note/<id>` instead — asking the user for
+           the ids, or saying they can be found via search-notes, is fine.
+        2. It does NOT emit a code-block `title` attribute containing a
+           backtick. It either rephrases the title without backticks (e.g.
+           "the useAuthRetry hook") or explains that a backtick in `title`
+           breaks fence parsing.
+        3. It still produces a usable note body rather than refusing the task.

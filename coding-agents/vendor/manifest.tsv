@@ -25,3 +25,14 @@ REPO=https://github.com/ast-grep/agent-skill
 PIN=577f4d4507678f2c8cee150fae25e6ce309f70b1
 LICENSE=none (no LICENSE file upstream; payload is gitignored, not redistributed)
 ast-grep	ast-grep/skills/ast-grep
+
+# Fifth source: Inkdrop's own agent skills (upstream companion to the Inkdrop MCP
+# server). Only note-taking is adopted: it documents Inkdrop's markdown dialect
+# (code-block attributes, mermaid, KaTeX, inkdrop://note/<id> links) that the
+# first-party inbox-capture / weekly-review / monthly-summary skills never state.
+# fill-out-template is NOT adopted: it duplicates the first-party plan-doc /
+# planning-workflow lane (plans live in .claude/plans/, not in Inkdrop templates).
+REPO=https://github.com/inkdropapp/skills
+PIN=067b7796649fcd56c0023eb2b5dfee68e984fcbd
+LICENSE=none (no LICENSE file upstream; README acknowledges it; payload is gitignored, not redistributed)
+note-taking	skills/note-taking

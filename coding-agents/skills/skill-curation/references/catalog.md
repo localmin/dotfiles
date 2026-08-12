@@ -69,6 +69,15 @@
 | ✅ | optimizing-descriptions | `mizchi/skills` | `meta/optimizing-descriptions` | description(トリガー)精度の調整 |
 | ✅ | skill-creator | (plugin) | `claude-plugins-official` | 新規 skill の作成(公式プラグイン) |
 
+## Inkdrop パイプライン（導入済み）
+| | skill | repo | upstream path | 用途 |
+|---|---|---|---|---|
+| ✅ | note-taking | `inkdropapp/skills` | `skills/note-taking` | Inkdrop の markdown 方言(コードブロック属性 / mermaid / KaTeX / `inkdrop://note/<id>` リンク) |
+| ⛔ | fill-out-template | `inkdropapp/skills` | `skills/fill-out-template` | 不採用: 計画は `.claude/plans/` に置く方針で `plan-doc` / `planning-workflow` と重複 |
+> 注: `note-taking` は model-invoked で、Inkdrop ノートを書くたび発火する。図(mermaid)を能動的に
+> 勧めるので、分量を絞る skill 側で優先順位を明示すること(inbox-capture の日次要約が該当)。
+> upstream に LICENSE が無い(README も認めている)。payload は gitignore で再配布しない。
+
 ## Deliberately not in catalog（この stack に不要 — Phase 2 にも上げない）
 | 軸 | 理由 |
 |---|---|

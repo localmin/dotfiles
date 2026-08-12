@@ -1,0 +1,363 @@
+eval: note-taking-adoption-gate
+skill: skills/note-taking
+patterns:
+  - rule: >-
+      When a scenario's stated requirement contradicts a skill's explicit
+      constraint, the skill's constraint wins. Apply the correct mechanism and
+      document the substitution.
+    seen_in:
+      - 1
+    representative_issue: >-
+      The scenario requested wiki-link syntax (`[[Session store]]`, `[[Token
+      refresh]]`) for cross-referencing notes.
+  - rule: >-
+      When a scenario requests a code-fence attribute value that the skill
+      explicitly prohibits, substitute the closest valid form and note the
+      reason.
+    seen_in:
+      - 1
+    representative_issue: >-
+      The scenario requested `title="\`useAuthRetry\`"` (backtick-wrapped hook
+      name inside a title attribute).
+  - rule: >-
+      When a scenario requirement directly contradicts a skill constraint, the
+      skill constraint wins; rephrase or substitute to comply with the skill,
+      and surface the conflict to the caller.
+    seen_in:
+      - 1
+    representative_issue: >-
+      The scenario asked for wiki-links (`[[Session store]]`, `[[Token
+      refresh]]`).
+  - rule: >-
+      When a scenario specifies an attribute value that the skill prohibits for
+      syntactic reasons, apply the skill's prescribed rephrasing and note the
+      substitution.
+    seen_in:
+      - 1
+    representative_issue: >-
+      The scenario asked for title="`useAuthRetry`" (backtick inside the title
+      value).
+  - rule: >-
+      When a scenario's stated requirement conflicts with an explicit
+      prohibition in the governing skill, follow the skill rule and document the
+      deviation — do not silently implement the prohibited form.
+    seen_in:
+      - 2
+    representative_issue: >-
+      The scenario requested wiki-link syntax (`[[Session store]]`, `[[Token
+      refresh]]`) for cross-referencing notes.
+  - rule: >-
+      When a scenario specifies a literal attribute value that the skill marks
+      as invalid, substitute a skill-compliant equivalent (rephrase without the
+      prohibited character) and note the substitution.
+    seen_in:
+      - 2
+    representative_issue: >-
+      The scenario requested `title="\`useAuthRetry\`"` (backtick-wrapped hook
+      name in the title attribute).
+  - rule: >-
+      When a scenario requirement directly contradicts a skill-level constraint,
+      follow the skill and substitute the compliant form, reporting the
+      substitution.
+    seen_in:
+      - 2
+    representative_issue: >-
+      Scenario required wiki-link syntax `[[Session store]]` / `[[Token
+      refresh]]`.
+  - rule: >-
+      When a scenario requests a construct the skill forbids with an explicit
+      workaround, apply the workaround and document the change.
+    seen_in:
+      - 2
+    representative_issue: >-
+      Scenario required `title="`useAuthRetry`"` (backtick inside the title
+      attribute).
+  - rule: >-
+      When a scenario's stated requirement conflicts with the skill's documented
+      constraint, the skill's rule takes precedence; document the deviation
+      rather than silently complying with the conflicting request.
+    seen_in:
+      - 3
+    representative_issue: >-
+      The scenario requested `[[Session store]]` and `[[Token refresh]]`
+      wiki-link syntax.
+  - rule: >-
+      When the scenario specifies a syntactically invalid attribute value that
+      the skill forbids, apply the skill's prescribed rephrasing rule and note
+      the substitution.
+    seen_in:
+      - 3
+    representative_issue: >-
+      The scenario requested `title="\`useAuthRetry\`"` (backticks inside the
+      title value).
+  - rule: >-
+      When scenario requirements conflict with explicit skill constraints,
+      follow the skill and surface the conflict in the output rather than
+      silently complying with the scenario.
+    seen_in:
+      - 3
+    representative_issue: >-
+      The scenario requests wiki-links (`[[Session store]]`, `[[Token
+      refresh]]`) and a backtick-containing title (`title="`useAuthRetry`"`).
+  - rule: >-
+      When a skill step requires a tool that is unavailable, use a
+      clearly-labelled placeholder and instruct the user how to resolve it.
+    seen_in:
+      - 3
+    representative_issue: >-
+      No MCP server is available, so real note IDs for "Session store" and
+      "Token refresh" cannot be resolved.
+  - rule: >-
+      When a scenario's literal request violates a documented tool/format
+      constraint, follow the constraint and state the substitution explicitly
+      rather than attempting a literal but broken rendering.
+    seen_in:
+      - 5
+    representative_issue: >-
+      The scenario says the code block should be "titled with the hook name in
+      backticks, i.e. title="`useAuthRetry`"", but the skill states a title
+      value cannot contain a backtick.
+  - rule: >-
+      When required identifiers are unavailable and the instructions permit a
+      placeholder, use an unambiguous, clearly-labeled placeholder token rather
+      than fabricating a plausible-looking id.
+    seen_in:
+      - 5
+    representative_issue: No note ids were available for the wiki-link targets.
+  - rule: >-
+      When a skill explicitly documents a hard constraint that conflicts with a
+      stated user requirement, and the user has pre-authorized silent
+      substitution, apply the skill's documented workaround directly and
+      disclose the substitution inline — don't re-litigate it as a question.
+    seen_in:
+      - 6
+    representative_issue: >-
+      The scenario asked for `title="` `useAuthRetry` `"` (backticks inside a
+      quoted title attribute), which the skill explicitly says breaks fence
+      parsing.
+  - rule: >-
+      When a scenario explicitly names a syntax the reference doc says is
+      unsupported, and pre-authorizes silent substitution, apply the doc's
+      documented alternative directly rather than flagging it as a blocking
+      question.
+    seen_in:
+      - 8
+    representative_issue: >-
+      Scenario asked for wiki-links `[[Session store]]` / `[[Token refresh]]`,
+      which the skill explicitly says Inkdrop doesn't support.
+  - rule: >-
+      When a doc gives an explicit rephrasing example for a known-broken syntax,
+      mirror that example's pattern rather than inventing an unrelated
+      substitution.
+    seen_in:
+      - 8
+    representative_issue: >-
+      Scenario asked for a code-block title containing backticks (``
+      `useAuthRetry` ``), which the skill says breaks fence parsing.
+  - rule: >-
+      When a skill lacks a documented placeholder convention for a missing
+      identifier, invent a clearly-marked, unambiguous placeholder (e.g.
+      `<note-id>`) and state explicitly that it needs substitution, rather than
+      guessing at an undocumented syntax.
+    seen_in:
+      - 8
+    representative_issue: >-
+      The scenario asked for wiki-links "like `[[Session store]]` and `[[Token
+      refresh]]`" but skill says Inkdrop has no wiki-link syntax at all — only
+      single specific note IDs via `inkdrop://note/<id>`, with no documented
+      placeholder-id convention.
+  - rule: >-
+      When a scenario asks for an explanatory note body but omits the underlying
+      bug/fix narrative, either flag the gap explicitly in the deliverable
+      (e.g., mark inferred prose as inferred) or request the missing narrative
+      before drafting factual-sounding explanation text.
+    seen_in:
+      - 8
+    representative_issue: >-
+      The skill's `commit`/`url` guidance couldn't be applied because the
+      scenario states the code is on an uncommitted local branch, so I used
+      `filename`+`line` per the skill's explicit preference rule for that case;
+      the "fix" explanation itself (why debounce/loading-state matters) isn't
+      given in the scenario, so I inferred plausible rationale from the code and
+      title rather than from verified facts.
+iterations:
+  - iter: 1
+    timestamp: '2026-08-11T18:41:10.680Z'
+    overall_pass_rate: 1
+    new_unclear_count: 4
+    reseen_count: 0
+    total_unclear: 4
+    new_rules:
+      - >-
+        When a scenario's stated requirement contradicts a skill's explicit
+        constraint, the skill's constraint wins. Apply the correct mechanism and
+        document the substitution.
+      - >-
+        When a scenario requests a code-fence attribute value that the skill
+        explicitly prohibits, substitute the closest valid form and note the
+        reason.
+      - >-
+        When a scenario requirement directly contradicts a skill constraint, the
+        skill constraint wins; rephrase or substitute to comply with the skill,
+        and surface the conflict to the caller.
+      - >-
+        When a scenario specifies an attribute value that the skill prohibits
+        for syntactic reasons, apply the skill's prescribed rephrasing and note
+        the substitution.
+    reseen_rules: []
+  - iter: 2
+    timestamp: '2026-08-11T18:43:13.858Z'
+    overall_pass_rate: 1
+    new_unclear_count: 4
+    reseen_count: 0
+    total_unclear: 4
+    new_rules:
+      - >-
+        When a scenario's stated requirement conflicts with an explicit
+        prohibition in the governing skill, follow the skill rule and document
+        the deviation — do not silently implement the prohibited form.
+      - >-
+        When a scenario specifies a literal attribute value that the skill marks
+        as invalid, substitute a skill-compliant equivalent (rephrase without
+        the prohibited character) and note the substitution.
+      - >-
+        When a scenario requirement directly contradicts a skill-level
+        constraint, follow the skill and substitute the compliant form,
+        reporting the substitution.
+      - >-
+        When a scenario requests a construct the skill forbids with an explicit
+        workaround, apply the workaround and document the change.
+    reseen_rules: []
+  - iter: 3
+    timestamp: '2026-08-11T18:45:25.422Z'
+    overall_pass_rate: 1
+    new_unclear_count: 4
+    reseen_count: 0
+    total_unclear: 4
+    new_rules:
+      - >-
+        When a scenario's stated requirement conflicts with the skill's
+        documented constraint, the skill's rule takes precedence; document the
+        deviation rather than silently complying with the conflicting request.
+      - >-
+        When the scenario specifies a syntactically invalid attribute value that
+        the skill forbids, apply the skill's prescribed rephrasing rule and note
+        the substitution.
+      - >-
+        When scenario requirements conflict with explicit skill constraints,
+        follow the skill and surface the conflict in the output rather than
+        silently complying with the scenario.
+      - >-
+        When a skill step requires a tool that is unavailable, use a
+        clearly-labelled placeholder and instruct the user how to resolve it.
+    reseen_rules: []
+  - iter: 4
+    timestamp: '2026-08-11T18:48:29.709Z'
+    overall_pass_rate: 1
+    new_unclear_count: 0
+    reseen_count: 0
+    total_unclear: 0
+    new_rules: []
+    reseen_rules: []
+  - iter: 5
+    timestamp: '2026-08-11T18:49:54.084Z'
+    overall_pass_rate: 1
+    new_unclear_count: 2
+    reseen_count: 0
+    total_unclear: 2
+    new_rules:
+      - >-
+        When a scenario's literal request violates a documented tool/format
+        constraint, follow the constraint and state the substitution explicitly
+        rather than attempting a literal but broken rendering.
+      - >-
+        When required identifiers are unavailable and the instructions permit a
+        placeholder, use an unambiguous, clearly-labeled placeholder token
+        rather than fabricating a plausible-looking id.
+    reseen_rules: []
+  - iter: 6
+    timestamp: '2026-08-11T18:51:14.566Z'
+    overall_pass_rate: 1
+    new_unclear_count: 1
+    reseen_count: 0
+    total_unclear: 1
+    new_rules:
+      - >-
+        When a skill explicitly documents a hard constraint that conflicts with
+        a stated user requirement, and the user has pre-authorized silent
+        substitution, apply the skill's documented workaround directly and
+        disclose the substitution inline — don't re-litigate it as a question.
+    reseen_rules: []
+  - iter: 7
+    timestamp: '2026-08-11T18:53:04.178Z'
+    overall_pass_rate: 1
+    new_unclear_count: 0
+    reseen_count: 0
+    total_unclear: 0
+    new_rules: []
+    reseen_rules: []
+  - iter: 8
+    timestamp: '2026-08-11T18:54:29.334Z'
+    overall_pass_rate: 1
+    new_unclear_count: 4
+    reseen_count: 0
+    total_unclear: 4
+    new_rules:
+      - >-
+        When a scenario explicitly names a syntax the reference doc says is
+        unsupported, and pre-authorizes silent substitution, apply the doc's
+        documented alternative directly rather than flagging it as a blocking
+        question.
+      - >-
+        When a doc gives an explicit rephrasing example for a known-broken
+        syntax, mirror that example's pattern rather than inventing an unrelated
+        substitution.
+      - >-
+        When a skill lacks a documented placeholder convention for a missing
+        identifier, invent a clearly-marked, unambiguous placeholder (e.g.
+        `<note-id>`) and state explicitly that it needs substitution, rather
+        than guessing at an undocumented syntax.
+      - >-
+        When a scenario asks for an explanatory note body but omits the
+        underlying bug/fix narrative, either flag the gap explicitly in the
+        deliverable (e.g., mark inferred prose as inferred) or request the
+        missing narrative before drafting factual-sounding explanation text.
+    reseen_rules: []
+convergence:
+  status: accuracy-converged-with-residual
+  rationale: |
+    NOT converged under the strict criterion (two consecutive iterations with
+    zero unclear points). Recorded as-is rather than rounded up.
+
+    Accuracy: 100% in every iteration, 32/32 trials (2 tasks x 2 trials x 8
+    iterations). No grader ever failed; every regex and llm rubric passed,
+    including the ones asserting inkdrop://note/<id> links, filename+line
+    code-fence attributes, absence of commit=/url= on uncommitted code,
+    refusal of [[wiki-link]] syntax, and refusal of a backtick inside a
+    code-fence title.
+
+    Unclear points per iteration: iters 1-3 = 4,4,4; iters 4-8 = 0,2,1,0,4.
+    Every unclear point is scenario-derived, never skill-derived: they restate
+    "the scenario asked for something the skill forbids, so I substituted and
+    disclosed it" and "no note id was available, so I used a placeholder".
+    Both are properties of the edge task, which deliberately embeds a conflict
+    with the skill in order to test whether the skill wins. None was ever
+    re-seen (reseen_count is 0 in all 8 iterations), i.e. the executor phrases
+    the same two observations differently each run rather than surfacing new
+    gaps. Removing the conflict from the scenario would drive unclear to zero
+    but would also remove what the edge task exists to test.
+
+    Two setup defects were found and fixed mid-gate; iters 1-3 are superseded:
+      - config.model was claude-sonnet-4-6, which does not exist in this
+        environment. The claude CLI does NOT reject an unknown model id: it
+        passes the string through and echoes it back in modelUsage, so the run
+        completes and its provenance is unverifiable. Iters 4+ use
+        claude-sonnet-5. The test-driven-development gate names the same
+        invalid id and has the same provenance problem in its record.
+      - the edge task did not say how to resolve the conflict it embedded,
+        which manufactured unclear points. Iters 4+ pre-authorize substitution
+        in the prompt.
+
+    Adopted at inkdropapp/skills@067b7796649fcd56c0023eb2b5dfee68e984fcbd.
+    Upstream ships no LICENSE file (its README says so); the payload is
+    gitignored and not redistributed, same handling as ast-grep/agent-skill.

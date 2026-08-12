@@ -1,0 +1,43 @@
+id: note-typical-cross-link
+name: Compose an Inkdrop note body that links to another note and shows code
+inputs:
+  prompt: |
+    Draft the body of an Inkdrop note titled "Debounce in the tag sidebar".
+    It should explain the fix and point at two things:
+
+    - a related note I already have, whose id is `note:tFz4sfEw`, titled
+      "Sidebar rendering notes"
+    - the code that changed, which is line 70 of `src/index.ts` in an
+      uncommitted local branch:
+
+      ```
+      const filteredTags = workspace.loading ? {} : stats?.tags || {};
+      ```
+
+    Output the note body as markdown. Do not call any tools; this environment
+    has no MCP server attached, so just produce the text.
+graders:
+  - name: uses_note_uri
+    type: text
+    config:
+      regex_match:
+        - "inkdrop://note/tFz4sfEw"
+  - name: uses_codeblock_attributes
+    type: text
+    config:
+      regex_match:
+        - "filename=\"src/index\\.ts\""
+        - "line=70"
+  - name: llm_dialect_correct
+    type: llm
+    config:
+      rubric: |
+        All of the following must hold for the produced note body:
+        1. The related note is linked as a markdown link whose target is
+           `inkdrop://note/tFz4sfEw` — the `note:` prefix is dropped and it is
+           NOT written as a wiki-link (`[[...]]`) or as a bare `note:` id.
+        2. The code snippet is a fenced block whose info string carries the
+           language plus `filename` and `line` attributes pointing at
+           src/index.ts line 70.
+        3. It does NOT attach `commit=` or `url=` GitHub permalink attributes,
+           since the code is uncommitted and such a link would be dead.
