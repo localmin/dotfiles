@@ -90,22 +90,36 @@ Chrome ウィンドウから URL を取得し、記事を fetch して要約し�
 
 「今日の日付」は**セッションに与えられた日付を唯一の基準にする**（`date` を引き直さない。日付をまたいで再開したとき、両者が食い違うと分岐が揺れる）。
 
-```
-1. ~/.cache/inbox-capture/today-note-id を読む
-2a. キャッシュあり: read-note を実行
-    - 「ノートが無い」と確定した失敗 (404 / not_found / 削除済み) → キャッシュを破棄し 2b へ
-    - 呼び出し自体が完了しなかった失敗 (タイムアウト / 認証エラー / MCP 接続断)
-      → キャッシュは破棄しない（ノートが消えた証拠ではない）。1回だけ再試行し、
-        それでも駄目なら中断してユーザーに報告する
-    - 成功 → title が `inbox <今日の日付>` と一致するか必ず検証する
-        - 一致   → _id, _rev, 本文を確定して終了 (MCP 1回)
-        - 不一致 → 日付をまたいで前日以前を指している。キャッシュを破棄し 2b へ
-2b. search-notes で `book:inbox title:"inbox YYYY-MM-DD"` を検索
-    - ヒット → _id をキャッシュに保存し、read-note で本文と _rev を取得 (MCP 2回)
-    - ミス   → 新規作成扱い。list-notebooks で bookId を解決し、Phase 2 で create-note (MCP 1回)
+**キャッシュ検証に MCP ツールの `read-note` を直接使わない。`scripts/note-head.sh` を使う**:
+
+```bash
+~/dotfiles/coding-agents/skills/inbox-capture/scripts/note-head.sh \
+  -o <出力ディレクトリ> --expect-title "inbox <今日の日付>" <キャッシュの note:ID>
 ```
 
-**`read-note` の成功は「今日のノートである」ことを保証しない**（ノートは削除されず残り続けるため）。title 検証を省略しない。
+このスクリプトは stdio 経路で `read-note` を呼び、**本文を `<出力先>/body.md` に書いて標準出力には出さない**。文脈に載るのは `id` / `rev` / `title` / `bookId` / `chars` / `body_path` の6行だけ。title 検証もスクリプト側が行い、結果を exit code で返す:
+
+| exit | 意味 | 次の動作 |
+|---|---|---|
+| 0 | 今日のノート。`rev` と `body_path` が確定 | Phase 2 の追記へ（MCP 1回） |
+| 3 | ノートは在るが title が別日 | キャッシュを破棄し 2b へ |
+| 4 | ノートが無い（404 / not_found） | キャッシュを破棄し 2b へ |
+| 5 | 呼び出しが完了しなかった（タイムアウト / 認証 / 接続断） | **キャッシュを破棄しない**。1回だけ再試行し、駄目なら中断してユーザーに報告 |
+| 2 | 引数エラー | 呼び出しを直す |
+
+- **`read-note` を MCP ツールとして直接呼ぶと既存本文が丸ごと文脈に載る**。当日ノートは 20 件ほどで 60,000 字を超えるので、これで以降の作業が潰れる（実測: 前日ノートの検証で 23,743 字を読み込んで浪費した）。title を確かめたいだけなら本文は要らない。
+- **`read-note` の成功は「今日のノートである」ことを保証しない**（ノートは削除されず残り続けるため）。`--expect-title` を省略しない。
+- 1Password 認証が走るため sandbox 外で実行する（`dangerouslyDisableSandbox`）。
+
+キャッシュが無い / 破棄した場合（2b）:
+
+```
+search-notes で `book:inbox title:"inbox YYYY-MM-DD"` を検索
+  - ヒット → _id をキャッシュに保存し、note-head.sh で本文と _rev を取得
+  - ミス   → 新規作成扱い。list-notebooks で bookId を解決し、Phase 2 で create-note
+```
+
+回帰テストは `scripts/test-note-head.sh`（MCP 呼び出しを stub するのでオフライン・認証なしで回る。`TMPDIR` が書けない環境では `TEST_TMPDIR=<書ける場所>` を渡す）。
 
 ## Phase 2（1回のみ）: 一括書き込み
 
@@ -113,9 +127,9 @@ Phase 1 で揃った全セクションをまとめて当日ノートに書く。
 
 - 新規作成: `create-note`。**`status: "active"` を必ず指定する**（省略すると `none` になり Inkdrop に表示されない）。作成された `_id` を `~/.cache/inbox-capture/today-note-id` に保存する。
   - **キャッシュ書き込みは sandbox 内では失敗する**（`~/.cache` は既定の書き込み許可範囲外で `Operation not permitted`）。`dangerouslyDisableSandbox` を付けて実行する。恒久対策は settings.json の `sandbox.filesystem.allowWrite` に `~/.cache/inbox-capture` を追加すること。
-- 追記: `update-note`。引数は `_id` と `_rev`（`noteId` ではない）で、`read-note` の結果から取る。**`read-note` で得た既存本文を絶対に消さず、末尾にセクションを追加するだけにする。**
-  - **既存本文が大きいときは MCP ツールの `body` 引数を使わない**: `update-note` は body 全文を引数に取るため、既存本文を一度 main の文脈へ載せることになる。当日ノートは 20 件ほどで 60,000 字を超え（実測: `read-note` がトークン上限を超えてファイルへ退避された）、これを丸ごと文脈に置くと以降の作業が潰れる。この規模では**全 CLI 共通で** `jq --rawfile` + stdio 経路（後述「1Password 認証爆発の防止」）を使い、既存本文をファイル上で連結して流す——文脈に載せるのは追記する新セクションだけにする。
-  - **退避された `read-note` の結果から `_rev` / `title` を拾うときは pretty-print を前提にする**: 退避 JSON は整形済みなので `"_rev":"` では引っかからない（`"_rev": "` と空白が入る）。`grep -o -E '"(_rev|title)": "[^"]*"'` の形で取る。
+- 追記: `update-note`。引数は `_id` と `_rev`（`noteId` ではない）で、系統B の `note-head.sh` が出力した `id` / `rev` をそのまま使う。**既存本文を絶対に消さず、末尾にセクションを追加するだけにする。**
+  - **既存本文が大きいときは MCP ツールの `body` 引数を使わない**: `update-note` は body 全文を引数に取るため、既存本文を一度 main の文脈へ載せることになる。当日ノートは 20 件ほどで 60,000 字を超え、これを丸ごと文脈に置くと以降の作業が潰れる。この規模では**全 CLI 共通で** `jq --rawfile` + stdio 経路（後述「1Password 認証爆発の防止」）を使う。
+  - **連結はファイル上で行う**: 新セクションだけをファイルへ書き、`cat <body_path> <新セクション> > <連結先>` で繋いでから `jq -nc --rawfile body <連結先>` に渡す。`body_path` は `note-head.sh` が書いた既存本文で、**一度も文脈に載っていない**——この経路を守る限り載せずに済む。文脈に置くのは追記する新セクションだけ。
 - **`bookId` は inbox ノートブックの実 `_id`**（例 `book:51GBqxKj`）。`^(book:|trash$)` パターン必須で、表示名 `inbox` や `book:inbox` では通らない。`list-notebooks` の `name == "inbox"` から引く。
   - 混同注意: `search-notes` の `book:inbox` は**表示名フィルタ**なのでそのまま使える。実 `_id` を要求するのは `create-note` / `update-note` の `bookId` 引数だけ。
 - **タグは付けない**（週次レビューで「育てる」判定して昇格したときだけ付ける）。
