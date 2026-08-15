@@ -36,3 +36,23 @@ REPO=https://github.com/inkdropapp/skills
 PIN=067b7796649fcd56c0023eb2b5dfee68e984fcbd
 LICENSE=none (no LICENSE file upstream; README acknowledges it; payload is gitignored, not redistributed)
 note-taking	skills/note-taking
+
+# Sixth source: mattpocock/skills — relentless planning interview + ADR/glossary.
+# grill-with-docs = /grilling + /domain-modeling, so the two entry points
+# (grill-me, grill-with-docs, both slash-command-only via disable-model-invocation)
+# require the two engine skills (grilling, domain-modeling, both auto-invocable)
+# to be vendored alongside. domain-modeling ships ADR-FORMAT.md / CONTEXT-FORMAT.md
+# in its dir (copied as-is). The design-doc gap (2-3 approaches / spec self-review /
+# scope decomposition, which superpowers/brainstorming would enforce) is left open
+# on purpose: absorbed lightly via a design section in the first-party plan-doc
+# template; a dedicated design skill is deferred until the need is real.
+# Adopted 2026-08-16 by explicit user direction after in-conversation rubric check;
+# waxa eval skipped (these are interactive interview skills — the executor eval loop
+# is ill-suited to them).
+REPO=https://github.com/mattpocock/skills
+PIN=8b78b531ab965735c5dc74f6f7a219e1e37326df
+LICENSE=MIT
+grilling	skills/productivity/grilling
+grill-me	skills/productivity/grill-me
+grill-with-docs	skills/engineering/grill-with-docs
+domain-modeling	skills/engineering/domain-modeling
