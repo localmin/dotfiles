@@ -1,0 +1,9 @@
+id: no-dispatch-in-update-listener-ts
+valid:
+  - "EditorView.inputHandler.of((view: EditorView, from: number, to: number, text: string) => { view.dispatch({ changes }) })"
+  - "EditorView.updateListener.of((update: ViewUpdate) => { console.log(update.docChanged) })"
+  - "EditorView.updateListener.of(() => { env.commands.dispatch(document.body, 'core:save-note') })"
+  - "view.dispatch({ changes: { from, to, insert } })"
+invalid:
+  - "EditorView.updateListener.of((update: ViewUpdate) => { update.view.dispatch({ changes }) })"
+  - "EditorView.updateListener.of((u: ViewUpdate) => { if (u.docChanged) view.dispatch({ selection }) })"

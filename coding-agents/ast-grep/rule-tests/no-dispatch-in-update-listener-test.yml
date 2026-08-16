@@ -1,0 +1,13 @@
+id: no-dispatch-in-update-listener
+valid:
+  # The supported way to react to typed input.
+  - "EditorView.inputHandler.of((view, from, to, text) => { view.dispatch({ changes }) })"
+  # An update listener that only reads.
+  - "EditorView.updateListener.of(update => { console.log(update.docChanged) })"
+  # Inkdrop's command bus, not a CodeMirror transaction.
+  - "EditorView.updateListener.of(() => { env.commands.dispatch(document.body, 'core:save-note') })"
+  # Dispatching outside any update listener.
+  - "view.dispatch({ changes: { from, to, insert } })"
+invalid:
+  - "EditorView.updateListener.of(update => { update.view.dispatch({ changes }) })"
+  - "EditorView.updateListener.of(u => { if (u.docChanged) view.dispatch({ selection }) })"

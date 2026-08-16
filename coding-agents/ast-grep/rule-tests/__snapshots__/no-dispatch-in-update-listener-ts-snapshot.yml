@@ -1,0 +1,22 @@
+id: no-dispatch-in-update-listener-ts
+snapshots:
+  'EditorView.updateListener.of((u: ViewUpdate) => { if (u.docChanged) view.dispatch({ selection }) })':
+    labels:
+    - source: 'EditorView.updateListener.of((u: ViewUpdate) => { if (u.docChanged) view.dispatch({ selection }) })'
+      style: primary
+      start: 0
+      end: 99
+    - source: view.dispatch({ selection })
+      style: secondary
+      start: 68
+      end: 96
+  'EditorView.updateListener.of((update: ViewUpdate) => { update.view.dispatch({ changes }) })':
+    labels:
+    - source: 'EditorView.updateListener.of((update: ViewUpdate) => { update.view.dispatch({ changes }) })'
+      style: primary
+      start: 0
+      end: 91
+    - source: update.view.dispatch({ changes })
+      style: secondary
+      start: 55
+      end: 88

@@ -1,0 +1,21 @@
+# CodeMirror 6 forbids dispatching a transaction while an update is in flight.
+# Origin: porting inkdrop-date-command to CodeMirror 6 (2026-08).
+id: no-dispatch-in-update-listener
+language: JavaScript
+severity: error
+rule:
+  pattern: EditorView.updateListener.of($$$)
+  has:
+    stopBy: end
+    all:
+      - pattern: $RECV.dispatch($$$)
+      # `commands.dispatch` is Inkdrop's command bus, not a CodeMirror
+      # transaction, so it is safe to call from an update listener.
+      - not:
+          pattern: $ANY.commands.dispatch($$$)
+message: Do not dispatch a transaction from an update listener.
+note: |
+  CodeMirror throws when a transaction is dispatched mid-update, and the
+  exception disables the whole extension rather than surfacing at the call
+  site. Use EditorView.inputHandler when reacting to typed input, or defer the
+  dispatch out of the update cycle.

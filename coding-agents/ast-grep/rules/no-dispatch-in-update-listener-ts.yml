@@ -1,0 +1,19 @@
+# TypeScript counterpart of no-dispatch-in-update-listener. ast-grep binds one
+# language per rule, and CodeMirror 6 extensions are commonly written in both.
+id: no-dispatch-in-update-listener-ts
+language: TypeScript
+severity: error
+rule:
+  pattern: EditorView.updateListener.of($$$)
+  has:
+    stopBy: end
+    all:
+      - pattern: $RECV.dispatch($$$)
+      - not:
+          pattern: $ANY.commands.dispatch($$$)
+message: Do not dispatch a transaction from an update listener.
+note: |
+  CodeMirror throws when a transaction is dispatched mid-update, and the
+  exception disables the whole extension rather than surfacing at the call
+  site. Use EditorView.inputHandler when reacting to typed input, or defer the
+  dispatch out of the update cycle.

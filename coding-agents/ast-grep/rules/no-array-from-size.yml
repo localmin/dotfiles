@@ -1,0 +1,9 @@
+# Seed rule proving the codify pipeline works end to end.
+# Origin: retrospective-codify skill, example 1.
+id: no-array-from-size
+language: TypeScript
+severity: warning
+rule:
+  pattern: Array.from($COLL).length
+message: Use .size for Set/Map size instead of Array.from(...).length.
+note: Array.from allocates an intermediate array just to count elements.

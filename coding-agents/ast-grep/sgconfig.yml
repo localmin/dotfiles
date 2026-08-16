@@ -1,0 +1,7 @@
+# Global ast-grep rules shared across all projects (fed by retrospective-codify).
+# Run: ast-grep scan -c ~/dotfiles/coding-agents/ast-grep/sgconfig.yml <path>
+# Test: ast-grep test -c ~/dotfiles/coding-agents/ast-grep/sgconfig.yml
+ruleDirs:
+  - rules
+testConfigs:
+  - testDir: rule-tests

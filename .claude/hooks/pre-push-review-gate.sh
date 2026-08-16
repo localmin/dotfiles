@@ -47,6 +47,26 @@ gitdir="$(git -C "$root" rev-parse --git-dir 2>/dev/null || true)"
 head="$(git -C "$root" rev-parse HEAD 2>/dev/null || true)"
 marker="$gitdir/review-ok"
 
+# Global ast-grep gate (rules codified via retrospective-codify).
+# error-severity findings block the push (scan exits non-zero);
+# warnings are printed for awareness but do not block.
+AST_GREP_GLOBAL_CONFIG="$HOME/dotfiles/coding-agents/ast-grep/sgconfig.yml"
+if command -v ast-grep >/dev/null 2>&1 && [[ -f "$AST_GREP_GLOBAL_CONFIG" ]]; then
+  scan_out="$(ast-grep scan -c "$AST_GREP_GLOBAL_CONFIG" "$root" 2>&1)"
+  scan_rc=$?
+  if [[ -n "$scan_out" ]]; then
+    printf '%s\n' "$scan_out" >&2
+  fi
+  if [[ $scan_rc -ne 0 ]]; then
+    cat >&2 <<EOF
+
+Pre-push ast-grep gate: error-severity findings above must be fixed before pushing.
+Rules live in ~/dotfiles/coding-agents/ast-grep/rules/ (global, fed by retrospective-codify).
+EOF
+    exit 2
+  fi
+fi
+
 if [[ -n "$head" && -f "$marker" && "$(cat "$marker" 2>/dev/null)" == "$head" ]]; then
   exit 0   # reviews approved for this exact HEAD -> allow push
 fi

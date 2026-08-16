@@ -1,0 +1,7 @@
+id: no-array-from-size
+valid:
+  - const n = mySet.size
+  - const arr = Array.from(mySet)
+invalid:
+  - const n = Array.from(mySet).length
+  - if (Array.from(map.keys()).length > 0) {}

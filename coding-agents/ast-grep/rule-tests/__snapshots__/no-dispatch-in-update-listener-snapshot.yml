@@ -1,0 +1,22 @@
+id: no-dispatch-in-update-listener
+snapshots:
+  EditorView.updateListener.of(u => { if (u.docChanged) view.dispatch({ selection }) }):
+    labels:
+    - source: EditorView.updateListener.of(u => { if (u.docChanged) view.dispatch({ selection }) })
+      style: primary
+      start: 0
+      end: 85
+    - source: view.dispatch({ selection })
+      style: secondary
+      start: 54
+      end: 82
+  EditorView.updateListener.of(update => { update.view.dispatch({ changes }) }):
+    labels:
+    - source: EditorView.updateListener.of(update => { update.view.dispatch({ changes }) })
+      style: primary
+      start: 0
+      end: 77
+    - source: update.view.dispatch({ changes })
+      style: secondary
+      start: 41
+      end: 74

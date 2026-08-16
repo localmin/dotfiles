@@ -1,0 +1,14 @@
+id: no-array-from-size
+snapshots:
+  const n = Array.from(mySet).length:
+    labels:
+    - source: Array.from(mySet).length
+      style: primary
+      start: 10
+      end: 34
+  if (Array.from(map.keys()).length > 0) {}:
+    labels:
+    - source: Array.from(map.keys()).length
+      style: primary
+      start: 4
+      end: 33
