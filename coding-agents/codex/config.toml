@@ -1,8 +1,8 @@
 # Codex CLI configuration
 # Unify the guidance file on CLAUDE.md (shared with Claude Code / Antigravity CLI)
 project_doc_fallback_filenames = ["CLAUDE.md", "README.md"]
-model = "gpt-5.5"
-model_reasoning_effort = "high"
+model = "gpt-5.6-sol"
+model_reasoning_effort = "xhigh"
 
 [projects."/Users/localmin/dotfiles"]
 trust_level = "trusted"
@@ -10,11 +10,15 @@ trust_level = "trusted"
 [projects."/Users/localmin"]
 trust_level = "trusted"
 
+[projects."/Users/localmin/fragment/github.com/shutendohg/discussion"]
+trust_level = "trusted"
+
 [tui]
 status_line = ["model-with-reasoning", "current-dir", "git-branch", "project-name", "context-used", "five-hour-limit", "run-state"]
 
 [tui.model_availability_nux]
 "gpt-5.5" = 1
+"gpt-5.6-sol" = 3
 
 # Inkdrop MCP server.
 # Secrets are injected by `op run` from 1Password (vault: code, item: Inkdrop Local HTTP Server).
@@ -27,3 +31,12 @@ args = ["run", "--env-file=/Users/localmin/dotfiles/coding-agents/inkdrop.op.env
 last_updated = "2026-05-05T16:31:35Z"
 source_type = "local"
 source = "/Users/localmin/.codex/.tmp/bundled-marketplaces/openai-bundled"
+
+[features]
+hooks = true
+js_repl = false
+
+[desktop]
+followUpQueueMode = "queue"
+dock-icon-preference = "codex-system"
+conversationDetailMode = "STEPS_PROSE"
