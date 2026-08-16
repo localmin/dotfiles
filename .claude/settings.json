@@ -59,6 +59,15 @@
             "command": "bash ~/.claude/hooks/codify-prompt.sh"
           }
         ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/config-doc-size-guard.sh"
+          }
+        ]
       }
     ],
     "PreCompact": [

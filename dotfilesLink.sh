@@ -36,3 +36,5 @@ ln -sf ~/dotfiles/.claude/hooks/webfetch-github-gate.sh ~/.claude/hooks/webfetch
 ln -sf ~/dotfiles/.claude/hooks/codify-prompt.sh ~/.claude/hooks/codify-prompt.sh
 # Shared hook library (is_git_push etc.), sourced by the hooks above. Linked as a directory.
 ln -sfn ~/dotfiles/.claude/hooks/lib ~/.claude/hooks/lib
+# Config-doc size guard (PostToolUse): warns when CLAUDE.md > 200 or SKILL.md > 500 lines.
+ln -sf ~/dotfiles/.claude/hooks/config-doc-size-guard.sh ~/.claude/hooks/config-doc-size-guard.sh
