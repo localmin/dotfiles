@@ -1,0 +1,14 @@
+# hunk — review-first terminal diff viewer (https://github.com/modem-dev/hunk)
+# Linked to ~/.config/hunk/config.toml by dotfilesLink.sh.
+# Only values that deviate from hunk's defaults are set here; see `hunk diff --help`
+# and the upstream README for the full option list.
+
+# Query the terminal background at startup and pick the matching GitHub theme.
+theme = "auto"
+
+# Show agent/AI inline notes by default. This is the reason hunk is paired with the
+# coding agents here: the agent writes review notes via `hunk session comment`, and
+# they need to be visible without toggling the pane every session.
+agent_notes = true
+
+# VCS is intentionally left unset so hunk keeps auto-detecting git / jj / sl checkouts.

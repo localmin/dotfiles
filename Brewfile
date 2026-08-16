@@ -123,6 +123,8 @@ brew "ruby", link: false
 brew "slides"
 # Text interface for Git repositories
 brew "tig"
+# Review-first terminal diff viewer; agents annotate the diff via the hunk-review skill
+brew "hunk"
 # Agent-native terminal multiplexer (coding agents drive it via the herdr skill)
 brew "herdr"
 # Terminal multiplexer

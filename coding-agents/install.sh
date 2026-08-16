@@ -107,6 +107,17 @@ link_if_nonempty "$AGENT_DIR/codex/config.toml" "$HOME/.codex/config.toml"
 if [[ -x "$AGENT_DIR/vendor/fetch.sh" ]]; then
   "$AGENT_DIR/vendor/fetch.sh" --if-missing || echo "  warn   : vendor fetch failed; vendored skills skipped"
 fi
+
+# hunk ships its own agent skill inside the Homebrew keg. Point at the version-independent
+# `opt` path so `brew upgrade hunk` keeps the link valid. The payload stays untracked
+# (see skills/.gitignore) because Homebrew owns it; Brewfile is what reproduces it.
+hunk_skill_src="$(brew --prefix 2>/dev/null)/opt/hunk/libexec/skills/hunk-review"
+if [[ -d "$hunk_skill_src" ]]; then
+  link "$hunk_skill_src" "$AGENT_DIR/skills/hunk-review"
+else
+  echo "  skip   : hunk-review (hunk not installed; run 'brew bundle --file=~/dotfiles/Brewfile')"
+fi
+
 mkdir -p "$HOME/.claude/skills" "$HOME/.gemini/skills" "$HOME/.codex/skills"
 for skill_dir in "$AGENT_DIR/skills"/*/; do
   [[ -d "$skill_dir" ]] || continue

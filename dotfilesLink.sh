@@ -15,6 +15,10 @@ ln -sf ~/dotfiles/.bash_profile  ~/.bash_profile
 ln -sf ~/dotfiles/.tigrc ~/.tigrc
 ln -sf ~/dotfiles/.tmux.conf ~/.tmux.conf
 
+# hunk (terminal diff viewer) user config
+mkdir -p ~/.config/hunk
+ln -sf ~/dotfiles/config/hunk/config.toml ~/.config/hunk/config.toml
+
 # Claude Code user settings (deny list / sandbox / model etc.)
 # Needs jq for the statusLine script.
 mkdir -p ~/.claude
