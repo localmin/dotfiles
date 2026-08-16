@@ -5,7 +5,7 @@ description: plan mode で詰めた要件・設計議論を、プロジェクト
 
 # plan-doc
 
-plan mode の合意内容を `<project-root>/.claude/plans/` 配下の構造化 doc に永続化する skill。詳細な運用規約は `~/dotfiles/coding-agents/policy/planning-workflow.md` を参照。
+plan mode の合意内容を `<project-root>/.claude/plans/` 配下の構造化 doc に永続化する skill。詳細な運用規約は `planning-workflow` skill を参照。
 
 ## いつ使うか
 

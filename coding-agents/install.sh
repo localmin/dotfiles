@@ -36,8 +36,10 @@ link() {
   mkdir -p "$(dirname "$dst")"
 
   if [[ -e "$dst" && ! -L "$dst" ]]; then
-    echo "  backup : $dst → $dst.bak"
-    mv "$dst" "$dst.bak"
+    # Timestamped so repeated installs never clobber an earlier backup
+    local bak="$dst.bak.$(date +%Y%m%d%H%M%S)"
+    echo "  backup : $dst → $bak"
+    mv "$dst" "$bak"
   fi
 
   if [[ -L "$dst" ]]; then
