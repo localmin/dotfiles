@@ -1,5 +1,13 @@
 {
   "permissions": {
+    "allow": [
+      "Bash(~/dotfiles/coding-agents/skills/inbox-capture/scripts/list-windows.sh)",
+      "Bash(~/dotfiles/coding-agents/skills/inbox-capture/scripts/window-urls.sh *)",
+      "Bash(~/dotfiles/coding-agents/skills/inbox-capture/scripts/fetch-batch.sh *)",
+      "Bash(gh search:*)",
+      "Bash(npm audit:*)",
+      "Bash(hunk session:*)"
+    ],
     "deny": [
       "Bash(rm:*)",
       "Bash(rmdir:*)",
@@ -38,34 +46,59 @@
     ]
   },
   "model": "opus",
+  "enabledMcpjsonServers": [
+    "inkdrop"
+  ],
   "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          { "type": "command", "command": "bash ~/.claude/hooks/pre-push-review-gate.sh" }
-        ]
-      }
-    ],
     "PostToolUse": [
       {
         "matcher": "Bash",
         "hooks": [
-          { "type": "command", "command": "bash ~/.claude/hooks/codify-prompt.sh" }
-        ]
-      }
-    ],
-    "SessionStart": [
-      {
-        "hooks": [
-          { "type": "command", "command": "bash ~/.claude/hooks/resume-context.sh" }
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/codify-prompt.sh"
+          }
         ]
       }
     ],
     "PreCompact": [
       {
         "hooks": [
-          { "type": "command", "command": "bash ~/.claude/hooks/precompact-flush.sh" }
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/precompact-flush.sh"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/pre-push-review-gate.sh"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/resume-context.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash '/Users/localmin/.claude/hooks/herdr-agent-state.sh' session",
+            "timeout": 10
+          }
         ]
       }
     ]
@@ -75,21 +108,24 @@
     "command": "bash ~/.claude/statusline-command.sh"
   },
   "enabledPlugins": {
-    "skill-creator@claude-plugins-official": true,
-    "security-guidance@claude-plugins-official": true,
-    "typescript-lsp@claude-plugins-official": true,
-    "clangd-lsp@claude-plugins-official": true,
-    "pyright-lsp@claude-plugins-official": true,
-    "frontend-design@claude-plugins-official": true,
-    "context7@claude-plugins-official": true,
-    "playwright@claude-plugins-official": true,
     "chrome-devtools-mcp@claude-plugins-official": true,
+    "clangd-lsp@claude-plugins-official": true,
+    "context7@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true,
+    "hookify@claude-plugins-official": true,
+    "playwright@claude-plugins-official": true,
+    "pyright-lsp@claude-plugins-official": true,
     "ruby-lsp@claude-plugins-official": true,
-    "hookify@claude-plugins-official": true
+    "security-guidance@claude-plugins-official": true,
+    "skill-creator@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true
   },
   "sandbox": {
     "enabled": true,
     "filesystem": {
+      "allowWrite": [
+        "~/.cache/inbox-capture"
+      ],
       "denyRead": [
         "~/.ssh",
         "~/.aws",
@@ -101,9 +137,11 @@
       ]
     },
     "excludedCommands": [
-      "gh *"
+      "gh *",
+      "herdr *",
+      "~/dotfiles/coding-agents/skills/inbox-capture/scripts/fetch-batch.sh *"
     ]
   },
-  "effortLevel": "high",
+  "effortLevel": "medium",
   "tui": "fullscreen"
 }
