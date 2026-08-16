@@ -41,6 +41,7 @@ Pinned per block in `manifest.tsv`. Upstream sources:
 - [mizchi/skills](https://github.com/mizchi/skills) — license: MIT (repo default)
 - [ast-grep/agent-skill](https://github.com/ast-grep/agent-skill) — no upstream license (payload is gitignored, not redistributed)
 - [obra/superpowers](https://github.com/obra/superpowers) — license: MIT
+- [ogulcancelik/herdr](https://github.com/ogulcancelik/herdr) — AGPL-3.0-or-later (dual-licensed AGPL/commercial; payload is gitignored, not redistributed)
 - [inkdropapp/skills](https://github.com/inkdropapp/skills) — no upstream license (its README says so; payload is gitignored, not redistributed)
 
 | local name | source | upstream path | purpose |
@@ -52,6 +53,7 @@ Pinned per block in `manifest.tsv`. Upstream sources:
 | waxa-eval | mizchi/skills | meta/waxa-eval | operating manual for the `waxa` CLI (skill eval) |
 | ast-grep | ast-grep/agent-skill | ast-grep/skills/ast-grep | authoritative ast-grep rule-writing reference (rule_reference.md) for structural code search |
 | test-driven-development | obra/superpowers | skills/test-driven-development | TDD loop discipline: verified-RED before GREEN, no implementation-conforming tests (gate: vendor/evals/test-driven-development/) |
+| herdr | ogulcancelik/herdr | SKILL.md | drive the herdr terminal multiplexer from inside it (only active when HERDR_ENV=1) |
 | note-taking | inkdropapp/skills | skills/note-taking | Inkdrop markdown dialect: code-fence attributes, mermaid, KaTeX, `inkdrop://note/<id>` links (gate: vendor/evals/note-taking/) |
 
 ### Runtime dependencies (note)

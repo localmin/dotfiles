@@ -123,6 +123,8 @@ brew "ruby", link: false
 brew "slides"
 # Text interface for Git repositories
 brew "tig"
+# Agent-native terminal multiplexer (coding agents drive it via the herdr skill)
+brew "herdr"
 # Terminal multiplexer
 brew "tmux"
 # Display directories as trees (with optional color/HTML output)

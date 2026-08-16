@@ -32,6 +32,16 @@ PIN=d884ae04edebef577e82ff7c4e143debd0bbec99
 LICENSE=MIT
 test-driven-development	skills/test-driven-development
 
+# Fourth source: herdr official agent skill (agent-native terminal multiplexer;
+# replaces the retired first-party tmux-runner). Single-file skill: upstream ships
+# a bare SKILL.md at the repo root. Only works inside herdr (HERDR_ENV=1).
+# Adopted 2026-07-07 by explicit user direction; rubric-checked manually
+# (current waxa CLI no longer has an `audit` subcommand).
+REPO=https://github.com/ogulcancelik/herdr
+PIN=d9230f517a88be0eb88c9af39f7a4212644c9a3d
+LICENSE=AGPL-3.0-or-later (dual-licensed AGPL/commercial; payload is gitignored, not redistributed)
+herdr	SKILL.md
+
 # Fifth source: Inkdrop's own agent skills (upstream companion to the Inkdrop MCP
 # server). Only note-taking is adopted: it documents Inkdrop's markdown dialect
 # (code-block attributes, mermaid, KaTeX, inkdrop://note/<id> links) that the
@@ -54,7 +64,7 @@ note-taking	skills/note-taking
 # template; a dedicated design skill is deferred until the need is real.
 # Adopted 2026-08-16 by explicit user direction after in-conversation rubric check;
 # waxa eval skipped (these are interactive interview skills — the executor eval loop
-# is ill-suited to them).
+# is ill-suited to them, same rationale as the herdr block above).
 REPO=https://github.com/mattpocock/skills
 PIN=8b78b531ab965735c5dc74f6f7a219e1e37326df
 LICENSE=MIT

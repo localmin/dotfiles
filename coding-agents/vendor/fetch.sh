@@ -13,6 +13,10 @@
 #   ./fetch.sh --if-missing # only fetch when a skill dir is absent (bootstrap)
 #
 # To update a skill: bump the PIN of its block in manifest.tsv, then ./fetch.sh.
+#
+# Skill lines may point at a directory (copied as-is) or a single *.md file
+# (copied to ../skills/<name>/SKILL.md — for upstreams that ship a bare
+# SKILL.md at the repo root, e.g. ogulcancelik/herdr).
 
 set -euo pipefail
 
@@ -87,16 +91,34 @@ for i in "${!REPOS[@]}"; do
   echo "vendor: cloning $repo @ ${pin:0:12} (blobless, sparse)"
   git clone --filter=blob:none --no-checkout --quiet "$repo" "$tmp/repo"
   git -C "$tmp/repo" sparse-checkout init --cone >/dev/null
-  git -C "$tmp/repo" sparse-checkout set "${paths[@]}" >/dev/null
+  # Cone mode only takes directories; map *.md file entries to their parent
+  # dir (root-level files are always checked out in cone mode, so "." needs
+  # no pattern at all).
+  sparse_dirs=()
+  for p in "${paths[@]}"; do
+    case "$p" in
+      *.md) d="$(dirname "$p")"; [[ "$d" == "." ]] || sparse_dirs+=("$d") ;;
+      *) sparse_dirs+=("$p") ;;
+    esac
+  done
+  if [[ ${#sparse_dirs[@]} -gt 0 ]]; then
+    git -C "$tmp/repo" sparse-checkout set "${sparse_dirs[@]}" >/dev/null
+  fi
   git -C "$tmp/repo" checkout --quiet "$pin"
 
   for j in "${idxs[@]}"; do
     name="${NAMES[$j]}"; path="${PATHS[$j]}"; license="${LICENSES[$j]}"
     src="$tmp/repo/$path"
-    [[ -d "$src" ]] || { echo "  ERROR: '$path' not found in $repo@$pin" >&2; rm -rf "$tmp"; exit 1; }
     dst="$SKILLS_DIR/$name"
-    rm -rf "$dst"; mkdir -p "$dst"
-    cp -R "$src/." "$dst/"
+    if [[ -d "$src" ]]; then
+      rm -rf "$dst"; mkdir -p "$dst"
+      cp -R "$src/." "$dst/"
+    elif [[ -f "$src" ]]; then
+      rm -rf "$dst"; mkdir -p "$dst"
+      cp "$src" "$dst/SKILL.md"
+    else
+      echo "  ERROR: '$path' not found in $repo@$pin" >&2; rm -rf "$tmp"; exit 1
+    fi
     cat > "$dst/.upstream" <<EOF
 repo:    $repo
 path:    $path
