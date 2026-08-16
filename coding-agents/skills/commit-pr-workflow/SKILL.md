@@ -43,13 +43,27 @@ repo の `CLAUDE.md` / `README` / `CONTRIBUTING` / 既存 git 履歴（merge com
 5. **push 前ゲート**: `/code-review` と `/security-review` を通し findings に対処する。
    - Claude Code: PreToolUse hook（`pre-push-review-gate.sh`）が未レビューの push をブロックし
      手順を提示する。承認後 `git rev-parse HEAD > <gitdir>/review-ok` で HEAD を記録して再 push。
+   - **marker 記録と `git push` は別のツール呼び出しに分ける**。`&&` で1コマンドに繋ぐと
+     PreToolUse hook が**コマンド全体の実行前**に走るため、marker はまだ書かれておらず
+     旧 HEAD で判定されて必ずブロックされる（理由: hook から見えるのはコマンド文字列だけで、
+     その中の前半の副作用は完了していない）。
    - 他 CLI: hook が無いので手動で両レビューを実施する。
-6. **push**:
+6. **public repo なら push 前に公開範囲と機密を確認する**（理由: push は取り消せず、
+   一度公開された内容はキャッシュ・インデックスに残る）。
+   - `gh repo view <owner>/<repo> --json visibility` で public か private かを確定させる。
+     private だと思い込んだまま進めない。
+   - public なら**差分だけでなく追跡ファイル全体**を機密スキャンする
+     （`git ls-files` + credential パターンの `git grep`）。差分が clean でも、
+     以前から追跡されている設定ファイルは対象外になっている。
+   - ローカルにあるのに追跡されていないファイルは、**除外の出所を `git check-ignore -v` で確認**する。
+     出所が `~/.config/git/ignore` 等のグローバル設定なら、そのマシンでたまたま守られているだけで
+     別マシンの clone では追跡されてしまう。repo 自身の `.gitignore` へ移す。
+7. **push**:
    - **直コミット運用**: default ブランチのまま `git push`。
    - **PR 運用**: default ブランチにいるなら**先に作業ブランチを切る（branch-first）**。
      `git push -u origin <branch>` → `gh pr create`（PR 本文書式は下記）。PR は WebFetch でなく
      `gh` で作る。
-7. **push 後**: 試行錯誤・ユーザー訂正・非自明な修正があったセッションなら
+8. **push 後**: 試行錯誤・ユーザー訂正・非自明な修正があったセッションなら
    `retrospective-codify` の実行を検討（CLAUDE.md 参照）。
 
 ## commit message
