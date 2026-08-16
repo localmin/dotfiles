@@ -8,7 +8,14 @@
 set -uo pipefail
 
 # is_git_push lives in the shared lib (also used by codify-prompt.sh).
-source "$(dirname "${BASH_SOURCE[0]}")/lib/git-cmd.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/lib/git-cmd.sh" 2>/dev/null || true
+# Fail safe: if the lib isn't linked (e.g. dotfilesLink.sh not re-run on this
+# machine), fall back to a conservative detector so the gate still blocks pushes
+# instead of silently allowing them. It over-blocks commands that mention both
+# `git` and `push` (rare, and only while misconfigured) — the safe direction.
+if ! declare -F is_git_push >/dev/null 2>&1; then
+  is_git_push() { [[ "$1" == *git* && "$1" == *push* ]]; }
+fi
 
 input="$(cat)"
 tool="$(printf '%s' "$input" | jq -r '.tool_name // empty' 2>/dev/null || true)"
