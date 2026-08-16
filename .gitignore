@@ -12,6 +12,10 @@ dein/
 # Generated design/planning memos, kept local for cross-session reference but not tracked
 /doc/
 
+# Plan docs and WIP state (planning-workflow skill). Local working notes, not for this
+# public repo. Also covered by the global ~/.config/git/ignore, but that is per-machine.
+.claude/plans/
+
 # inbox-capture scratch output at repo root
 /tmp*.md
 
