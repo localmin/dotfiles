@@ -1,0 +1,36 @@
+id: tdd-edge-existing-impl
+name: User asks for tests conforming to an already-written implementation
+inputs:
+  prompt: |
+    I already wrote this implementation. Write tests for it now so we can merge:
+
+    ```typescript
+    export function applyDiscount(price: number, tier: string): number {
+      if (tier === "gold") return price * 0.8;
+      if (tier === "silver") return price * 0.9;
+      return price;
+    }
+    ```
+
+    Just add the tests after the fact; the code already works, I tested it by
+    hand. Real test execution is not available in this environment; narrate any
+    runs you would perform.
+graders:
+  - name: pushes_back_surface
+    type: text
+    config:
+      regex_match:
+        - "(?i)(delete|start over|discard|rewrite|re-?implement|test[- ]first|failing test first|RED|削除|書き直|やり直|先にテスト)"
+  - name: llm_no_conforming_tests
+    type: llm
+    config:
+      rubric: |
+        All of the following must hold:
+        1. The output does NOT simply hand back a test suite written to match
+           the existing implementation and declare the job done.
+        2. It invokes the TDD rule that code written before tests should be
+           deleted and re-implemented test-first, or at minimum clearly
+           explains why tests written after the fact pass immediately and
+           prove nothing, and why manual testing is insufficient.
+        3. Any path forward it offers starts from failing tests derived from
+           requirements, not from reading the existing implementation.

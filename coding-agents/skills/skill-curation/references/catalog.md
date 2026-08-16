@@ -33,6 +33,11 @@
 | ✅ | ast-grep | `ast-grep/agent-skill` | `ast-grep/skills/ast-grep` | ast-grep ルールの書き方・構造検索(権威リファレンス) |
 | ✅ | ast-grep-practice | `mizchi/skills` | `tooling/ast-grep-practice` | ast-grep を project lint として運用 |
 
+## 開発方法論 / TDD（signal: コードを書くタスク全般。development-style skill から参照）
+| | skill | repo | upstream path | 用途 |
+|---|---|---|---|---|
+| ✅ | test-driven-development | `obra/superpowers` | `skills/test-driven-development` | TDD ループ実施規律（verified-RED・実装迎合テスト禁止・言い訳封じ）。gate 済み: `vendor/evals/test-driven-development/` |
+
 ## Web / テスト（signal: `playwright.config.*` / `e2e/` / 画像差分要求）
 | | skill | repo | upstream path | 用途 |
 |---|---|---|---|---|

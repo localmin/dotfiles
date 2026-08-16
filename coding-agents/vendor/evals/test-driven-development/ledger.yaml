@@ -1,0 +1,31 @@
+eval: test-driven-development-adoption-gate
+skill: skills/test-driven-development
+patterns: []
+iterations:
+  - iter: 1
+    timestamp: '2026-07-05T12:59:43.584Z'
+    overall_pass_rate: 1
+    new_unclear_count: 0
+    reseen_count: 0
+    total_unclear: 0
+    new_rules: []
+    reseen_rules: []
+  - iter: 2
+    timestamp: '2026-07-05T13:02:09.997Z'
+    overall_pass_rate: 1
+    new_unclear_count: 0
+    reseen_count: 0
+    total_unclear: 0
+    new_rules: []
+    reseen_rules: []
+convergence:
+  status: converged
+  rationale: |
+    Iter 1 (100%) -> Iter 2 (100%), zero unclear points and zero retries in
+    all 8 trials (2 tasks x 2 trials x 2 iterations). Edge scenario confirmed
+    the skill rejects implementation-conforming tests (invokes delete-and-
+    restart + explains why tests-after prove nothing); typical scenario
+    confirmed red-before-green with verified-RED discipline. Note: the npm
+    build of waxa 0.1.1 has a broken executor (dntShim.Deno.Command); this
+    gate was run from mizchi/skills@89c1b34 source via deno. Adopted at
+    obra/superpowers@d884ae04.

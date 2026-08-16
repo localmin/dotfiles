@@ -40,6 +40,7 @@ Pinned per block in `manifest.tsv`. Upstream sources:
 
 - [mizchi/skills](https://github.com/mizchi/skills) — license: MIT (repo default)
 - [ast-grep/agent-skill](https://github.com/ast-grep/agent-skill) — no upstream license (payload is gitignored, not redistributed)
+- [obra/superpowers](https://github.com/obra/superpowers) — license: MIT
 - [inkdropapp/skills](https://github.com/inkdropapp/skills) — no upstream license (its README says so; payload is gitignored, not redistributed)
 
 | local name | source | upstream path | purpose |
@@ -47,15 +48,14 @@ Pinned per block in `manifest.tsv`. Upstream sources:
 | retrospective-codify | mizchi/skills | meta/retrospective-codify | codify learnings into ast-grep rules / CLAUDE.md / skills |
 | ast-grep-practice | mizchi/skills | tooling/ast-grep-practice | how-to for running ast-grep as a project lint |
 | optimizing-descriptions | mizchi/skills | meta/optimizing-descriptions | audit and rewrite SKILL.md descriptions |
-| skill-selector | mizchi/skills | meta/skill-selector | pick skills to adopt from a curated catalog |
-| skill-finder | mizchi/skills | meta/skill-finder | cross-source skill discovery + waxa eval gate |
 | empirical-prompt-tuning | mizchi/skills | meta/empirical-prompt-tuning | empirical instruction tuning via a subagent executor |
 | waxa-eval | mizchi/skills | meta/waxa-eval | operating manual for the `waxa` CLI (skill eval) |
 | ast-grep | ast-grep/agent-skill | ast-grep/skills/ast-grep | authoritative ast-grep rule-writing reference (rule_reference.md) for structural code search |
+| test-driven-development | obra/superpowers | skills/test-driven-development | TDD loop discipline: verified-RED before GREEN, no implementation-conforming tests (gate: vendor/evals/test-driven-development/) |
 | note-taking | inkdropapp/skills | skills/note-taking | Inkdrop markdown dialect: code-fence attributes, mermaid, KaTeX, `inkdrop://note/<id>` links (gate: vendor/evals/note-taking/) |
 
 ### Runtime dependencies (note)
 
-`waxa-eval` / `skill-finder` invoke the `waxa` CLI at runtime (`npx @mizchi/waxa`,
+`waxa-eval` invokes the `waxa` CLI at runtime (`npx @mizchi/waxa`,
 requires an authenticated `claude` CLI). The SKILL.md files are documentation and
 read fine from vendoring alone, but actually running an eval needs the CLI via npx.

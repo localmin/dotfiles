@@ -1,0 +1,40 @@
+id: tdd-typical-new-feature
+name: New utility function implemented test-first
+inputs:
+  prompt: |
+    You are working in a TypeScript repo with vitest configured. Implement a new
+    utility `slugify(title: string): string` in src/utils/slugify.ts. It should
+    lower-case, trim, collapse spaces into single hyphens, and strip
+    non-alphanumeric characters.
+
+    Real test execution is not available in this environment; when the skill
+    tells you to run tests, narrate the exact command you would run and the
+    failure or pass output you expect, then continue the loop.
+
+    Deliver: the test file, the expected RED run, the implementation, and the
+    expected GREEN run, in the order you produced them.
+graders:
+  - name: red_before_green_surface
+    type: text
+    config:
+      regex_match:
+        - "(?is)(failing test|write .{0,40}test .{0,20}first|RED)[\\s\\S]*?(implement|production code|GREEN)"
+  - name: verify_red_surface
+    type: text
+    config:
+      regex_match:
+        - "(?i)(npm (run )?test|vitest|npx vitest|run the test|実行)"
+  - name: llm_red_discipline
+    type: llm
+    config:
+      rubric: |
+        All of the following must hold:
+        1. A failing test is written BEFORE any implementation code appears in
+           the output.
+        2. The output verifies (or explicitly narrates verifying) that the test
+           fails for the right reason (feature missing, not a typo/error)
+           before implementing.
+        3. The implementation is minimal for the tested behavior — no
+           speculative options, parameters, or features beyond what the test
+           requires.
+        4. At no point is the test edited to make the implementation pass.

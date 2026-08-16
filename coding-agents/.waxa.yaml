@@ -1,0 +1,2 @@
+# waxa repo-root marker (see skills/waxa-eval). Evals live under vendor/evals/;
+# skill paths in eval.yaml are relative to this directory (e.g. skills/<name>).

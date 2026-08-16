@@ -15,5 +15,8 @@ dein/
 # inbox-capture scratch output at repo root
 /tmp*.md
 
+# waxa eval run artifacts (per-iteration outputs; eval.yaml/tasks/ledger are tracked)
+coding-agents/results/
+
 # Playwright MCP snapshots (tool writes here; cannot target the scratchpad)
 .playwright-mcp/

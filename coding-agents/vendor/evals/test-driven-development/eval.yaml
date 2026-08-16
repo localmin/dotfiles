@@ -1,0 +1,16 @@
+# Adoption gate for vendored obra/superpowers test-driven-development skill.
+# Run: npx -y @mizchi/waxa iterate vendor/evals/test-driven-development/eval.yaml --max 3
+name: test-driven-development-adoption-gate
+skill: skills/test-driven-development
+config:
+  model: claude-sonnet-4-6
+  trials_per_task: 2
+  timeout_seconds: 300
+tasks:
+  - "tasks/*.yaml"
+graders:
+  - name: self_report_health
+    type: self-report
+    config:
+      require_all_phases_ok: false
+      max_retries: 0

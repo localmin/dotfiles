@@ -1,6 +1,6 @@
 ---
 name: skill-curation
-description: 'この dotfiles 環境で agent skill を探す/選ぶ/採用するための meta-skill。ユーザーが明示的に「skill を追加したい」「〜の skill はある?」と言ったとき、または採用前に候補を評価するときだけ起動する——通常作業では auto-invoke しない。catalog-first（references/catalog.md を先に読んでから外を探す）→ 段階的なクロスソース探索 → 7軸ルーブリック → 必須の waxa audit/eval ゲート → coding-agents/vendor/manifest.tsv に pin して採用（vendor 機構。この環境は APM を使わない）。'
+description: 'この dotfiles 環境で agent skill を探す/選ぶ/採用するための meta-skill。ユーザーが明示的に「skill を追加したい」「〜の skill はある?」と言ったとき、または採用前に候補を評価するときだけ起動する——通常作業では auto-invoke しない。catalog-first（references/catalog.md を先に読んでから外を探す）→ 段階的なクロスソース探索 → 7軸ルーブリック → 必須の waxa eval ゲート（source 実行。audit は現行 CLI では任意）→ coding-agents/vendor/manifest.tsv に pin して採用（vendor 機構。この環境は APM を使わない）。'
 ---
 
 # skill-curation
@@ -65,9 +65,14 @@ skill を足すのは disk 上は安いが context は食う。**意図的に選
 
 ## ゲート(採用前に必須)
 
-1. `npx @mizchi/waxa audit <candidate-dir>` で構造的問題を安く検出。
-2. `waxa` eval を収束(2連続で unclear ゼロ)まで回す。詳しい操作は `waxa-eval` skill。
-   2反復して unclear が減らなければ **divergent = reject**。
+1. **構造チェック**: waxa CLI に `audit` サブコマンドがあれば `waxa audit <candidate-dir>` で
+   安く検出する。ただし**現行 waxa CLI には `audit` が無いことがある**——無ければ下記7軸
+   ルーブリックを手動で当てて代替する(audit の有無に採用是非を依存させない。実例: herdr は
+   audit 不在のため手動ルーブリックで採用、manifest の該当ブロック注記参照)。
+2. `waxa` eval を収束(2連続で unclear ゼロ)まで回す。2反復して unclear が減らなければ
+   **divergent = reject**。**npm 版(`npx @mizchi/waxa`)は executor が壊れており偽の収束
+   (CONVERGED)を返すことがあるので使わない**——`mizchi/skills@<pin>` を clone して
+   `deno run -A tools/waxa/src/cli.ts` の source 実行で回す。詳しい操作は `waxa-eval` skill。
 3. ルーブリックの**非冗長**で落ちる候補は、Fit ✓ でも reject(理由を
    `references/rejection-log.md` に記録)。
 
@@ -80,6 +85,9 @@ skill を足すのは disk 上は安いが context は食う。**意図的に選
      `<local-name><TAB><upstream-path>` を1行足す。
    - 別 repo 由来なら新しい `REPO=` / `PIN=`(eval を通した commit SHA)/ `LICENSE=`
      ブロックを足してから skill 行。
+   - `<upstream-path>` は skill 名から**推測せず**、upstream の `SKILL.md` が実在する
+     ディレクトリを解決してから書く(`gh api repos/<owner>/<repo>/git/trees/<sha>?recursive=1`
+     で `SKILL.md` を grep 等)。multi-skill repo では root 直下とは限らない。
 2. `coding-agents/vendor/fetch.sh` で取得(payload は gitignore)。
 3. `coding-agents/install.sh` で全 CLI に symlink。
 4. **eval を通した ref で pin**。floating ref(`main`/`HEAD`)禁止 ——

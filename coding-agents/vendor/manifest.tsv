@@ -26,6 +26,12 @@ PIN=577f4d4507678f2c8cee150fae25e6ce309f70b1
 LICENSE=none (no LICENSE file upstream; payload is gitignored, not redistributed)
 ast-grep	ast-grep/skills/ast-grep
 
+# Third source: obra/superpowers (TDD loop discipline; complements first-party development-style)
+REPO=https://github.com/obra/superpowers
+PIN=d884ae04edebef577e82ff7c4e143debd0bbec99
+LICENSE=MIT
+test-driven-development	skills/test-driven-development
+
 # Fifth source: Inkdrop's own agent skills (upstream companion to the Inkdrop MCP
 # server). Only note-taking is adopted: it documents Inkdrop's markdown dialect
 # (code-block attributes, mermaid, KaTeX, inkdrop://note/<id> links) that the
