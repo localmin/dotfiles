@@ -80,6 +80,15 @@
             "command": "bash ~/.claude/hooks/pre-push-review-gate.sh"
           }
         ]
+      },
+      {
+        "matcher": "WebFetch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/webfetch-github-gate.sh"
+          }
+        ]
       }
     ],
     "SessionStart": [

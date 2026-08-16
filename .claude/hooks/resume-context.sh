@@ -14,6 +14,9 @@ if [[ -f "$wip" ]]; then
   out+=$'## Resume state — .claude/plans/WIP.md\n\n'
   out+="$(cat "$wip")"
   out+=$'\n\n'
+  out+=$'RULE: In your FIRST reply, explicitly state that you read WIP.md, the current\n'
+  out+=$'status, and the next step — before taking any action. Do not re-open decisions\n'
+  out+=$'recorded as settled in WIP.md or plan docs via AskUserQuestion.\n\n'
 fi
 
 if git -C "$root" rev-parse --is-inside-work-tree >/dev/null 2>&1; then

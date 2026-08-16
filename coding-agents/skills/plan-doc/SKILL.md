@@ -18,7 +18,7 @@ plan mode の合意内容を `<project-root>/.claude/plans/` 配下の構造化 
 2. **雛形を生成**する: `bash ~/dotfiles/coding-agents/skills/plan-doc/scripts/new-plan.sh <slug> [<project-root>]`
    - `<project-root>` 省略時はカレントディレクトリの git トップ（`git rev-parse --show-toplevel`）を使う。
    - `<root>/.claude/plans/<YYYY-MM-DD>-<slug>.md` を template から生成し、`<root>/.claude/plans/INDEX.md` へ参照行を追記する（INDEX が無ければ作成）。
-3. **生成 doc を議論内容で埋める**。Goals / Spec / 設計 / Task 分割 / 実装の進め方 / 動作確認 の各見出しを埋める。設計は grilling で詰めた内容を書き、永続する決定は ADR（`docs/adr/`）へ切り出してリンクする。
+3. **生成 doc を議論内容で埋める**。Goals / Spec / 前提と検証状況 / 設計 / Task 分割 / 実装の進め方 / 動作確認 の各見出しを埋める。設計は grilling で詰めた内容を書き、永続する決定は ADR（`docs/adr/`）へ切り出してリンクする。「前提と検証状況」は、コード・設定で確認できるものを確認してから「確認済み」にし、未確認で残すものは未確認と明示する（推測を前提に混ぜない）。
 4. **INDEX.md のフックを調整**する。スクリプトが追記した行のフック部分を、内容を表す一言に書き換える。
 
 ## 再開時

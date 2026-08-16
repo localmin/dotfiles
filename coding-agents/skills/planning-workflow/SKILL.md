@@ -52,7 +52,7 @@ plan-doc は「設計を詰めた機能」の永続ログ。一方で、plan mod
 
 `~/dotfiles/.claude/settings.json` に2つの hook を設定済み（`~/dotfiles/.claude/hooks/` に実体、`dotfilesLink.sh` で `~/.claude/hooks/` へリンク）:
 
-- **SessionStart** (`resume-context.sh`): 起動 / 再開時に WIP.md と `git status --short` を自動で context に注入する。ルールを忘れても再開時に途中状態が必ず目に入る（クリーンかつ WIP.md 無しなら何も出さない）。
+- **SessionStart** (`resume-context.sh`): 起動 / 再開時に WIP.md と `git status --short` を自動で context に注入する。ルールを忘れても再開時に途中状態が必ず目に入る（クリーンかつ WIP.md 無しなら何も出さない）。WIP.md があるときは再開規律 directive（最初の応答で WIP 読了・現状・次の一手を明示し、決着済みを蒸し返さない）も併せて注入する。
 - **PreCompact** (`precompact-flush.sh`): compaction 直前に「WIP.md に flush せよ」とリマインドする（未コミット変更があるときのみ）。
 
 これらは Claude Code 専用。Antigravity / Codex では同等 hook が無いため、上記の更新タイミング規律をテキストルールとして守る。
@@ -62,7 +62,11 @@ plan-doc は「設計を詰めた機能」の永続ログ。一方で、plan mod
 作業を再開したら、まず `<project-root>/.claude/plans/INDEX.md`（設計ログ）と `WIP.md`（途中状態）の有無を確認し、あれば関連エントリを読んでから作業に入る。これにより議論をやり直さずに済む。
 
 - **再開した最初の応答で、WIP を読んだ旨・現状・次の一手を、動く前に明示する**。黙読はユーザーから見えず不安にさせる。SessionStart hook が WIP を注入していても、口に出さねば「読んだ」が伝わらない。
-- WIP に「次の一手」があればそれを実行に移す。決着済みの判断を `AskUserQuestion` で蒸し返さない——蒸し返してよいのは WIP に答えが無いか、外向き・不可逆でユーザー承認が要る一点だけ。
+- WIP に「次の一手」があればそれを実行に移す。
+
+### 決着済み判断の扱い
+
+WIP.md / plan doc に「直近の決定」を明示的な見出しで残す。`AskUserQuestion` を出す前に決定リストと突き合わせる。蒸し返してよいのは、答えが記録に無いか、外向き・不可逆でユーザー承認が要る一点だけ。
 
 ## git とプライバシー
 
