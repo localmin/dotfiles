@@ -34,8 +34,17 @@ expect_plan 'https://github.com/o/r/blob/main/src/a.ts' \
   "github${T}gh api repos/o/r/contents/src/a.ts?ref=main --jq .content"
 expect_plan 'https://raw.githubusercontent.com/o/r/main/README.md' \
   "github${T}gh api repos/o/r/contents/README.md?ref=main --jq .content"
+# A tree path is a directory: the contents API returns an array there, so it must
+# not reuse the blob plan (`--jq .content` fails with "expected an object but got:
+# array"). It needs two API calls, so it routes back into this script.
 expect_plan 'https://github.com/o/r/tree/main/docs' \
-  "github${T}gh api repos/o/r/contents/docs?ref=main --jq .content"
+  "github${T}$TARGET --github-dir o r main docs"
+expect_plan 'https://github.com/o/r/tree/main/plugins/html/skills/html' \
+  "github${T}$TARGET --github-dir o r main plugins/html/skills/html"
+# A tree URL with no path below the ref is the repo root browse page, and the
+# readme is a better answer there than a listing of the top-level files.
+expect_plan 'https://github.com/o/r/tree/main' \
+  "github${T}gh api repos/o/r/readme --jq .content"
 expect_plan 'https://gist.github.com/someone/abc123' \
   "github${T}gh gist view abc123 -r"
 expect_plan 'https://github.com/o/r/issues/42' \
@@ -114,6 +123,50 @@ expect_heading '# First
 expect_heading '# Tab	Inside' 'Tab Inside'
 # Trailing whitespace and trailing #s are trimmed.
 expect_heading '#   Padded Title   ' 'Padded Title'
+
+# --- directory rendering (offline; contents API payload comes from a fixture) ---
+
+DIR_JSON='[{"name":"SKILL.md","type":"file"},{"name":"design-system","type":"dir"},{"name":"render-pdf.sh","type":"file"}]'
+NO_DOC_JSON='[{"name":"a.ts","type":"file"},{"name":"sub","type":"dir"}]'
+README_JSON='[{"name":"readme.markdown","type":"file"},{"name":"src","type":"dir"}]'
+
+expect_out() {
+  local label="$1" want="$2"
+  shift 2
+  local got
+  got=$("$TARGET" "$@" 2>&1)
+  if [ "$got" = "$want" ]; then
+    PASS=$((PASS + 1))
+  else
+    FAIL=$((FAIL + 1))
+    printf 'FAIL %s\n  want: [%s]\n  got:  [%s]\n' "$label" "$want" "$got"
+  fi
+}
+
+with_json() {
+  local json="$1"
+  shift
+  local tmp got
+  tmp="$(mktemp "${TMPDIR:-/tmp}/dir.XXXXXX")"
+  printf '%s' "$json" >"$tmp"
+  "$@" "$tmp"
+  got=$?
+  rm -f "$tmp"
+  return $got
+}
+
+# Directories are marked so the reader can tell them from files at a glance.
+with_json "$DIR_JSON" expect_out 'dir-render' '# plugins/html/skills/html
+
+- SKILL.md
+- design-system/
+- render-pdf.sh' --dir-render plugins/html/skills/html
+# A listing alone cannot be summarized, so the directory doc is named for a
+# second fetch. SKILL.md wins over README.md when both exist.
+with_json "$DIR_JSON" expect_out 'dir-doc SKILL.md' 'SKILL.md' --dir-doc
+with_json "$README_JSON" expect_out 'dir-doc readme case-insensitive' 'readme.markdown' --dir-doc
+# No doc means listing only — never a stray fetch of an unrelated file.
+with_json "$NO_DOC_JSON" expect_out 'dir-doc none' '' --dir-doc
 
 printf '\n%d passed, %d failed\n' "$PASS" "$FAIL"
 [ "$FAIL" -eq 0 ]

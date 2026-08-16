@@ -21,6 +21,13 @@
 #   --plan     print "<kind>\t<command>" for one URL and exit, without fetching
 #   --heading  print the first markdown heading of a file (title fallback), then exit
 #
+# Internal entry points (a github tree plan re-enters the script; also unit-tested):
+#   --github-dir OWNER REPO REF PATH  directory listing plus that directory's doc
+#   --dir-render PATH JSONFILE        render a contents payload as a listing
+#   --dir-doc JSONFILE                name the directory's SKILL.md / README.md
+#
+# Requires bash 3.2, gh, ax, and jq.
+#
 # Output: OUTDIR/manifest.tsv with columns idx, kind, status, title, path, url,
 # plus one NNN.md / NNN.pdf per URL. The manifest path is echoed on stdout.
 # `title` is the page <title> for HTML, else the first markdown heading; it is
@@ -41,6 +48,10 @@ BUDGET=6000
 JOBS=8
 TIMEOUT=10
 OUTDIR=""
+
+# Absolute path to this script: a tree plan re-enters it, and the plan may run
+# from any working directory.
+SELF="$(cd "$(dirname "$0")" && pwd)/$(basename "$0")"
 
 # Resolution result, set by resolve_plan.
 PLAN_KIND=""
@@ -105,18 +116,76 @@ resolve_plan() {
   PLAN_ARGV=(ax "$url" --md --all -m "$TIMEOUT" --budget "$BUDGET")
 }
 
-# github_contents_plan OWNER REPO REF FIRST_PATH_INDEX SEGS... — read a file or
-# directory through the contents API. The blob is base64, so mark it for decode.
+# join_segs START SEGS... — rebuild the path that sits below a ref.
+join_segs() {
+  local start="$1"
+  shift
+  local segs=("$@")
+  local i out=""
+  for ((i = start; i < ${#segs[@]}; i++)); do
+    if [ -z "$out" ]; then out="${segs[$i]}"; else out="$out/${segs[$i]}"; fi
+  done
+  printf '%s' "$out"
+}
+
+# github_contents_plan OWNER REPO REF FIRST_PATH_INDEX SEGS... — read a file
+# through the contents API. The blob is base64, so mark it for decode.
 github_contents_plan() {
   local owner="$1" repo="$2" ref="$3" start="$4"
   shift 4
-  local segs=("$@")
-  local i filepath=""
-  for ((i = start; i < ${#segs[@]}; i++)); do
-    if [ -z "$filepath" ]; then filepath="${segs[$i]}"; else filepath="$filepath/${segs[$i]}"; fi
-  done
+  local filepath
+  filepath=$(join_segs "$start" "$@")
   PLAN_ARGV=(gh api "repos/$owner/$repo/contents/$filepath?ref=$ref" --jq .content)
   PLAN_DECODE=1
+}
+
+# github_tree_plan OWNER REPO REF FIRST_PATH_INDEX SEGS... — read a directory.
+# The same contents endpoint returns an array here, so the blob plan's `--jq
+# .content` fails outright ("expected an object but got: array"). Rendering the
+# directory takes two API calls, which does not fit the one-command plan model,
+# so the plan re-enters this script instead.
+github_tree_plan() {
+  local owner="$1" repo="$2" ref="$3" start="$4"
+  shift 4
+  local filepath
+  filepath=$(join_segs "$start" "$@")
+  if [ -z "$filepath" ]; then
+    # A tree URL with no path below the ref is the repo root browse page.
+    github_readme_plan "$owner" "$repo"
+    return
+  fi
+  PLAN_ARGV=("$SELF" --github-dir "$owner" "$repo" "$ref" "$filepath")
+  PLAN_DECODE=0
+}
+
+# dir_render PATH JSONFILE — the contents payload as a markdown listing.
+dir_render() {
+  printf '# %s\n\n' "$1"
+  jq -r 'map("- " + .name + (if .type=="dir" then "/" else "" end)) | join("\n")' "$2"
+}
+
+# dir_doc JSONFILE — the directory's own document, if it has one. A bare listing
+# of file names carries nothing to summarize, and a directory URL in a browser
+# renders this same file below the listing, so it is what the reader is after.
+dir_doc() {
+  jq -r 'map(select(.type == "file" and (.name | test("^(SKILL|README)\\.(md|markdown)$"; "i")))) | (.[0].name // "")' "$1"
+}
+
+# github_dir_fetch OWNER REPO REF PATH — listing plus that directory's document.
+github_dir_fetch() {
+  local owner="$1" repo="$2" ref="$3" path="$4"
+  local json doc
+  json="$(mktemp "${TMPDIR:-/tmp}/inbox-dir.XXXXXX")"
+  if ! gh api "repos/$owner/$repo/contents/$path?ref=$ref" >"$json"; then
+    rm -f "$json"
+    return 1
+  fi
+  dir_render "$path" "$json"
+  doc="$(dir_doc "$json")"
+  rm -f "$json"
+  [ -n "$doc" ] || return 0
+  printf '\n\n## %s\n\n' "$doc"
+  gh api "repos/$owner/$repo/contents/$path/$doc?ref=$ref" --jq .content | base64 --decode
 }
 
 # github_readme_plan OWNER REPO — the default for any github.com path we do not
@@ -154,8 +223,11 @@ github_plan() {
   fi
 
   case "${segs[2]}" in
-    blob | tree)
+    blob)
       github_contents_plan "$owner" "$repo" "${segs[3]}" 4 "${segs[@]}"
+      ;;
+    tree)
+      github_tree_plan "$owner" "$repo" "${segs[3]}" 4 "${segs[@]}"
       ;;
     issues)
       PLAN_ARGV=(gh issue view "${segs[3]}" --repo "$owner/$repo")
@@ -278,6 +350,18 @@ main() {
       --heading)
         heading_of "$2"
         return 0
+        ;;
+      --github-dir)
+        github_dir_fetch "$2" "$3" "$4" "$5"
+        return $?
+        ;;
+      --dir-render)
+        dir_render "$2" "$3"
+        return $?
+        ;;
+      --dir-doc)
+        dir_doc "$2"
+        return $?
         ;;
       -h | --help) sed -n '2,30p' "$0"; return 0 ;;
       *) urlfile="$1"; shift ;;
