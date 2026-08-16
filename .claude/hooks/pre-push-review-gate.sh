@@ -7,30 +7,8 @@
 # The security-guidance plugin still runs as an independent first pass.
 set -uo pipefail
 
-# Return 0 only when the command actually invokes the `git push` subcommand
-# (not merely mentions "push", e.g. `git commit -m "...push..."` or echo).
-is_git_push() {
-  local cmd="$1" seg norm
-  norm="${cmd//&&/$'\n'}"; norm="${norm//||/$'\n'}"
-  norm="${norm//;/$'\n'}"; norm="${norm//|/$'\n'}"
-  while IFS= read -r seg; do
-    local toks; read -ra toks <<<"$seg"
-    local k=0
-    # skip leading VAR=val env assignments
-    while [[ $k -lt ${#toks[@]} && "${toks[$k]:-}" == *=* && "${toks[$k]:-}" != -* ]]; do k=$((k+1)); done
-    [[ "${toks[$k]:-}" == git ]] || continue
-    local j=$((k+1))
-    # skip git global flags (some take an argument)
-    while [[ $j -lt ${#toks[@]} && "${toks[$j]}" == -* ]]; do
-      case "${toks[$j]}" in
-        -C|-c|--git-dir|--work-tree|--namespace|--exec-path) j=$((j+2));;
-        *) j=$((j+1));;
-      esac
-    done
-    [[ "${toks[$j]:-}" == push ]] && return 0
-  done <<<"$norm"
-  return 1
-}
+# is_git_push lives in the shared lib (also used by codify-prompt.sh).
+source "$(dirname "${BASH_SOURCE[0]}")/lib/git-cmd.sh"
 
 input="$(cat)"
 tool="$(printf '%s' "$input" | jq -r '.tool_name // empty' 2>/dev/null || true)"

@@ -23,4 +23,4 @@ plan mode の合意内容を `<project-root>/.claude/plans/` 配下の構造化 
 
 ## 再開時
 
-作業を再開したら、まず `<project-root>/.claude/plans/INDEX.md` を読み、関連エントリだけ詳細 doc を Read してから plan に入る（全部は読まない）。
+再開時の運用（INDEX.md → 関連 doc の lazy-read、最初の応答での明示）は `planning-workflow` skill の再開規律に従う。

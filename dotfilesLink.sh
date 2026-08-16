@@ -34,3 +34,5 @@ ln -sf ~/dotfiles/.claude/hooks/pre-push-review-gate.sh ~/.claude/hooks/pre-push
 ln -sf ~/dotfiles/.claude/hooks/webfetch-github-gate.sh ~/.claude/hooks/webfetch-github-gate.sh
 # Codify nudge (PostToolUse): after a successful git push, suggest running retrospective-codify.
 ln -sf ~/dotfiles/.claude/hooks/codify-prompt.sh ~/.claude/hooks/codify-prompt.sh
+# Shared hook library (is_git_push etc.), sourced by the hooks above. Linked as a directory.
+ln -sfn ~/dotfiles/.claude/hooks/lib ~/.claude/hooks/lib

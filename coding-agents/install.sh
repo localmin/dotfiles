@@ -138,7 +138,11 @@ claude mcp remove inkdrop -s user 2>/dev/null || true
 
 # 7. Language servers for enabled LSP plugins (typescript-lsp / pyright-lsp / ruby-lsp / clangd-lsp)
 #    Plugins only enable Claude Code's built-in LSP; the server binaries are needed per machine.
-if command -v npm >/dev/null 2>&1; then
+# Idempotent: skip the network install when the binaries are already present.
+# To upgrade, run the `npm install -g` / `gem install` lines manually.
+if command -v typescript-language-server >/dev/null 2>&1 && command -v pyright >/dev/null 2>&1; then
+  echo "  skip   : npm LSP servers (already installed)"
+elif command -v npm >/dev/null 2>&1; then
   npm install -g typescript-language-server typescript pyright >/dev/null 2>&1 \
     && echo "  ok     : npm LSP servers (typescript-language-server, typescript, pyright)" \
     || echo "  warn   : npm LSP install failed"
@@ -146,7 +150,9 @@ else
   echo "  warn   : npm not found; skip typescript/pyright LSP servers"
 fi
 # ruby-lsp requires ruby >= 3.0 (macOS's bundled 2.6 cannot build prism)
-if command -v gem >/dev/null 2>&1 && ruby -e 'exit(RUBY_VERSION.to_f >= 3.0 ? 0 : 1)' 2>/dev/null; then
+if command -v ruby-lsp >/dev/null 2>&1; then
+  echo "  skip   : ruby-lsp (already installed)"
+elif command -v gem >/dev/null 2>&1 && ruby -e 'exit(RUBY_VERSION.to_f >= 3.0 ? 0 : 1)' 2>/dev/null; then
   gem install ruby-lsp >/dev/null 2>&1 && echo "  ok     : ruby-lsp gem" || echo "  warn   : ruby-lsp gem install failed"
 else
   echo "  skip   : ruby-lsp (needs ruby >= 3.0; current $(ruby -v 2>/dev/null | awk '{print $2}'))"
