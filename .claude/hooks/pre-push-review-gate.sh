@@ -52,14 +52,60 @@ EOF
   fi
 fi
 
+# --- Scope of the pending push -------------------------------------------
+# Resolve what this push actually introduces, so the gate can size the review
+# to the change instead of demanding the same full pass for every commit.
+base=""
+if upstream="$(git -C "$root" rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null)"; then
+  base="$(git -C "$root" merge-base HEAD "$upstream" 2>/dev/null || true)"
+fi
+if [[ -z "$base" ]]; then
+  # New branch with no upstream yet: compare against the default branch.
+  for ref in origin/HEAD origin/main origin/master; do
+    if git -C "$root" rev-parse --verify -q "$ref" >/dev/null 2>&1; then
+      base="$(git -C "$root" merge-base HEAD "$ref" 2>/dev/null || true)"
+      [[ -n "$base" ]] && break
+    fi
+  done
+fi
+
+changed=""
+[[ -n "$base" ]] && changed="$(git -C "$root" diff --name-only "$base..HEAD" 2>/dev/null || true)"
+
+# Docs-only pushes skip the gate: prose cannot break a build or introduce a
+# vulnerability. Anything else -- source, config, workflows, lockfiles -- still
+# requires both reviews. Deliberately NOT a size threshold: small diffs are
+# routinely where the worst bugs hide.
+#
+# Match on the extension, never on a directory: a `^docs/` prefix would let
+# `docs/install.sh` through. The LICENSE alternative is anchored at both ends
+# so `LICENSE.sh` does not pass as `LICENSE`.
+if [[ -n "$changed" ]] && ! printf '%s\n' "$changed" | grep -qvE '\.md$|^LICENSE(\.md|\.txt)?$'; then
+  echo "Pre-push review gate: docs-only change, skipping /code-review and /security-review." >&2
+  exit 0
+fi
+
 if [[ -n "$head" && -f "$marker" && "$(cat "$marker" 2>/dev/null)" == "$head" ]]; then
   exit 0   # reviews approved for this exact HEAD -> allow push
 fi
 
+# Size only picks the effort level, never whether to review at all. Lockfiles
+# are excluded from the count: a dependency bump is thousands of generated
+# lines that no reviewer reads, and it would push every bump into a full pass.
+review_cmd="/code-review"
+if [[ -n "$base" ]]; then
+  churn="$(git -C "$root" diff --numstat "$base..HEAD" -- . ':(exclude)*lock.json' ':(exclude)*lock.yaml' ':(exclude)*.lockb' 2>/dev/null \
+    | awk '{ added += $1; removed += $2 } END { print added + removed + 0 }')"
+  if [[ -n "$churn" && "$churn" -lt 100 ]]; then
+    review_cmd="/code-review low"
+  fi
+fi
+
+
 cat >&2 <<EOF
 Pre-push review gate: this push is blocked until the pending changes are reviewed.
 
-1. Run /code-review on the diff and address findings.
+1. Run $review_cmd on the diff and address findings.
 2. Run /security-review on the diff and address findings.
 3. Record approval for the current commit, then push again:
      git rev-parse HEAD > "$marker"
