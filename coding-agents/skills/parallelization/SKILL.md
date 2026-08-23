@@ -15,6 +15,8 @@ description: タスクに着手するとき最初に読む、並列化と subage
 - **大量探索・grep・解析（3+ query 規模）** → `general-purpose` / `Explore` subagent に投げ、main は要約だけ受け取る。
 - **bias-free 評価**（skill / prompt / 自分の生成物の検証）→ 新規 subagent に投げる。「自分で再読して評価」は禁じ手（自分の生成物を自分で読むと評価にバイアスがかかるため、コンテキストを共有しない別 agent で検証する）。
 - **Long-running batch**（Bash の 10 分上限を超える、同種処理を多数の repo に回す等）→ subagent dispatch か `run_in_background` + `Monitor`。
+  - **`Monitor` は常に sandbox 内で動くので `gh` が使えない**（`~/.config/gh` の読み取りが deny されて起動に失敗する）。CI やリモート状態の監視は `run_in_background: true` + `dangerouslyDisableSandbox` の until ループで行う。
+  - **監視スクリプトで `|| true` を使わない**。取得コマンドの失敗が「該当なし」に化けて偽陰性を報告する（実例: `gh run list ... || true` が sandbox で失敗し、実際には走っていた CI を「実行 0 件」と 2 回報告した）。失敗は失敗として出力させる。
 
 ## 自分が既に subagent のとき（隔離指示の書き方）
 

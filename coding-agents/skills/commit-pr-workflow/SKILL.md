@@ -63,7 +63,15 @@ repo の `CLAUDE.md` / `README` / `CONTRIBUTING` / 既存 git 履歴（merge com
    - **PR 運用**: default ブランチにいるなら**先に作業ブランチを切る（branch-first）**。
      `git push -u origin <branch>` → `gh pr create`（PR 本文書式は下記）。PR は WebFetch でなく
      `gh` で作る。
-8. **push 後**: 試行錯誤・ユーザー訂正・非自明な修正があったセッションなら
+   - **PR 本文は `--body-file` で渡す**。`--body "$(cat <<'EOF' ... EOF)"` は本文中の引用符や
+     backtick でシェルが構文エラーになる（理由: PR 本文にはコード片や `'` がほぼ必ず入る）。
+     一時ファイルに書いて `--body-file` を指す。
+8. **push 後に PR の state を確認する**: `gh pr view <n> --json state`。
+   既存ブランチへ push しても、**その PR が既に merged / closed なら PR は更新されず、
+   `pull_request` イベントも発火しないので CI が 1 件も走らない**（実例: マージ済み PR の
+   ブランチに 7 コミット push し、「PR を更新した」と誤報告した上に CI 未実行に気付かなかった）。
+   閉じていたら main から作業ブランチを切り直して新規 PR を作る。
+9. **push 後**: 試行錯誤・ユーザー訂正・非自明な修正があったセッションなら
    `retrospective-codify` の実行を検討（CLAUDE.md 参照）。
 
 ## commit message
