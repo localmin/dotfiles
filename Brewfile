@@ -11,6 +11,10 @@ tap "xykong/tap"
 tap "yusukebe/tap"
 # Cryptography and SSL/TLS Toolkit
 brew "openssl@3"
+# GNU Privacy Guard (OpenPGP)
+brew "gnupg"
+# Pinentry for GPG on Mac
+brew "pinentry-mac"
 # High performance message passing library
 brew "open-mpi"
 # Code searching, linting, rewriting

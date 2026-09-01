@@ -38,3 +38,9 @@ ln -sf ~/dotfiles/.claude/hooks/codify-prompt.sh ~/.claude/hooks/codify-prompt.s
 ln -sfn ~/dotfiles/.claude/hooks/lib ~/.claude/hooks/lib
 # Config-doc size guard (PostToolUse): warns when CLAUDE.md > 200 or SKILL.md > 500 lines.
 ln -sf ~/dotfiles/.claude/hooks/config-doc-size-guard.sh ~/.claude/hooks/config-doc-size-guard.sh
+
+# GnuPG agent config. Only this one file is linked, never ~/.gnupg itself:
+# that directory holds the secret keys and the trust database, and gpg refuses
+# to use it unless it is mode 700 with 600 on its contents.
+mkdir -p ~/.gnupg && chmod 700 ~/.gnupg
+ln -sf ~/dotfiles/config/gnupg/gpg-agent.conf ~/.gnupg/gpg-agent.conf
