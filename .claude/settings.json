@@ -1,4 +1,7 @@
 {
+  "env": {
+    "SECURITY_REVIEW_MODEL": "claude-opus-5"
+  },
   "permissions": {
     "allow": [
       "Bash(~/dotfiles/coding-agents/skills/inbox-capture/scripts/list-windows.sh)",
