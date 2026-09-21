@@ -27,12 +27,22 @@ Stateless Invocation は1回あたり起動コスト（認証 + npm 解決）が
 
 ## 集計対象ノートブック
 
+`search-notes` の `book:` 修飾子は表示名で引けるが、`create-note` の `bookId` には**実 ID** が要る。2026-09-21 時点の実 ID:
+
 ```
-tech/web-engineering / tech/AI / tech/infra / tech/cryptography
-tech/low-layer / tech/neovim / others/ / someday-ideas/
+book:_dtsK1wL    tech/web-engineering
+book:TnFNXDOy    tech/AI
+book:7beOT60T    tech/infra
+book:Q3uI87J9    tech/cryptography
+book:SvJkLqvg    tech/low-layer
+book:5uqtSYb-    tech/neovim
+book:YPhSGe-q    others
+book:GkmAPwUu    someday-ideas
 ```
 
-(`inbox/` `monthly/` `yearly/` `weekly/` は集計対象外)
+保存先の `monthly` は `book:rFt2TWxB`。`inbox`(`book:51GBqxKj`) と `monthly` は集計対象外（`yearly` / `weekly` は未作成）。
+
+ID が合わないときは `list-notebooks` で引き直し、この一覧を更新する。
 
 ## 手順
 
@@ -73,7 +83,7 @@ Inkdrop の検索修飾子に **日付フィルタは存在しない**（`book:`
 - タグ `xxx`: N本（基準: 3本以上）
 ```
 
-4. **ノートを作成**: `create-note` でタイトル `YYYY-MM 月次サマリー`、`bookId: monthly`、`status: active`
+4. **ノートを作成**: `create-note` でタイトル `YYYY-MM 月次サマリー`、`bookId: "book:rFt2TWxB"`（monthly）、`status: "active"`
 5. **NotebookLM 候補の提示**: 3本以上のタグがあれば `notebooklm-judge` の実行を提案
 
 ## タイムアウトとリトライ方針
