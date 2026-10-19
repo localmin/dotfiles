@@ -23,11 +23,12 @@ Chrome ウィンドウから URL を取得し、記事を fetch して要約し�
 
 ## Phase 0: URL 取得
 
-1. ウィンドウ一覧: `~/dotfiles/coding-agents/skills/inbox-capture/scripts/list-windows.sh`
+1. ウィンドウ一覧: `~/dotfiles/coding-agents/skills/inbox-capture/scripts/list-windows.sh`（出力 `番号|ウィンドウID|タブ数|タイトル`）
 2. 一覧をチャットに**全件そのまま**提示し、「どのウィンドウ（番号）を処理しますか？」と聞く。
-3. 指定番号で `~/dotfiles/coding-agents/skills/inbox-capture/scripts/window-urls.sh <番号>` を実行。
+3. 指定番号の行の**ウィンドウID**で `~/dotfiles/coding-agents/skills/inbox-capture/scripts/window-urls.sh <ウィンドウID>` を実行。
 
-- **`window-urls.sh` を引数なしで実行しない**: fzf に落ちてターミナルを占有しフリーズする。番号は必ず聞いてから渡す。
+- **番号ではなく ID を渡す**: 番号は前面順（z-order）で、一覧取得後にユーザーがウィンドウを触るだけで別ウィンドウを指す（実例: 19 タブのつもりが別ウィンドウの 2 件が返った）。ID はウィンドウが閉じるまで不変。番号を渡すと「no Chrome window with id」で落ちる。
+- **`window-urls.sh` を引数なしで実行しない**: fzf に落ちてターミナルを占有しフリーズする。番号は必ず聞いてから ID に引き直して渡す。回帰テストは `scripts/test-window-urls.sh`（osascript を stub。`TMPDIR` が書けない環境は `TEST_TMPDIR=<書ける場所>`）。
 - **sandbox 下の osascript 失敗に注意**: 両スクリプトは内部で osascript を使う。sandbox では Apple Events がブロックされ「アプリケーションは実行されていません (-600)」という誤解を招くエラーになる。**これを Chrome 未起動と判断しない**。まず `dangerouslyDisableSandbox` で再実行し、それでも失敗するときだけ未起動を疑う。
 - **ウィンドウ一覧が空（exit 0 で出力なし）なら残留 playwright Chrome を疑う**: playwright MCP は `--user-data-dir=~/Library/Caches/ms-playwright-mcp/...` で別インスタンスの Chrome を起動する。残っていると AppleScript の宛先がそちらへ向き `count of windows` が 0 を返す（エラーにならない）。判別は `pgrep -f "ms-playwright-mcp/mcp-chrome"`、当たったら `browser_close` で閉じてから再実行する。**使ったブラウザは必ず `browser_close` で閉じる**（閉じ忘れは次回の Phase 0 を壊す。これが本 skill の browser_close 規定の正本）。
 - macOS + Google Chrome 専用。
