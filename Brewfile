@@ -93,8 +93,6 @@ brew "mas"
 brew "neovim"
 # Small build system for use with gyp or CMake
 brew "ninja"
-# Node.js version manager
-brew "nodebrew"
 # Manage multiple Node.js versions
 brew "nvm"
 # Port to Qt of the Scintilla editing component
