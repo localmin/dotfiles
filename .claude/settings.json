@@ -150,6 +150,8 @@
     "excludedCommands": [
       "gh *",
       "herdr *",
+      "~/dotfiles/coding-agents/skills/inbox-capture/scripts/list-windows.sh*",
+      "~/dotfiles/coding-agents/skills/inbox-capture/scripts/window-urls.sh *",
       "~/dotfiles/coding-agents/skills/inbox-capture/scripts/fetch-batch.sh *"
     ]
   },
