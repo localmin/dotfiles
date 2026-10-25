@@ -137,6 +137,9 @@
       "allowWrite": [
         "~/.cache/inbox-capture"
       ],
+      "denyWrite": [
+        "~/dotfiles/coding-agents/skills/inbox-capture/scripts"
+      ],
       "denyRead": [
         "~/.ssh",
         "~/.aws",
