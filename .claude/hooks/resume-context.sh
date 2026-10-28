@@ -3,14 +3,15 @@
 # Surface resume context so interrupted multi-step work can be picked back up
 # without re-deriving state: the project's .claude/plans/WIP.md plus any
 # uncommitted changes. Stdout from a SessionStart hook is injected as context.
-# Stays silent when there is nothing to resume (clean tree, no WIP.md).
+# Stays silent when there is nothing to resume (clean tree, no WIP.md or a
+# blank one — planning-workflow empties WIP.md when work is settled, since rm is denied).
 set -euo pipefail
 
 root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 wip="$root/.claude/plans/WIP.md"
 out=""
 
-if [[ -f "$wip" ]]; then
+if [[ -f "$wip" ]] && grep -q '[^[:space:]]' "$wip"; then
   out+=$'## Resume state — .claude/plans/WIP.md\n\n'
   out+="$(cat "$wip")"
   out+=$'\n\n'
