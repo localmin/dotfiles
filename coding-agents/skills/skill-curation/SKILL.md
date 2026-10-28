@@ -1,6 +1,6 @@
 ---
 name: skill-curation
-description: 'この dotfiles 環境で agent skill を探す/選ぶ/採用するための meta-skill。ユーザーが明示的に「skill を追加したい」「〜の skill はある?」と言ったとき、または採用前に候補を評価するときだけ起動する——通常作業では auto-invoke しない。catalog-first（references/catalog.md を先に読んでから外を探す）→ 段階的なクロスソース探索 → 7軸ルーブリック → 必須の waxa eval ゲート（source 実行。audit は現行 CLI では任意）→ coding-agents/vendor/manifest.tsv に pin して採用（vendor 機構。この環境は APM を使わない）。'
+description: 'この dotfiles 環境で agent skill を探す/選ぶ/採用するための meta-skill。ユーザーが明示的に「skill を追加したい」「〜の skill はある?」と言ったとき、または採用前に候補を評価するときだけ起動する——通常作業では auto-invoke しない。catalog-first（references/catalog.md を先に読んでから外を探す）→ 段階的なクロスソース探索 → 7軸ルーブリック → 必須の waxa eval ゲート（省略はユーザー承認時のみ。source 実行。audit は現行 CLI では任意）→ coding-agents/vendor/manifest.tsv に pin して採用（vendor 機構。この環境は APM を使わない）。'
 ---
 
 # skill-curation
@@ -22,7 +22,7 @@ skill を足すのは disk 上は安いが context は食う。**意図的に選
 呼ばない:
 
 - 一度きりのタスク → skill 化せず inline で解く
-- 既に vendor 済み(`coding-agents/vendor/manifest.tsv` にある)→ まず再確認
+- 既に vendor 済み(`coding-agents/vendor/manifest.tsv` にある)→ 新規探索せず、その skill の存在と PIN を提示する
 
 ## Phase 1 — catalog-first
 
@@ -32,7 +32,7 @@ skill を足すのは disk 上は安いが context は食う。**意図的に選
 2. project signal を3源から拾う: repo ファイル(`package.json` / `astro.config.*` /
    `svelte.config.*` / `CMakeLists.txt` / `pyproject.toml` / `.github/workflows/` 等)、
    ユーザーの明示意図、`CLAUDE.md` の mandate。
-3. ヒットしたら **install 行を提示して停止**(野良検索に進まない)。ユーザーに提案 →
+3. ヒットしたら **該当行の repo / upstream path と、manifest.tsv に追記する行を提示して停止**(野良検索に進まない)。ユーザーに提案 →
    引き算してもらう。default は少なめ。
 4. catalog に無く、かつ**反復する**ニーズなら Phase 2 へ。30 秒スキャンして無ければ
    迷わずエスカレーション(逆に「近いけど違う」を無理に catalog に押し込まない)。
@@ -66,13 +66,16 @@ skill を足すのは disk 上は安いが context は食う。**意図的に選
 ## ゲート(採用前に必須)
 
 1. **構造チェック**: waxa CLI に `audit` サブコマンドがあれば `waxa audit <candidate-dir>` で
-   安く検出する。ただし**現行 waxa CLI には `audit` が無いことがある**——無ければ下記7軸
+   安く検出する。ただし**現行 waxa CLI には `audit` が無いことがある**——無ければ上記7軸
    ルーブリックを手動で当てて代替する(audit の有無に採用是非を依存させない。実例: herdr は
    audit 不在のため手動ルーブリックで採用、manifest の該当ブロック注記参照)。
 2. `waxa` eval を収束(2連続で unclear ゼロ)まで回す。2反復して unclear が減らなければ
    **divergent = reject**。**npm 版(`npx @mizchi/waxa`)は executor が壊れており偽の収束
    (CONVERGED)を返すことがあるので使わない**——`mizchi/skills@<pin>` を clone して
    `deno run -A tools/waxa/src/cli.ts` の source 実行で回す。詳しい操作は `waxa-eval` skill。
+   **例外**: 対話型 interview skill など、executor に単発実行させる eval に向かないものは、
+   ユーザーの明示承認を得たうえで eval を省略してよい。省略した理由は manifest.tsv の該当ブロックに
+   注記する(前例: mattpocock/skills の grilling 系)。承認なしに省略しない。
 3. ルーブリックの**非冗長**で落ちる候補は、Fit ✓ でも reject(理由を
    `references/rejection-log.md` に記録)。
 
