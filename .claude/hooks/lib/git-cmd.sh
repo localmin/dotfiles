@@ -59,7 +59,7 @@ git_push_dir() {
         -C) _git_cmd_resolve "$d" "${toks[$((j+1))]:-}" || return 2
             d="$_git_cmd_resolved"; j=$((j+2));;
         --git-dir|--git-dir=*|--work-tree|--work-tree=*) return 2;;
-        -c|--namespace|--exec-path) j=$((j+2));;
+        -c|--namespace|--exec-path|--attr-source|--config-env) j=$((j+2));;
         *) j=$((j+1));;
       esac
     done
@@ -75,7 +75,8 @@ git_push_dir() {
 # (`bash -c ...`, `sh -lc ...`) and `git` appears somewhere before `push` after it.
 _git_cmd_shell_push() {
   local shells="${_GIT_CMD_SHELLS// /|}"
-  local re="(^|[[:space:];&|(])(${shells})[[:space:]]+(-[A-Za-z]+[[:space:]]+)*-[A-Za-z]*c[A-Za-z]*[[:space:]].*git.*push"
+  # Any options (with or without values) may sit before the `-c`-style flag.
+  local re="(^|[[:space:];&|(])(${shells})[[:space:]](.*[[:space:]])?-[A-Za-z]*c[A-Za-z]*[[:space:]].*git.*push"
   [[ "$1" =~ $re ]]
 }
 
@@ -127,27 +128,23 @@ is_git_push() {
     # Shells were handled on the whole command above; a shell running a script file
     # is not inspected.
     [[ " $_GIT_CMD_SHELLS " == *" ${toks[0]:-} "* ]] && continue
-    # A wrapper (env/command/nohup/...) can carry its own options and values before
-    # `git`; find the `git` token, skip its global options, and count the segment as
-    # a push when the subcommand is `push` — with no dry-run exemption (fail closed).
+    # A wrapper (env/command/nohup/...) carries its own options and values before
+    # `git` (`env -u git git push`), which this parser cannot tell apart from git's.
+    # Any `push` token after a `git` token counts as a push, with no dry-run
+    # exemption. This over-blocks e.g. `env git commit -m push` on purpose.
     if [[ " $_GIT_CMD_WRAPPERS " == *" ${toks[0]:-} "* ]]; then
-      local k=1
-      while [[ $k -lt ${#toks[@]} && "${toks[$k]}" != git ]]; do k=$((k+1)); done
-      k=$((k+1))
-      while [[ $k -lt ${#toks[@]} && "${toks[$k]}" == -* ]]; do
-        case "${toks[$k]}" in
-          -C|-c|--git-dir|--work-tree|--namespace|--exec-path) k=$((k+2));;
-          *) k=$((k+1));;
-        esac
+      local k seen_git=0
+      for ((k = 1; k < ${#toks[@]}; k++)); do
+        [[ "${toks[$k]}" == git ]] && seen_git=1
+        [[ $seen_git -eq 1 && "${toks[$k]}" == push ]] && return 0
       done
-      [[ "${toks[$k]:-}" == push ]] && return 0
       continue
     fi
     [[ "${toks[0]:-}" == git ]] || continue
     local j=1
     while [[ $j -lt ${#toks[@]} && "${toks[$j]}" == -* ]]; do
       case "${toks[$j]}" in
-        -C|-c|--git-dir|--work-tree|--namespace|--exec-path) j=$((j+2));;
+        -C|-c|--git-dir|--work-tree|--namespace|--exec-path|--attr-source|--config-env) j=$((j+2));;
         *) j=$((j+1));;
       esac
     done

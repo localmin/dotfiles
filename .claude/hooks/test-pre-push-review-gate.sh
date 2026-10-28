@@ -65,10 +65,16 @@ check "cd in a pipeline does not move the push" block "$T/pending" "cd $T/approv
 check "backgrounded cd does not move the push" block "$T/pending"  "cd $T/approved & git push"
 check "quoted cd is not a directory change"    block "$T/pending"  "echo \"a && cd $T/approved && b\" && git push"
 check "shell -c wrapper is gated"              block "$T/pending"  "bash -c \"git push\""
-check "wrapped non-push git is not a push"     allow "$T/pending"  "env git commit -m push"
+# Deliberate over-block: behind a wrapper the parser cannot tell the wrapper's own
+# arguments from git's, so any `push` after a `git` token counts as a push.
+check "wrapped git mentioning push over-blocks" block "$T/pending" "env git commit -m push"
+check "wrapper option named git is not git"    block "$T/pending"  "env -u git git push"
+check "git option taking a separate value"     block "$T/pending"  "git --attr-source HEAD push"
 check "unrelated wrapper before push is fine"  allow "$T/approved" "command -v jq && git push"
 check "shell -c string with separators"        block "$T/pending"  "bash -c \"git fetch; git push\""
 check "sh -c string with cd chain"             block "$T/pending"  "sh -c 'cd x && git push'"
+check "shell option with a value before -c"    block "$T/pending"  "bash -o pipefail -c \"git push\""
+check "shell long option before -c"            block "$T/pending"  "bash --login -c \"git push\""
 check "shell running a script is not a push"   allow "$T/pending"  "bash ./tools/git-push-helper.sh"
 check "bare pushd fails closed"                block "$T/approved" "pushd $T/pending; pushd $T/approved; pushd; git push"
 
