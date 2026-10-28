@@ -24,8 +24,30 @@ tool="$(printf '%s' "$input" | jq -r '.tool_name // empty' 2>/dev/null || true)"
 cmd="$(printf '%s' "$input" | jq -r '.tool_input.command // empty' 2>/dev/null || true)"
 is_git_push "$cmd" || exit 0
 
-root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
-[[ -n "$root" ]] || exit 0   # not a git repo: nothing to gate
+# Judge the repository the push targets, not the one this hook process runs in:
+# `git -C other push` / `cd other && git push` must be gated against `other`.
+session_dir="$(printf '%s' "$input" | jq -r '.cwd // empty' 2>/dev/null || true)"
+[[ -n "$session_dir" ]] || session_dir="$PWD"
+# Every resolution failure blocks: a push is already confirmed, so "unknown target"
+# must never degrade into "gate some other repo" or "nothing to gate".
+dir_rc=2
+if declare -F git_push_dir >/dev/null 2>&1; then
+  push_dir="$(git_push_dir "$cmd" "$session_dir")"; dir_rc=$?
+fi
+if [[ $dir_rc -ne 0 ]]; then
+  cat >&2 <<'EOF'
+Pre-push review gate: cannot tell which repository this push targets (subshell,
+grouping, variable expansion, GIT_DIR/--git-dir, cd options, or the hook lib is not
+linked). Run `git push` (or `git -C <literal path> push`) as a plain command so the
+gate can check that repo.
+EOF
+  exit 2
+fi
+root="$(git -C "$push_dir" rev-parse --show-toplevel 2>/dev/null || true)"
+if [[ -z "$root" ]]; then
+  echo "Pre-push review gate: '$push_dir' is not a git repository; refusing the push." >&2
+  exit 2
+fi
 gitdir="$(git -C "$root" rev-parse --git-dir 2>/dev/null || true)"
 [[ -n "$gitdir" ]] || exit 0
 [[ "$gitdir" = /* ]] || gitdir="$root/$gitdir"
