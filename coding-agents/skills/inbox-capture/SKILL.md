@@ -1,6 +1,6 @@
 ---
 name: inbox-capture
-description: Chromeウィンドウを選択して全タブのURLを取得し、記事を要約してInkdropのinbox当日まとめノート（inbox YYYY-MM-DD）にセクションとして追記する。同日2回目以降は既存ノートに追記。日次運用想定。
+description: Chromeウィンドウを選択して全タブのURLを取得し、記事を要約してInkdropのinbox当日まとめノート（inbox YYYY-MM-DD）にセクションとして追記し、各記事に読了判定（即読了/要約で十分/後で読む）を付ける。URL を引数で直接渡すことも可。同日2回目以降は既存ノートに追記。「タブを inbox に入れて」「今日の記事をまとめて」を頼まれたら使う。日次運用想定（macOS + Chrome 専用）。
 ---
 
 # inbox-capture
@@ -22,6 +22,8 @@ Chrome ウィンドウから URL を取得し、記事を fetch して要約し�
 `jq --rawfile` 経路は Antigravity 専用ではない。**どの CLI でも、既存本文が大きいノートへの追記はこの経路**（理由は Phase 2）。
 
 ## Phase 0: URL 取得
+
+**引数で URL が渡されたら Phase 0 を飛ばす**: 1 行 1 URL でリストファイルに書き、それを系統A の `fetch-batch.sh` に渡す（ウィンドウ一覧は出さない）。以下は引数なしのとき。
 
 1. ウィンドウ一覧: `~/dotfiles/coding-agents/skills/inbox-capture/scripts/list-windows.sh`（出力 `番号|ウィンドウID|タブ数|タイトル`）
 2. 一覧をチャットに**全件そのまま**提示し、「どのウィンドウ（番号）を処理しますか？」と聞く。
@@ -60,7 +62,7 @@ Chrome ウィンドウから URL を取得し、記事を fetch して要約し�
 
 - **`status` は自動検出の下限であって十分性の保証ではない**。`ok` でも本文が薄いなら `empty` と同じエスカレーション（playwright）に載せる。判断するのは status でなく読んだ自分。
 - 主な引数: `-b <budget>`（HTML の `ax --budget`、既定 6000）/ `-j <並列数>`（既定 8。429 が出るホストは下げる）/ `-o <出力先>`。URL は 1 回で何件でも可（制御するのは同時接続数）。
-- **GitHub URL を含むときは `dangerouslyDisableSandbox` を付ける**（sandbox は `~/.config/gh` 読み取りを拒否し `gh` が全滅。404 でも認証切れでもないので「取得失敗」に積まない）。inbox 固有の注意:
+- **`fetch-batch.sh` は URL の種類によらず常に `dangerouslyDisableSandbox` を付けて実行する**。sandbox 内では ① ネットワーク許可リスト外のホストが proxy に拒否され、`NNN.err` に `403 not in this command's allowed_domains` と出る（**サイトの 403 ではない**。実測: 非 GitHub の 2 件が全滅）② `~/.config/gh` の読み取りが拒否され `gh` が全滅する（404 でも認証切れでもない）。どちらも sandbox 起因なので「取得失敗」に積まない。sandbox 外での実行が拒否されたら、`.err` に出たホストを Bash の `allowed_domains` に並べて取り直す（条件を変えた取り直しで、再試行に当たらない）。inbox 固有の注意:
   - **`sandbox.excludedCommands` の `gh *` は効かない**: 照合はコマンド先頭に対してで、`fetch-batch.sh` の**内部から**呼ばれる `gh` は sandbox の外に出ない。スクリプト自体が除外対象でない限り「`gh *` があるから大丈夫」の根拠にしない。
   - **`dangerouslyDisableSandbox` が拒否されたら sandbox 内で走らせて終わりにしない**: GitHub 系だけ静かに失敗する。① GitHub 系 URL を別リストに分け `gh` で取り直す（`gh` 単体なら `excludedCommands` の `gh *` が効く）② それも拒否ならユーザーに permission 追加を求める、の順で対応し、**取れなかった旨を必ず報告する**。
 
@@ -74,11 +76,11 @@ Chrome ウィンドウから URL を取得し、記事を fetch して要約し�
 
 ファミリで判断し既知ホストの列挙で判断しない（列挙だと未掲載サブパスが未定義になる）。**GitHub 系を `gh` 以外で取ると本文が薄くなり週次判定を誤らせる。**
 
-**取得失敗の扱い**（正本。系統A の `failed` とタイムアウト節はここを参照）: 4xx / 5xx / タイムアウト / 429 は**カテゴリ問わず同一条件での再試行をしない**。条件を変えた取り直し（`partial`→`-b` 引き上げ、`empty`→playwright）は再試行に当たらず、各 status の規定どおり実施してよい。禁止は「同じコマンドをもう一度打つ」ことだけ。失敗はリストに積んで続行し、ノート末尾に `## 取得失敗` セクションとしてまとめる。各行に **`NNN.err` のエラー原文を必ず併記**（`- <URL> — ax: fetch failed: 429`）。分類は読み手に委ね、記録側は情報を落とさない。**GitHub 系が `gh` で失敗しても WebFetch にフォールバックしない**（薄い要約で埋めるより欠落として明示する方が誤らせない）。
+**取得失敗の扱い**（正本。系統A の `failed` とタイムアウト節はここを参照）: 4xx / 5xx / タイムアウト / 429 は**カテゴリ問わず同一条件での再試行をしない**。条件を変えた取り直し（`partial`→`-b` 引き上げ、`empty`→playwright）は再試行に当たらず、各 status の規定どおり実施してよい。禁止は「同じコマンドをもう一度打つ」ことだけ。失敗はリストに積んで続行し、ノート末尾に `## 取得失敗` セクションとしてまとめる。各行に **`NNN.err` のエラー原文を必ず併記**（`- <URL> — ax: fetch failed: 429`）。分類は読み手に委ね、記録側は情報を落とさない。**全件が失敗して記事セクションが 0 件になったら、Phase 2 の書き込みをせずに止め、失敗内容をユーザーに報告して判断を仰ぐ**（失敗セクションだけのノート追記は、たいてい sandbox や permission の問題で、書いても役に立たない）。**GitHub 系が `gh` で失敗しても WebFetch にフォールバックしない**（薄い要約で埋めるより欠落として明示する方が誤らせない）。
 
 **守るべき不変条件: 生本文をこのタスク後も残る文脈に到達させない**。生本文は tool result に乗ると要約後もログに残るので、**inline fetch は件数によらず必ず汚染する**。立場は自己認識で判定せず、**プロンプトの明示 signal で判定する**:
 
-- **プロンプトに `ISOLATED-EXECUTOR` が無ければ自分は main 側**。系統A ごと `general-purpose` subagent に隔離し、main は完成セクション（要約 + 読了判定）だけ受け取る（`parallelization` skill）。dispatch 時、subagent プロンプト冒頭に必ず: `ISOLATED-EXECUTOR: あなたは隔離済みの実行者です。系統A をさらに subagent へ再委譲せず inline で実行してください。`
+- **プロンプトに `ISOLATED-EXECUTOR` が無ければ自分は main 側**。系統A ごと `general-purpose` subagent に隔離し、main は完成セクション（要約 + 読了判定）だけ受け取る（`parallelization` skill）。返させるもの: ① 新セクションを書いたファイルのパス ② 即読了以外の記事ファイル（`NNN.md` / `NNN.pdf`）のパス一覧（推定読了時間の記事分に使う）③ 取得失敗の URL と `.err` 原文。読了判定の関心軸の材料（作業中 repo の `CLAUDE.md` 要点・既存 inbox の「後で読む」傾向）は main が集め、委譲プロンプトに書いて渡す（subagent に Inkdrop を読ませない）。dispatch 時、subagent プロンプト冒頭に必ず: `ISOLATED-EXECUTOR: あなたは隔離済みの実行者です。系統A をさらに subagent へ再委譲せず inline で実行してください。`
 - **`ISOLATED-EXECUTOR` があれば inline で実行**（再委譲は 1 段で止まる）。宣言が無くても「再委譲するな / あなたが専任」に相当する指示があれば inline に倒し、その際は**生本文がこの文脈に乗ったことを報告に明示する**。
 - **12 件超は subagent 自体を複数並列に dispatch**（fetch 時間は潰れているので残るは要約の思考時間）。URL を 6〜8 件ずつに分け同一ブロックで同時起動、main は返ったセクションを URL 順に連結。少数なら 1 subagent でよい。
 
@@ -112,9 +114,9 @@ stdio 経路で `read-note` を呼び、**本文を `<出力先>/body.md` に書
 Phase 1 で揃った全セクションをまとめて当日ノートに書く。**MCP 呼び出しは 1 回だけ**。
 
 - 新規作成: `create-note`。**`status: "active"` を必ず指定**（省略すると `none` になり表示されない）。作成された `_id` を `~/.cache/inbox-capture/today-note-id` に保存する（**キャッシュ書き込みは sandbox 内で失敗**する＝`~/.cache` は書き込み許可外。`dangerouslyDisableSandbox` を付ける。恒久対策は settings.json の `sandbox.filesystem.allowWrite` に `~/.cache/inbox-capture` を追加、設定済み）。
-- 追記: `update-note`。引数は `_id` と `_rev`（`noteId` ではない。`note-head.sh` の `id` / `rev` をそのまま使う）。**既存本文を絶対に消さず末尾にセクションを追加するだけ**。
+- 追記: `update-note`。引数は `_id` / `_rev` / `body` / `title` / `bookId` / `status: "active"`（`noteId` ではない。`id` / `rev` / `title` / `bookId` は `note-head.sh` の出力をそのまま使う）。例: `jq -nc --rawfile body <連結先> --arg id <id> --arg rev <rev> --arg t "<title>" --arg b <bookId> '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"update-note","arguments":{"_id":$id,"_rev":$rev,"body":$body,"title":$t,"bookId":$b,"status":"active"}}}'`。**既存本文を絶対に消さず末尾にセクションを追加するだけ**。
   - **既存本文が大きいときは MCP の `body` 引数を使わない**: `update-note` は body 全文を引数に取り、既存本文（20 件で 60,000 字超）を main の文脈に載せてしまう。この規模では**全 CLI 共通で** `jq --rawfile` + stdio 経路（下記）を使う。
-  - **連結はファイル上で行う**: 新セクションだけをファイルへ書き、`cat <body_path> <新セクション> > <連結先>` で繋いで `jq -nc --rawfile body <連結先>` に渡す。`body_path` は `note-head.sh` が書いた既存本文で**一度も文脈に載っていない**。文脈に置くのは追記する新セクションだけ。
+  - **連結はファイル上で行う**: 新セクションだけをファイルへ書き、追記なら `{ cat <body_path>; printf '\n'; cat <新セクション>; } > <連結先>`、新規作成なら `{ printf '# inbox <今日の日付>\n\n'; cat <新セクション>; } > <連結先>` で作って `jq -nc --rawfile body <連結先>` に渡す（既存本文の末尾が改行で終わるかは読まずに分からないので、区切りの改行を必ず挟む）。`body_path` は `note-head.sh` が書いた既存本文で**一度も文脈に載っていない**。文脈に置くのは追記する新セクションだけ。
   - **連結先に `reading-time.sh apply` をかけてから `jq` に渡す**（新規作成時も同じ）。既存本文を文脈に載せずに冒頭行だけ書き換えられる唯一の経路。詳細は「推定読了時間」。
 - **`bookId` は inbox ノートブックの実 `_id`**（例 `book:51GBqxKj`。`^(book:|trash$)` 必須で表示名 `inbox` や `book:inbox` では通らない。`list-notebooks` の `name == "inbox"` から引く）。混同注意: `search-notes` の `book:inbox` は**表示名フィルタ**でそのまま使える。実 `_id` を要求するのは `create-note` / `update-note` の `bookId` だけ。
 - **タグは付けない**（週次で「育てる」判定して昇格したときだけ）。日次ノートの既読管理も**タグではなく `status`** で行う——ユーザーがその日の分に目を通したら `completed` にする運用なので、作成時の `active` は「未読」を意味する。タグを状態管理に使うと `notebooklm-judge` の全タグ走査に偽の昇格候補として出てくる。
@@ -166,13 +168,13 @@ Phase 1 で揃った全セクションをまとめて当日ノートに書く。
 | 要約で十分 | 取得本文 5,000 字超・関心の周辺・概観で足りそう | 対象外（完了） |
 | 後で読む | 関心の中心・深読みで知識化したい | weekly-review で 育てる/捨てる |
 
-字数は**取得した本文**（`NNN.md`）で測る（原文の長さは手元にない）。**`wc -m`（文字数）を使い `wc -c`（バイト数）と混同しない**（日本語は 1.7〜2.2 倍ずれ判定が1段狂う）。**PDF は `NNN.pdf` しか出ないのでページ数を代理指標に**（目安: 10 ページ以下で「即読了」相当）。非記事ページ（EC 商品一覧・検索結果・ダッシュボード等）は要約対象を**列挙の要点**（件数・分類・価格帯・在庫や締切）にし、分量軸は「一覧を見て判断が済むか」で読む。
+字数は**取得した本文**（`NNN.md`）で測る（原文の長さは手元にない。明らかなナビゲーション・リンク列は差し引いて見てよく、効くのは 5,000 字の境界付近だけ）。GitHub の README やツール紹介ページは通常の記事として扱う。**`wc -m`（文字数）を使い `wc -c`（バイト数）と混同しない**（日本語は 1.7〜2.2 倍ずれ判定が1段狂う）。**PDF は `NNN.pdf` しか出ないのでページ数を代理指標に**（目安: 10 ページ以下で「即読了」相当）。非記事ページ（EC 商品一覧・検索結果・ダッシュボード等）は要約対象を**列挙の要点**（件数・分類・価格帯・在庫や締切）にし、分量軸は「一覧を見て判断が済むか」で読む。
 
 ## 推定読了時間
 
 ノート冒頭（`# inbox YYYY-MM-DD` の直下）に、その日の分を読み切るのにかかる推定時間を 1 行置く。**対象は「ノートの要約テキスト」+「即読了以外（要約で十分 / 後で読む）の記事本文」**——即読了は日次の時点で読み終わっているので残り時間に数えない。Phase 2 の連結後・MCP 送信前に刻む。
 
-1. 要約分: **今回書く新セクションだけ**を渡す → `~/dotfiles/coding-agents/skills/inbox-capture/scripts/reading-time.sh estimate <新セクション.md>`
+1. 要約分: **今回書く記事セクションだけ**を渡す（`## 取得失敗` セクションは除く）→ `~/dotfiles/coding-agents/skills/inbox-capture/scripts/reading-time.sh estimate <新セクション.md>`
 2. 記事分: **即読了以外の** `NNN.md` / `NNN.pdf` だけを渡す → 同 `estimate <files...>`
 3. 刻む: 同 `apply --summary <分> --articles <分> --count <即読了以外の本数> <連結先>`（更新後の行を標準出力に返す）
 
