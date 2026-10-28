@@ -67,6 +67,8 @@ check "quoted cd is not a directory change"    block "$T/pending"  "echo \"a && 
 check "shell -c wrapper is gated"              block "$T/pending"  "bash -c \"git push\""
 check "wrapped non-push git is not a push"     allow "$T/pending"  "env git commit -m push"
 check "unrelated wrapper before push is fine"  allow "$T/approved" "command -v jq && git push"
+check "shell -c string with separators"        block "$T/pending"  "bash -c \"git fetch; git push\""
+check "sh -c string with cd chain"             block "$T/pending"  "sh -c 'cd x && git push'"
 check "shell running a script is not a push"   allow "$T/pending"  "bash ./tools/git-push-helper.sh"
 check "bare pushd fails closed"                block "$T/approved" "pushd $T/pending; pushd $T/approved; pushd; git push"
 

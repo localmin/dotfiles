@@ -21,6 +21,7 @@ _GIT_CMD_SHELLS="bash sh zsh dash ksh"
 git_push_dir() {
   local cmd="$1" dir="$2" seg norm found="" rest unsure_cd=0
   is_git_push "$cmd" || return 1
+  _git_cmd_shell_push "$cmd" && return 2
   [[ "$cmd" =~ [\(\)\{\}\$\`] ]] && return 2
   [[ "$cmd" == *GIT_DIR=* || "$cmd" == *GIT_WORK_TREE=* ]] && return 2
   # A cd only moves the push when the two are plain sequential commands: not in a
@@ -70,6 +71,14 @@ git_push_dir() {
   printf '%s\n' "$found"
 }
 
+# _git_cmd_shell_push CMD — return 0 when CMD runs a shell with a command string
+# (`bash -c ...`, `sh -lc ...`) and `git` appears somewhere before `push` after it.
+_git_cmd_shell_push() {
+  local shells="${_GIT_CMD_SHELLS// /|}"
+  local re="(^|[[:space:];&|(])(${shells})[[:space:]]+(-[A-Za-z]+[[:space:]]+)*-[A-Za-z]*c[A-Za-z]*[[:space:]].*git.*push"
+  [[ "$1" =~ $re ]]
+}
+
 # _git_cmd_resolve BASE PATH — set _git_cmd_resolved to PATH resolved against BASE.
 # Fails on anything that is not plain static text (quotes, globs, empty) and on
 # option-like operands (`cd -`, `cd -P dir`), whose target is not the operand.
@@ -98,6 +107,9 @@ is_git_push() {
   # Check the whole command before splitting: the split below drops grouping
   # characters, and `--dry-run {--no-dry-run,origin}` must not lose its braces.
   [[ "$cmd" =~ $meta ]] && cmd_meta=1
+  # A shell given a command string (`bash -c`, `sh -lc`, ...) is checked on the whole
+  # command: splitting below would cut inside the quoted string and lose the push.
+  _git_cmd_shell_push "$cmd" && return 0
   norm="${cmd//&&/$'\n'}"; norm="${norm//||/$'\n'}"
   norm="${norm//;/$'\n'}"; norm="${norm//|/$'\n'}"; norm="${norm//&/$'\n'}"
   # Grouping characters also delimit commands: `(cd x && git push)` would otherwise
@@ -112,12 +124,9 @@ is_git_push() {
       seg="${seg#"${BASH_REMATCH[0]}"}"
     done
     local toks; read -ra toks <<<"$seg"
-    # A shell given a command string (`-c`, `-lc`, ...): any `git` followed later by
-    # `push` is a push. A shell running a script file is not inspected.
-    if [[ " $_GIT_CMD_SHELLS " == *" ${toks[0]:-} "* ]]; then
-      [[ " ${toks[*]} " =~ [[:space:]]-[A-Za-z]*c[A-Za-z]*[[:space:]] && "$raw" == *git*push* ]] && return 0
-      continue
-    fi
+    # Shells were handled on the whole command above; a shell running a script file
+    # is not inspected.
+    [[ " $_GIT_CMD_SHELLS " == *" ${toks[0]:-} "* ]] && continue
     # A wrapper (env/command/nohup/...) can carry its own options and values before
     # `git`; find the `git` token, skip its global options, and count the segment as
     # a push when the subcommand is `push` — with no dry-run exemption (fail closed).
