@@ -1,6 +1,6 @@
 ---
 name: commit-pr-workflow
-description: コミット / push / PR 作成を頼まれたときに使う一連の手順。粒度整理・push 前レビューゲート・repo 運用の判定（直コミット vs branch+PR）・commit message / PR 本文の書式を、この環境の規約どおりに実行する。commit と push は別フェーズで、頼まれた分だけ実行して止まる。
+description: コミット / push / PR 作成を頼まれたときに使う一連の手順。粒度整理・push 前レビューゲート・repo 運用の判定（直コミット vs branch+PR）・commit message / PR 本文の書式を、この環境の規約どおりに実行する。public repo の機密確認、push 後の PR state 確認も含む。commit と push は別フェーズで、頼まれた分だけ実行して止まる。
 ---
 
 # commit / push / PR ワークフロー
@@ -33,16 +33,31 @@ repo の `CLAUDE.md` / `README` / `CONTRIBUTING` / 既存 git 履歴（merge com
 1. `git log` / `git status` を見て**粒度を整える**。多目的な変更は論理単位に分割、
    無意味な細切れは squash。共有ファイルに複数の関心が混在する場合は hunk 単位で分けて
    別コミットにする。
+   - hunk 単位の stage は `git add -p`（対話型）を使わず、`git diff -U0 <file>` から対象 hunk を
+     パッチファイルに切り出して `git apply --cached --unidiff-zero <patch>` で入れ、`git diff --cached` で確かめる。
+   - docs の変更は、特定のコード変更を説明するものならそのコミットに同梱し、どれにも結び付かない
+     汎用の docs なら単独のコミットにする。判定: docs 差分が、同じ変更で追加・変更した識別子
+     （関数名・フラグ名・設定キー）に言及していれば同梱（例: `shout` の使い方を書いた README は
+     `shout` 追加のコミットへ）、言及していなければ単独。
 2. commit 直前に **`git status` で index 全体を確認**（path を絞った add でも、
    既に stage 済みの無関係な変更が混ざっていないか見る）。
+   - 依頼と無関係な stage 済みの変更を見つけたら、`git restore --staged <path>` で外してからコミットし、
+     **コミット後に `git add <path>` で元の stage 状態に戻す**（ユーザーの stage を勝手に消さない。新規ファイルは外すと
+     一時的に untracked と表示されるが、同じ手順で戻る）。
+     外したことは報告に明記する。
 3. **commit する（sandbox 外）**。message 書式は下記「commit message」。
 4. **push はしない**。「N コミット作成、push は未実施」と報告して終わる。
 
 ## フェーズ2: push（「push して」で実行）
 
-5. **push 前ゲート**: `/code-review` と `/security-review` を通し findings に対処する。
+5. **push 前ゲート**: CLAUDE.md の基準で判定し、findings に対処する——差分が `*.md` / `LICENSE` だけなら不要、
+   それ以外は `/security-review` に加えて、lockfile を除いた変更が 100 行未満なら `/code-review low`、
+   それ以上なら `/code-review`。
    - Claude Code: PreToolUse hook（`pre-push-review-gate.sh`）が未レビューの push をブロックし
      手順を提示する。承認後 `git rev-parse HEAD > <gitdir>/review-ok` で HEAD を記録して再 push。
+     レビューを push より先に済ませたなら、最初の push の前に marker を記録してよい。
+     hook は push 先の repo を判定するので、`git push` は `(...)` で囲んだり変数を使ったりせず、
+     素のコマンド（または `git -C <リテラルのパス> push`）で打つ（判定できない形はブロックされる）。
    - **marker 記録と `git push` は別のツール呼び出しに分ける**。`&&` で1コマンドに繋ぐと
      PreToolUse hook が**コマンド全体の実行前**に走るため、marker はまだ書かれておらず
      旧 HEAD で判定されて必ずブロックされる（理由: hook から見えるのはコマンド文字列だけで、
@@ -57,7 +72,8 @@ repo の `CLAUDE.md` / `README` / `CONTRIBUTING` / 既存 git 履歴（merge com
 6. **public repo なら push 前に公開範囲と機密を確認する**（理由: push は取り消せず、
    一度公開された内容はキャッシュ・インデックスに残る）。
    - `gh repo view <owner>/<repo> --json visibility` で public か private かを確定させる。
-     private だと思い込んだまま進めない。
+     private だと思い込んだまま進めない。remote URL が github.com でなければ `gh repo view` は
+     実行せず、`gh` が使えないときと同様に**確定できないものとして public とみなし**、以下を実施する。
    - public なら**差分だけでなく追跡ファイル全体**を機密スキャンする
      （`git ls-files` + credential パターンの `git grep`）。差分が clean でも、
      以前から追跡されている設定ファイルは対象外になっている。
@@ -69,10 +85,14 @@ repo の `CLAUDE.md` / `README` / `CONTRIBUTING` / 既存 git 履歴（merge com
    - **PR 運用**: default ブランチにいるなら**先に作業ブランチを切る（branch-first）**。
      `git push -u origin <branch>` → `gh pr create`（PR 本文書式は下記）。PR は WebFetch でなく
      `gh` で作る。
+     - default ブランチに未 push の commit があった場合、作業ブランチを切った後も default 側に同じ
+       commit が残る。**勝手に `reset` しない**。「ローカルの <default> を origin に戻すか
+       （`git branch -f <default> origin/<default>`）」をユーザーに確認し、報告に書く。
    - **PR 本文は `--body-file` で渡す**。`--body "$(cat <<'EOF' ... EOF)"` は本文中の引用符や
      backtick でシェルが構文エラーになる（理由: PR 本文にはコード片や `'` がほぼ必ず入る）。
      一時ファイルに書いて `--body-file` を指す。
-8. **push 後に PR の state を確認する**: `gh pr view <n> --json state`。
+8. **push 後に PR の state を確認する**: `gh pr view <n> --json state`（`<n>` は `gh pr create` が
+   出力する URL の末尾。番号が手元に無ければ `gh pr view <branch> --json number,state`）。
    既存ブランチへ push しても、**その PR が既に merged / closed なら PR は更新されず、
    `pull_request` イベントも発火しないので CI が 1 件も走らない**（実例: マージ済み PR の
    ブランチに 7 コミット push し、「PR を更新した」と誤報告した上に CI 未実行に気付かなかった）。
@@ -84,7 +104,8 @@ repo の `CLAUDE.md` / `README` / `CONTRIBUTING` / 既存 git 履歴（merge com
 
 - 英語。件名は論理変更を端的に（命令形）。本文は必要なら why を数行。
 - trailer は **`Co-Authored-By` の1行のみ**。起動中の CLI の AI を co-author にする
-  （固定しない）。例:
+  （固定しない）。harness が attribution 行（モデル名入りなど）を提示していればそれをそのまま使う。
+  提示が無いときの例:
   - Claude Code: `Co-Authored-By: Claude <noreply@anthropic.com>`
   - Codex: `Co-Authored-By: GPT <noreply@openai.com>` 相当
   - Antigravity: `Co-Authored-By: Gemini <noreply@google.com>` 相当
