@@ -5,18 +5,28 @@
 # Commands that run another command (and may change its cwd or environment first,
 # e.g. `env -C dir`, `builtin cd`). Pushes behind them are detected but never resolved.
 _GIT_CMD_WRAPPERS="env command builtin nohup time nice sudo exec xargs"
+# Shells that take the command as a string (`bash -c "git push"`); any `git`
+# followed by `push` in that string counts as a push.
+_GIT_CMD_SHELLS="bash sh zsh dash ksh"
 
 # git_push_dir CMD BASE — print the directory the `git push` in CMD runs from,
 # starting at BASE (the session cwd). Follows `cd`/`pushd DIR` segments that come
 # before the push and `git -C DIR` options (relative paths compose, as git does).
 # Returns 1 when CMD has no push, 2 when the target cannot be resolved statically
-# (subshells, groups, expansions, --git-dir/--work-tree, GIT_DIR/GIT_WORK_TREE,
-# cd options, or commands that move/replace the shell) so callers can fail closed.
+# so callers can fail closed: subshells, groups, expansions, --git-dir/--work-tree,
+# GIT_DIR/GIT_WORK_TREE, cd options or a bare pushd, a cd whose effect is unclear
+# (inside a pipeline, backgrounded, or in a command with quoting the splitter
+# ignores), commands that move/replace the shell, a push behind a wrapper, or
+# several pushes that resolve to different directories.
 git_push_dir() {
-  local cmd="$1" dir="$2" seg norm
+  local cmd="$1" dir="$2" seg norm found="" rest unsure_cd=0
   is_git_push "$cmd" || return 1
   [[ "$cmd" =~ [\(\)\{\}\$\`] ]] && return 2
   [[ "$cmd" == *GIT_DIR=* || "$cmd" == *GIT_WORK_TREE=* ]] && return 2
+  # A cd only moves the push when the two are plain sequential commands: not in a
+  # pipeline stage, not backgrounded, and not inside quotes this splitter ignores.
+  rest="${cmd//&&/}"; rest="${rest//||/}"
+  [[ "$rest" == *[\|\&\"\']* ]] && unsure_cd=1
   norm="${cmd//&&/$'\n'}"; norm="${norm//||/$'\n'}"
   norm="${norm//;/$'\n'}"; norm="${norm//|/$'\n'}"; norm="${norm//&/$'\n'}"
   while IFS= read -r seg; do
@@ -26,12 +36,20 @@ git_push_dir() {
     local toks; read -ra toks <<<"$seg"
     case "${toks[0]:-}" in
       cd|pushd)
+        [[ $unsure_cd -eq 0 ]] || return 2
+        if [[ "${toks[0]}" == pushd && -z "${toks[1]:-}" ]]; then return 2; fi   # swaps the stack
         _git_cmd_resolve "$dir" "${toks[1]:-$HOME}" || return 2
         dir="$_git_cmd_resolved"; continue;;
       popd|eval|source|.|export) return 2;;
       git) ;;
       "") continue;;
-      *) [[ " $_GIT_CMD_WRAPPERS " == *" ${toks[0]} "* ]] && return 2; continue;;
+      *)
+        if [[ " $_GIT_CMD_WRAPPERS $_GIT_CMD_SHELLS " == *" ${toks[0]} "* ]]; then
+          # A wrapper is harmless unless it hides the push or a directory change.
+          is_git_push "$seg" && return 2
+          [[ " ${toks[*]} " =~ [[:space:]](cd|pushd|popd)[[:space:]] ]] && return 2
+        fi
+        continue;;
     esac
     is_git_push "$seg" || continue
     local d="$dir" j=1
@@ -44,9 +62,12 @@ git_push_dir() {
         *) j=$((j+1));;
       esac
     done
-    printf '%s\n' "$d"; return 0
+    # Every push must land in one place; the gate checks a single repository.
+    [[ -z "$found" || "$found" == "$d" ]] || return 2
+    found="$d"
   done <<<"$norm"
-  return 1
+  [[ -n "$found" ]] || return 1
+  printf '%s\n' "$found"
 }
 
 # _git_cmd_resolve BASE PATH — set _git_cmd_resolved to PATH resolved against BASE.
@@ -72,7 +93,11 @@ _git_cmd_resolve() {
 # NOT reported as a push: gating it blocks a harmless connectivity check, and the
 # post-push codify prompt would fire for a push that never happened.
 is_git_push() {
-  local cmd="$1" seg norm
+  local cmd="$1" seg norm cmd_meta=0
+  local meta="[][\$\`\\\\\"'(){}*?~<]"
+  # Check the whole command before splitting: the split below drops grouping
+  # characters, and `--dry-run {--no-dry-run,origin}` must not lose its braces.
+  [[ "$cmd" =~ $meta ]] && cmd_meta=1
   norm="${cmd//&&/$'\n'}"; norm="${norm//||/$'\n'}"
   norm="${norm//;/$'\n'}"; norm="${norm//|/$'\n'}"; norm="${norm//&/$'\n'}"
   # Grouping characters also delimit commands: `(cd x && git push)` would otherwise
@@ -87,15 +112,26 @@ is_git_push() {
       seg="${seg#"${BASH_REMATCH[0]}"}"
     done
     local toks; read -ra toks <<<"$seg"
+    # A shell given a command string (`-c`, `-lc`, ...): any `git` followed later by
+    # `push` is a push. A shell running a script file is not inspected.
+    if [[ " $_GIT_CMD_SHELLS " == *" ${toks[0]:-} "* ]]; then
+      [[ " ${toks[*]} " =~ [[:space:]]-[A-Za-z]*c[A-Za-z]*[[:space:]] && "$raw" == *git*push* ]] && return 0
+      continue
+    fi
     # A wrapper (env/command/nohup/...) can carry its own options and values before
-    # `git`, which this parser cannot follow; any `git ... push` behind one counts as
-    # a push, with no dry-run exemption (fail closed).
+    # `git`; find the `git` token, skip its global options, and count the segment as
+    # a push when the subcommand is `push` — with no dry-run exemption (fail closed).
     if [[ " $_GIT_CMD_WRAPPERS " == *" ${toks[0]:-} "* ]]; then
-      local k seen_git=0
-      for ((k = 1; k < ${#toks[@]}; k++)); do
-        [[ "${toks[$k]}" == git ]] && seen_git=1
-        [[ $seen_git -eq 1 && "${toks[$k]}" == push ]] && return 0
+      local k=1
+      while [[ $k -lt ${#toks[@]} && "${toks[$k]}" != git ]]; do k=$((k+1)); done
+      k=$((k+1))
+      while [[ $k -lt ${#toks[@]} && "${toks[$k]}" == -* ]]; do
+        case "${toks[$k]}" in
+          -C|-c|--git-dir|--work-tree|--namespace|--exec-path) k=$((k+2));;
+          *) k=$((k+1));;
+        esac
       done
+      [[ "${toks[$k]:-}" == push ]] && return 0
       continue
     fi
     [[ "${toks[0]:-}" == git ]] || continue
@@ -144,11 +180,10 @@ is_git_push() {
         *) [[ "$tok" =~ $plain || "$tok" =~ $redir ]] || unknown=1;;
       esac
     done
-    # One invariant for the whole segment, not per region: with no quoting, expansion,
+    # One invariant for the whole command, not per region: with no quoting, expansion,
     # grouping or glob characters anywhere (env assignments and git global options
     # included) the shell cannot rewrite what we parsed, so we see what git sees.
-    local meta="[][\$\`\\\\\"'(){}*?~<]"
-    [[ "$raw" =~ $meta ]] && unknown=1
+    [[ $cmd_meta -eq 1 ]] && unknown=1
     [[ $dry -eq 1 && $unknown -eq 0 ]] && continue
     return 0
   done <<<"$norm"

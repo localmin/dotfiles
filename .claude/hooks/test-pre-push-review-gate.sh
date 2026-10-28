@@ -59,6 +59,16 @@ check "nohup-wrapped push is gated"            block "$T/pending"  "nohup git pu
 check "command-wrapped push is gated"          block "$T/pending"  "command git push"
 check "wrapped push in reviewed repo"          block "$T/approved" "env GIT_TRACE=1 git push"
 check "ordinary chain before push still works" allow "$T/approved" "git status && echo ok && git push"
+check "brace expansion cannot unlock dry-run"  block "$T/pending"  "git push --dry-run {--no-dry-run,origin}"
+check "every push in a chain is gated"         block "$T/approved" "git push && git -C $T/pending push"
+check "cd in a pipeline does not move the push" block "$T/pending" "cd $T/approved | git push"
+check "backgrounded cd does not move the push" block "$T/pending"  "cd $T/approved & git push"
+check "quoted cd is not a directory change"    block "$T/pending"  "echo \"a && cd $T/approved && b\" && git push"
+check "shell -c wrapper is gated"              block "$T/pending"  "bash -c \"git push\""
+check "wrapped non-push git is not a push"     allow "$T/pending"  "env git commit -m push"
+check "unrelated wrapper before push is fine"  allow "$T/approved" "command -v jq && git push"
+check "shell running a script is not a push"   allow "$T/pending"  "bash ./tools/git-push-helper.sh"
+check "bare pushd fails closed"                block "$T/approved" "pushd $T/pending; pushd $T/approved; pushd; git push"
 
 echo "passed=$pass failed=$fail (fixtures: $T)"
 [[ $fail -eq 0 ]]
