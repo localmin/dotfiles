@@ -1,11 +1,11 @@
 ---
 name: monthly-summary
-description: 当月にInkdrop inboxから昇格したノートを集計してテンプレートに沿って月次サマリーを作成し、monthlyノートブックに保存する。NotebookLM昇格候補も提示。月次運用想定。
+description: 対象月（既定は前月）にInkdrop inboxから昇格したノート（weekly-review で「育てる」判定されたもの）を集計してテンプレートに沿って月次サマリーを作成し、monthlyノートブックに保存する。NotebookLM昇格候補も提示。「月次サマリー」「今月のまとめ」を頼まれたら使う。月次運用想定。
 ---
 
 # monthly-summary
 
-当月に inbox から昇格したノートを集計し、月次サマリーを Inkdrop に作成する。
+対象月に inbox から昇格したノートを集計し、月次サマリーを Inkdrop に作成する。
 
 ## Inkdrop MCP の使用方法と注意点
 
@@ -25,9 +25,13 @@ Stateless Invocation は1回あたり起動コスト（認証 + npm 解決）が
 
 対象月（例: `2026-05`）。省略時は前月。
 
-## 集計対象ノートブック
+## 「昇格」の定義
 
-`search-notes` の `book:` 修飾子は表示名で引けるが、`create-note` の `bookId` には**実 ID** が要る。2026-09-21 時点の実 ID:
+**昇格ノート = inbox 日次ノートの `- 週次判定: 育てる → [タイトル](inkdrop://note/<id>)` 行が指すノートのうち、`createdAt` が対象月のもの**（weekly-review が「育てる」で個別ノートを作った時点＝昇格時点）。ノートブックの全ノートを日付で拾う方式は使わない（古いノートを編集しただけのものや、inbox を経由しない手書きノートが混ざる）。
+
+## ノートブックの実 ID
+
+`search-notes` の `book:` 修飾子は**表示名**で引く（`book:inbox`）。`create-note` の `bookId` には**実 ID** が要る。2026-09-21 時点の実 ID（昇格先になりうるもの）:
 
 ```
 book:_dtsK1wL    tech/web-engineering
@@ -40,19 +44,19 @@ book:YPhSGe-q    others
 book:GkmAPwUu    someday-ideas
 ```
 
-保存先の `monthly` は `book:rFt2TWxB`。`inbox`(`book:51GBqxKj`) と `monthly` は集計対象外（`yearly` / `weekly` は未作成）。
+保存先の `monthly` は `book:rFt2TWxB`。`inbox` は `book:51GBqxKj`（`yearly` / `weekly` は未作成）。
 
 ID が合わないときは `list-notebooks` で引き直し、この一覧を更新する。
 
 ## 手順
 
-Inkdrop の検索修飾子に **日付フィルタは存在しない**（`book:` / `tag:` / `status:` / `title:` のみ）ため、当月分への絞り込みはノートの `createdAt` / `updatedAt` をローカルでフィルタする必要がある。MCP 呼び出しはノートブック単位で並列化してコストを隠す。
+Inkdrop の検索修飾子に **日付フィルタは存在しない**（`book:` / `tag:` / `status:` / `title:` のみ）。MCP 呼び出しは並列化してコストを隠す。
 
 1. **昇格ノートを収集**:
-   - 集計対象ノートブックごとに `search-notes(keyword: 'book:<bookId>')` を **すべて並列で** 実行する（直列だと N 倍の起動コストがかかる）。
-   - 加えて `search-notes(keyword: 'status:completed')` を 1 本（当月アーカイブされた個別ノート用）。
-   - 取得したノートを `createdAt` / `updatedAt` で当月分にローカルフィルタする。
-2. **タグ別に集計**: どのテーマに何本昇格したか整理
+   - 対象月と前月の inbox 日次ノートを `search-notes(keyword: 'book:inbox title:"inbox YYYY-MM"')` × 2 で **並列に** 引く（前月も見るのは、前月末に取り込んだ記事が対象月の weekly-review で育てられることがあるため）。**status で絞らない**（目を通した日次ノートは `completed` になっている）。
+   - 日次ノートの本文は **MCP の `read-note` で直接読まない**（1 本 60,000 字超になりうる）。inbox-capture の `~/dotfiles/coding-agents/skills/inbox-capture/scripts/note-head.sh -o <ノートごとの出力先> <note:ID>` を **並列で** 実行して `body.md` に落とし（1Password が走るため sandbox 外）、`grep -o 'inkdrop://note/[^)]*'` を `週次判定: 育てる` 行に対してだけ当ててリンク先 ID を集める。
+   - リンク先（個別ノート。小さい）を `read-note` で **並列に** 読み、`createdAt` が対象月のものだけ残す。同じ ID は 1 本に数える。
+2. **タグ別に集計**: どのテーマに何本昇格したか整理する。`read-note` の `tags` は tag ID なので、タグ名は `list-tags` で ID から引く。
 3. **月次サマリーを下書き**: 以下のテンプレートに沿って生成
 
 ```markdown
@@ -80,11 +84,11 @@ Inkdrop の検索修飾子に **日付フィルタは存在しない**（`book:`
 
 ## NotebookLM 昇格候補
 
-- タグ `xxx`: N本（基準: 3本以上）
+- タグ `xxx`: 今月 N本（判定は notebooklm-judge）
 ```
 
 4. **ノートを作成**: `create-note` でタイトル `YYYY-MM 月次サマリー`、`bookId: "book:rFt2TWxB"`（monthly）、`status: "active"`
-5. **NotebookLM 候補の提示**: 3本以上のタグがあれば `notebooklm-judge` の実行を提案
+5. **NotebookLM 候補の提示**: 今月昇格のあったタグを候補として挙げ、`notebooklm-judge` の実行を提案する（推奨/様子見/不要の判定基準は notebooklm-judge 側が正。ここで本数の閾値を独自に持たない）
 
 ## タイムアウトとリトライ方針
 

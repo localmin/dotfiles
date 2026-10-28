@@ -1,6 +1,6 @@
 ---
 name: weekly-review
-description: Inkdropのinbox日次まとめから「後で読む」マークの記事を抽出し、育てる/捨てるの2択で整理する。育てる場合はタグとノートブックを確定して個別ノート化し、日次まとめ側には判定結果を追記する（セクションは消さない）。NotebookLM昇格候補も提示。週次運用想定。
+description: Inkdropのinbox日次まとめから「後で読む」マークの記事を抽出し、育てる/捨てるの2択で整理する。育てる場合はタグとノートブックを確定して個別ノート化し、日次まとめ側には判定結果を追記する（セクションは消さない）。NotebookLM昇格候補も提示。期間省略時は当月+前月の未判定分を全部拾う。「週次レビュー」「後で読むの整理」を頼まれたら使う。週次運用想定。
 ---
 
 # weekly-review
@@ -18,6 +18,8 @@ inbox の日次まとめノートから **「後で読む」** とマークさ�
   Antigravity CLI では `antigravity mcp enable inkdrop` による常時有効化は行わないこと（関係ない操作でも 1Password が立ち上がるのを防ぐため）。
   代わりに、一時的なスクリプト等を生成し、以下のように `run_shell_command` 経由で MCP サーバーの stdio に直接 JSON-RPC を流し込んで単発実行（Stateless Invocation）すること。
   例: `echo '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"search-notes","arguments":{"keyword":"book:inbox"}}}' | op run --env-file=~/dotfiles/coding-agents/inkdrop.op.env -- npx --prefer-offline -y @inkdropapp/mcp-server`
+
+上の `echo` 例は短いクエリ専用。**ノート本文を送る呼び出し（`update-note` / `create-note`）は inbox-capture「1Password 認証爆発の防止」の `jq --rawfile` 形式を必ず使う**（シェルの文字列補間で本文を埋め込まない）。
 
 Stateless Invocation は1回あたり起動コスト（認証 + npm 解決）が大きいため、**MCP 呼び出し回数の最小化** と **並列化可能な呼び出しの同時実行** で起動コストを隠すこと。
 
@@ -84,15 +86,16 @@ Stateless MCP の起動コストを抑えるため、検索の絞り込みと並
    - **期間指定時**: 同月内なら 1 回、月をまたぐなら **月ごとに並列で** 実行し、取得後にタイトルの日付を解析して指定期間内のノートだけに絞る。
      - 月またぎ (例: 2026-04-28 〜 2026-05-04): `book:inbox title:"inbox 2026-04"` と `book:inbox title:"inbox 2026-05"` を並列に呼び、結果をマージ
 2. **「後で読む」セクションを抽出**:
-   - 対象ノートに対して `read-note` を **並列で** 実行する（読み込みなので競合しない）。
-   - `読了判定: 後で読む` を含み、**かつ `週次判定:` 行がない**セクションだけリスト化する（前者は inbox-capture が、後者は本スキルが書き込むフィールド）。
+   - **MCP の `read-note` を直接呼ばない**（日次ノートは 1 本で 60,000 字を超えることがあり、2 ヶ月分を文脈に載せると以降の作業が潰れる）。代わりに inbox-capture の `~/dotfiles/coding-agents/skills/inbox-capture/scripts/note-head.sh -o <ノートごとの出力先> <note:ID>` を対象ノートごとに **並列で** 実行し、本文をファイル（`body.md`）に落とす。`id` / `rev` もここで控える（手順 4 で使う）。1Password が走るため sandbox 外で実行する。
+   - `body.md` に対して grep 等で、`読了判定: 後で読む` を含み **かつ `週次判定:` 行がない**セクションだけを抜き出してリスト化する（前者は inbox-capture が、後者は本スキルが書き込むフィールド）。文脈に載せるのは抜き出したセクションだけ。
 3. **セクションごとに2択判定**（ユーザーに確認しながら進める）:
    - **育てる** → 個別ノート化フロー（下記）
-   - **捨てる** → その場では何もしない（記録は手順4でまとめて行う）
+   - **捨てる**（記録上の文言は「見送り」）→ その場では何もしない（記録は手順4でまとめて行う）
 4. **判定結果を日次まとめに追記**: セクションごとに `- 週次判定:` 行を足し、日次まとめ 1 ノートにつき `update-note` を **1回だけ** 呼ぶ（セクション単位で呼ばない）。**セクション本体は消さない**。
+   - 行の挿入は手順 2 の `body.md` に対してファイル上で行い（該当セクションの `- 読了判定:` 行の直後）、送信は inbox-capture「1Password 認証爆発の防止」の `jq -nc --rawfile body <ファイル>` + stdio 経路で行う。引数は `_id` / `_rev`（`note-head.sh` の `id` / `rev`）。**MCP の `update-note` に body 全文を引数で渡さない**（既存本文が丸ごと文脈に載る）。
    - 育てる → `- 週次判定: 育てる → [ノートタイトル](inkdrop://note/xxxxx)`（`create-note` の戻り値の `_id` から `note:` を落としたもの）
    - 捨てる → `- 週次判定: 見送り（YYYY-MM-DD）`
-5. **NotebookLM 昇格チェック**: タグ単位で3本以上溜まったものがあれば `notebooklm-judge` の実行を提案
+5. **NotebookLM 昇格チェック**: 今回付けたタグごとに `search-notes(keyword: 'tag:<タグ名>')` の件数を見て、3本以上あるタグがあれば `notebooklm-judge` の実行を提案する（判定そのものは notebooklm-judge に任せる）
 
 ## 「育てる」フロー
 
