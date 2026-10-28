@@ -1,13 +1,15 @@
 ---
 name: parallelization
-description: タスクに着手するとき最初に読む、並列化と subagent 化の判断基準。独立 subtask の並列 dispatch、大量探索の subagent への隔離、bias-free 評価、long-running batch の逃がし方と、並列化すべきでないパターンを定める。新しいタスクを受けた直後の作業設計で参照する。
+description: タスクに着手するとき最初に読む、並列化と subagent 化の判断基準。独立 subtask の並列 dispatch、大量探索の subagent への隔離、bias-free 評価、long-running batch の逃がし方と、並列化すべきでないパターンを定める。subagent を実際に起こしてよい条件、subagent として受けた作業を再委譲するかの判定（ISOLATED-EXECUTOR 宣言）、dispatch 拒否時の再試行、大規模 dispatch 前の規模確認も扱う。新しいタスクを受けた直後の作業設計で参照する。
 ---
 
 # 並列化と subagent
 
 ## 基本姿勢
 
-タスクを受けたら最初に「**並列化できる subtask は何か**」「**subagent に投げて main context を空けられるか**」を洗い出してから動く。**default は subagent 優先 / 並列優先**。
+タスクを受けたら最初に「**並列化できる subtask は何か**」「**subagent に投げて main context を空けられるか**」を洗い出してから動く。
+
+**subagent を実際に起こすのは次のどちらかに限る**: ① ユーザーが依頼した（skill 名指しの実行依頼を含む）② CLAUDE.md / skill が隔離を必須にしている（生本文の隔離、inbox-capture の系統A、bias-free 評価など）。どちらでもなければ、洗い出した並列化の候補は**提案に留めて**自分で進める（理由: Claude Code 本体が依頼なしの spawn を抑制しており、方針が衝突すると挙動が揺れる）。同一ツール呼び出し内の並列化（独立した Read / Bash を 1 message に並べる）はこの制限の対象外で、常に行う。
 
 ## subagent / 並列に投げる判断
 
