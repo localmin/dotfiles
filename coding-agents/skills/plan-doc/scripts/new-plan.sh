@@ -60,4 +60,4 @@ else
 fi
 
 echo
-echo "次: $doc の各見出し（Goals/Spec/Task分割/実装の進め方/動作確認）を埋め、INDEX のフックを書き換えてください。"
+echo "次: $doc の各見出し（Goals/Spec/前提と検証状況/設計/Task分割/実装の進め方/動作確認）を埋め、INDEX のフックを書き換えてください。"
