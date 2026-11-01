@@ -1,0 +1,5 @@
+{"id":"2026/2590","category":"PROTOCOLS","title":"FHE Bootstrapping Speedup","link":"https://eprint.iacr.org/2026/2590","published":"2026-10-21T12:00:00Z","authors":["F. Author"],"abstract":"FHE abstract."}
+{"id":"2026/2601","category":"PUBLICKEY","title":"ML-DSA & Masking: Faster","link":"https://eprint.iacr.org/2026/2601","published":"2026-10-22T09:00:00Z","authors":["C. Author"],"abstract":"Masked ML-DSA."}
+{"id":"2026/2588","category":"ATTACKS","title":"Side-Channel Attack on SLH-DSA","link":"https://eprint.iacr.org/2026/2588","published":"2026-10-21T10:00:00Z","authors":["E. Author"],"abstract":"SLH-DSA attack."}
+{"id":"2026/2551","category":"SECRETKEY","title":"Boundary Case Cipher","link":"https://eprint.iacr.org/2026/2551","published":"2026-10-19T11:28:43Z","authors":["A. Author"],"abstract":"Boundary."}
+{"id":"2026/2614","category":"SECRETKEY","title":"Tight Post-Quantum Multi-Key Security of the FX Construction","link":"https://eprint.iacr.org/2026/2614","published":"2026-10-23T11:55:06Z","authors":["Rentaro Shiba","Tetsu Iwata"],"abstract":"FX."}

@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+  <channel>
+    <title>Cryptology ePrint Archive</title>
+    <link>https://eprint.iacr.org/rss/rss.xml</link>
+    <description>Fixture feed.</description>
+    <item>
+      <title>Old Application Paper</title>
+      <link>https://eprint.iacr.org/2026/2300</link>
+      <description><![CDATA[Old application abstract.]]></description>
+      <guid isPermaLink="true">https://eprint.iacr.org/2026/2300</guid>
+      <category>Applications</category>
+      <enclosure url="https://eprint.iacr.org/2026/2300.pdf" length="1000" type="application/pdf"/>
+      <pubDate>Thu, 01 Oct 2026 10:00:00 +0000</pubDate>
+      <dc:creator>O. Author</dc:creator>
+    </item>
+  </channel>
+</rss>

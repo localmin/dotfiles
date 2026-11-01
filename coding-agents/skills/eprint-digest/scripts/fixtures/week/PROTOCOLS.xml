@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+  <channel>
+    <title>Cryptology ePrint Archive</title>
+    <link>https://eprint.iacr.org/rss/rss.xml</link>
+    <description>Fixture feed.</description>
+    <item>
+      <title>FHE Bootstrapping Speedup</title>
+      <link>https://eprint.iacr.org/2026/2590</link>
+      <description><![CDATA[FHE abstract.]]></description>
+      <guid isPermaLink="true">https://eprint.iacr.org/2026/2590</guid>
+      <category>Cryptographic protocols</category>
+      <enclosure url="https://eprint.iacr.org/2026/2590.pdf" length="1000" type="application/pdf"/>
+      <pubDate>Wed, 21 Oct 2026 12:00:00 +0000</pubDate>
+      <dc:creator>F. Author</dc:creator>
+    </item>
+    <item>
+      <title>Old Protocol</title>
+      <link>https://eprint.iacr.org/2026/2450</link>
+      <description><![CDATA[Old protocol abstract.]]></description>
+      <guid isPermaLink="true">https://eprint.iacr.org/2026/2450</guid>
+      <category>Cryptographic protocols</category>
+      <enclosure url="https://eprint.iacr.org/2026/2450.pdf" length="1000" type="application/pdf"/>
+      <pubDate>Sat, 10 Oct 2026 12:00:00 +0000</pubDate>
+      <dc:creator>G. Author</dc:creator>
+    </item>
+  </channel>
+</rss>

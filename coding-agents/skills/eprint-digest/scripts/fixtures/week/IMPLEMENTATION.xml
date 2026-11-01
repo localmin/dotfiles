@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+  <channel>
+    <title>Cryptology ePrint Archive</title>
+    <link>https://eprint.iacr.org/rss/rss.xml</link>
+    <description>Fixture feed.</description>
+    <item>
+      <title>Masked Kyber on Cortex-M4</title>
+      <link>https://eprint.iacr.org/2026/2605</link>
+      <description><![CDATA[Implementation abstract.]]></description>
+      <guid isPermaLink="true">https://eprint.iacr.org/2026/2605</guid>
+      <category>Implementation</category>
+      <enclosure url="https://eprint.iacr.org/2026/2605.pdf" length="1000" type="application/pdf"/>
+      <pubDate>Thu, 22 Oct 2026 15:00:00 +0000</pubDate>
+      <dc:creator>I. Author</dc:creator>
+      <dc:creator>J. Author</dc:creator>
+      <dc:creator>K. Author</dc:creator>
+    </item>
+  </channel>
+</rss>

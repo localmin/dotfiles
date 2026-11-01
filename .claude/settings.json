@@ -135,7 +135,8 @@
     "enabled": true,
     "filesystem": {
       "allowWrite": [
-        "~/.cache/inbox-capture"
+        "~/.cache/inbox-capture",
+        "~/.cache/eprint-digest"
       ],
       "denyWrite": [
         "~/dotfiles/coding-agents/skills/inbox-capture/scripts"
